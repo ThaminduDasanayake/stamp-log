@@ -43,7 +43,7 @@ export default function DesignSystemPage() {
               <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-md shadow-indigo-500/20">
                 <Broadcast className="h-6 w-6" weight="bold" />
               </div>
-              <h1 className="text-3xl font-extrabold tracking-tight">relay</h1>
+              <h1 className="text-3xl font-extrabold tracking-tight">stamplog</h1>
             </div>
             <p className="text-muted-foreground text-sm mt-1 font-medium">
               Automated Release Intelligence & Multi-Audience Synthesis Engine
@@ -74,13 +74,13 @@ export default function DesignSystemPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="p-4 rounded-xl bg-muted/60 border border-border/60 text-center">
-                  <span className="text-2xl font-black tracking-tight text-foreground">relay</span>
+                  <span className="text-2xl font-black tracking-tight text-foreground">stamplog</span>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Continuous release heartbeat, powered by AI
+                    Official AI release notes from raw git logs
                   </p>
                 </div>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Relay transforms messy Git commit strings and PR notes into structured release notes for Leadership, Customers, and Developers.
+                  StampLog transforms raw Git commit strings and PR notes into structured release notes for Leadership, Customers, and Developers.
                 </p>
               </CardContent>
             </Card>
@@ -422,11 +422,11 @@ export default function DesignSystemPage() {
         {/* Design System Footer */}
         <footer className="bg-card border border-border rounded-xl p-4 flex flex-col sm:flex-row justify-between items-center text-xs text-muted-foreground gap-2">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-foreground tracking-tight">relay</span>
+            <span className="font-bold text-foreground tracking-tight">stamplog</span>
             <span>•</span>
             <span>Design System & Architecture Specifications</span>
           </div>
-          <span>Stay synced. Release with clarity.</span>
+          <span>Official release notes from raw git logs.</span>
         </footer>
 
       </div>

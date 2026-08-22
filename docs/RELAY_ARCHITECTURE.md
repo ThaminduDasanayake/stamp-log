@@ -1,4 +1,4 @@
-# Relay
+# StampLog
 > **AI-Powered Release Notes & Multi-Audience Changelog Synthesis Engine**
 
 ---
@@ -6,7 +6,7 @@
 ## 1. Project Overview & Product Vision
 
 ### Product Mission
-**Relay** is an automated, AI-driven changelog and release notes workspace built on the **Next.js App Router**, **Vercel AI SDK**, **Google Gemini (via `@ai-sdk/google`)**, and **PostgreSQL (`pgvector` via Prisma/Supabase)**. It ingests developer inputs (Git commit logs, GitHub PR dumps, Jira/Linear issue summaries) and automatically classifies, structures, and synthesizes them into tailored release documentation for three distinct audiences:
+**StampLog** is an automated, AI-driven changelog and release notes workspace built on the **Next.js App Router**, **Vercel AI SDK**, **Google Gemini (via `@ai-sdk/google`)**, and **PostgreSQL (`pgvector` via Prisma/Supabase)**. It ingests developer inputs (Git commit logs, GitHub PR dumps, Jira/Linear issue summaries) and automatically classifies, structures, and synthesizes them into tailored release documentation for three distinct audiences:
 1. **Executive / Stakeholder View:** High-level strategic impacts, key metrics, and milestone summaries.
 2. **End-User / Customer View:** Benefit-driven feature announcements and noticeable bug fixes in accessible language.
 3. **Developer / Engineering View:** Breaking changes, migration guides, API deprecations, schema mutations, and dependency updates.
@@ -427,11 +427,11 @@ export function GeneratorStudio({ projectId }: { projectId: string }) {
 
 ---
 
-## 9. Relay Design System & UI Specifications
+## 9. StampLog Design System & UI Specifications
 
 ### 9.1 Brand & Product Vision
-* **Product Name:** **Relay**
-* **Tagline:** *Automated release intelligence, powered by AI.*
+* **Product Name:** **StampLog**
+* **Tagline:** *Official release notes from raw git logs, powered by AI.*
 * **Aesthetic:** Modern developer workspace & infrastructure tooling (sleek dark mode accents, high legibility, clean card surfaces, precise 4px alignment grid).
 
 ### 9.2 Iconography Standard

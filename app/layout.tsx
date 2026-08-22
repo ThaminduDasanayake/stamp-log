@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Relay — AI-Powered Release Notes Engine",
+  title: "StampLog — AI-Powered Release Notes Engine",
   description: "Automated multi-audience changelog synthesis engine built for modern developer teams.",
 };
 
