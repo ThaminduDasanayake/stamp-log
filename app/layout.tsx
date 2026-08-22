@@ -19,14 +19,25 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "StampLog — AI-Powered Release Notes Engine",
-  description: "Automated multi-audience changelog synthesis engine built for modern developer teams.",
+  description:
+    "Automated multi-audience changelog synthesis engine built for modern developer teams.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", plusJakartaSans.variable, geistMono.variable, "font-sans")}
+      className={cn(
+        "h-full",
+        "antialiased",
+        plusJakartaSans.variable,
+        geistMono.variable,
+        "font-sans",
+      )}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-indigo-500/20 selection:text-indigo-600 dark:selection:text-indigo-400">
         {children}
@@ -34,4 +45,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
-

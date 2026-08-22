@@ -1,12 +1,12 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface AudienceMeterProps {
-  execPercent?: number
-  userPercent?: number
-  devPercent?: number
-  className?: string
-  showLabels?: boolean
+  execPercent?: number;
+  userPercent?: number;
+  devPercent?: number;
+  className?: string;
+  showLabels?: boolean;
 }
 
 export function AudienceMeter({
@@ -16,10 +16,10 @@ export function AudienceMeter({
   className,
   showLabels = true,
 }: AudienceMeterProps) {
-  const total = execPercent + userPercent + devPercent
-  const ePct = Math.round((execPercent / total) * 100)
-  const uPct = Math.round((userPercent / total) * 100)
-  const dPct = Math.round((devPercent / total) * 100)
+  const total = execPercent + userPercent + devPercent;
+  const ePct = Math.round((execPercent / total) * 100);
+  const uPct = Math.round((userPercent / total) * 100);
+  const dPct = Math.round((devPercent / total) * 100);
 
   return (
     <div className={cn("flex flex-col gap-2 w-full", className)}>
@@ -58,5 +58,5 @@ export function AudienceMeter({
         </div>
       )}
     </div>
-  )
+  );
 }

@@ -9,5 +9,5 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 <!-- END:nextjs-agent-rules -->
 
 # Project Package Manager Rule
-- **Always use `pnpm`**: This project uses `pnpm` exclusively (`pnpm dev`, `pnpm run build`, `pnpm add <pkg>`, `pnpm dlx`). Do NOT use `npm` or `yarn`.
 
+- **Always use `pnpm`**: This project uses `pnpm` exclusively (`pnpm dev`, `pnpm run build`, `pnpm add <pkg>`, `pnpm dlx`). Do NOT use `npm` or `yarn`.

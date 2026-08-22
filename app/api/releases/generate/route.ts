@@ -9,10 +9,16 @@ export async function POST(req: Request) {
     const { projectId, rawCommits } = await req.json();
 
     if (!rawCommits || typeof rawCommits !== "string") {
-      return new Response("Missing or invalid rawCommits string", { status: 400 });
+      return new Response("Missing or invalid rawCommits string", {
+        status: 400,
+      });
     }
 
-    let projectInfo: { name?: string | null; toneGuide?: string | null; customPrompt?: string | null } | null = null;
+    let projectInfo: {
+      name?: string | null;
+      toneGuide?: string | null;
+      customPrompt?: string | null;
+    } | null = null;
 
     // Gracefully query project tone if DB is configured and projectId provided
     if (projectId && process.env.DATABASE_URL) {
