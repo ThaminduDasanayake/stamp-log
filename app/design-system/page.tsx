@@ -197,7 +197,7 @@ export default function DesignSystemPage() {
 
                   <div className="p-3 grid grid-cols-12 gap-2 items-center">
                     <span className="col-span-3 font-semibold text-xs text-muted-foreground">H1 Page Title</span>
-                    <h1 className="col-span-6 text-2xl font-bold tracking-tight text-foreground">Relay Release Notes</h1>
+                    <h1 className="col-span-6 text-2xl font-bold tracking-tight text-foreground">StampLog Release Notes</h1>
                     <span className="col-span-3 text-right font-mono text-xs text-muted-foreground">32px / Bold</span>
                   </div>
 

@@ -220,7 +220,7 @@ export async function POST(req: Request) {
     });
 
     const systemPrompt = `
-      You are Relay, an elite technical communicator and Product Lead for ${project?.name || 'the software project'}.
+      You are StampLog, an elite technical communicator and Product Lead for ${project?.name || 'the software project'}.
       Your job is to transform raw commit logs, PR titles, and ticket notes into high-quality, structured release documentation.
       
       TONE & STYLE:
@@ -460,7 +460,7 @@ export function GeneratorStudio({ projectId }: { projectId: string }) {
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                                   RELAY COLOR SYSTEM                                   │
+│                                 STAMPLOG COLOR SYSTEM                                  │
 │                                                                                        │
 │  ┌───────────────────────┐   ┌──────────────────────────────┐   ┌───────────────────┐  │
 │  │   Primary Accent      │   │     Secondary Accent         │   │  Base Background  │  │
