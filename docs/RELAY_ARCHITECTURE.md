@@ -232,9 +232,9 @@ export async function POST(req: Request) {
       3. For user-facing highlights, lead with user benefits, not engineering implementation details.
     `;
 
-    // 2. Stream structured object using Gemini 1.5 Flash (fast & generous rate limits)
+    // 2. Stream structured object using Gemini 3.6 Flash (fast & generous rate limits)
     const result = await streamObject({
-      model: google('gemini-1.5-flash'),
+      model: google('gemini-3.6-flash'),
       schema: ChangelogSchema,
       system: systemPrompt,
       prompt: `Analyze the following raw input and generate the structured changelog:
