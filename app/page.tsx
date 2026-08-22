@@ -27,7 +27,7 @@ export default function Home() {
           </Link>
           <Badge variant="dev" className="px-3 py-1.5 text-xs gap-1.5">
             <Sparkle className="h-3.5 w-3.5" weight="fill" />
-            Gemini 1.5 Flash
+            Gemini 3.6 Flash
           </Badge>
         </div>
       </header>

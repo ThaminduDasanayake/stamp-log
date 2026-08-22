@@ -62,7 +62,7 @@ export function GeneratorStudio({ projectId, projectName = "StampLog Project" }:
                 Raw Input Workbench
               </CardTitle>
               <Badge variant="outline" className="font-mono text-xs">
-                Gemini 1.5 Flash
+                Gemini 3.6 Flash
               </Badge>
             </div>
           </CardHeader>
