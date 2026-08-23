@@ -34,7 +34,7 @@ export default function LoginPage() {
     if (!email) return;
     setIsSubmitting(true);
     setTimeout(() => {
-      window.location.href = "/";
+      window.location.href = "/app";
     }, 1000);
   };
 
