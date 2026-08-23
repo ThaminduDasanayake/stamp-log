@@ -24,17 +24,19 @@ model Organization {
 }
 
 model Project {
-  id           String        @id @default(cuid())
-  orgId        String
-  organization Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  name         String
-  slug         String
-  description  String?
-  toneGuide    String?       @db.Text
-  customPrompt String?       @db.Text
-  releaseNotes ReleaseNote[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id            String        @id @default(cuid())
+  orgId         String
+  organization  Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  name          String
+  slug          String
+  description   String?
+  githubRepo    String?       // e.g. "ThaminduDasanayake/relay"
+  defaultBranch String?       @default("main")
+  toneGuide     String?       @db.Text
+  customPrompt  String?       @db.Text
+  releaseNotes  ReleaseNote[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@unique([orgId, slug])
 }

@@ -3,6 +3,8 @@ import {
   BroadcastIcon,
   SparkleIcon,
   PaletteIcon,
+  GithubLogoIcon,
+  LockIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { GeneratorStudio } from "@/components/generator-studio";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +27,15 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-3">
+          <Link href="/projects/import">
+            <Badge
+              variant="outline"
+              className="px-3 py-1.5 text-xs gap-1.5 border-indigo-500/30 hover:bg-muted transition-colors cursor-pointer"
+            >
+              <GithubLogoIcon className="h-3.5 w-3.5 text-primary" weight="bold" />
+              Import Repo
+            </Badge>
+          </Link>
           <Link href="/design-system">
             <Badge
               variant="outline"
@@ -34,10 +45,15 @@ export default function Home() {
               Design System
             </Badge>
           </Link>
-          <Badge variant="dev" className="px-3 py-1.5 text-xs gap-1.5">
-            <SparkleIcon className="h-3.5 w-3.5" weight="fill" />
-            Gemini 3.6 Flash
-          </Badge>
+          <Link href="/login">
+            <Badge
+              variant="dev"
+              className="px-3 py-1.5 text-xs gap-1.5 hover:opacity-80 transition-opacity cursor-pointer"
+            >
+              <LockIcon className="h-3.5 w-3.5" weight="bold" />
+              Sign In
+            </Badge>
+          </Link>
         </div>
       </header>
 

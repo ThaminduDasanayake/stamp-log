@@ -19,6 +19,8 @@ import {
   Globe,
   Clock,
   CaretDown,
+  GithubLogo,
+  ArrowClockwise,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -51,6 +53,11 @@ export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Pr
   const [copied, setCopied] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveResult, setSaveResult] = useState<{ publicUrl: string; version: string } | null>(null);
+
+  // GitHub Repo Quick-Sync State
+  const [githubRepoInput, setGithubRepoInput] = useState("");
+  const [isFetchingRepo, setIsFetchingRepo] = useState(false);
+  const [repoError, setRepoError] = useState("");
 
   // Recent saved releases state
   const [recentReleases, setRecentReleases] = useState<SavedReleaseItem[]>([]);
@@ -85,6 +92,37 @@ export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Pr
     setLoadedRelease(null);
     setSelectedReleaseId("");
     submit({ projectId, rawCommits: inputLogs });
+  };
+
+  // Zero-Paste GitHub Repo Sync handler
+  const handleFetchGitHubCommits = async () => {
+    if (!githubRepoInput.trim()) return;
+    setIsFetchingRepo(true);
+    setRepoError("");
+    setSaveResult(null);
+    setLoadedRelease(null);
+    setSelectedReleaseId("");
+
+    try {
+      const res = await fetch("/api/github/commits", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repo: githubRepoInput }),
+      });
+      const data = await res.json();
+
+      if (data.success && data.rawCommits) {
+        setInputLogs(data.rawCommits);
+        // Automatically trigger Gemini synthesis with fetched commits
+        submit({ projectId, rawCommits: data.rawCommits });
+      } else {
+        setRepoError(data.error || "Failed to fetch GitHub commits");
+      }
+    } catch (err: any) {
+      setRepoError(err?.message || "Connection error fetching GitHub repository");
+    } finally {
+      setIsFetchingRepo(false);
+    }
   };
 
   const handleSelectRelease = (id: string) => {
@@ -168,6 +206,47 @@ export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Pr
       
       {/* Left Workbench Form (5 cols) */}
       <div className="lg:col-span-5 space-y-4">
+        
+        {/* Quick Sync GitHub Repo Card */}
+        <Card className="shadow-sm border-indigo-500/20 bg-accent/30">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+              <GithubLogo className="h-4 w-4" weight="bold" /> Zero-Paste GitHub Repo Sync
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="owner/repo (e.g. facebook/react)"
+                className="flex-1 h-9 px-3 text-xs font-mono rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                value={githubRepoInput}
+                onChange={(e) => setGithubRepoInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleFetchGitHubCommits()}
+              />
+              <Button
+                size="sm"
+                onClick={handleFetchGitHubCommits}
+                disabled={isFetchingRepo || isLoading || !githubRepoInput.trim()}
+                className="h-9 px-3 gap-1.5 text-xs shadow-sm"
+              >
+                {isFetchingRepo ? (
+                  <ArrowClockwise className="h-3.5 w-3.5 animate-spin" weight="bold" />
+                ) : (
+                  <GithubLogo className="h-3.5 w-3.5" weight="bold" />
+                )}
+                {isFetchingRepo ? "Fetching..." : "Sync & AI"}
+              </Button>
+            </div>
+            {repoError && (
+              <p className="text-[11px] text-destructive font-medium leading-none pt-1">
+                {repoError}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Input Workbench Card */}
         <Card className="shadow-sm">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between gap-2">
@@ -187,7 +266,7 @@ export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Pr
                     <option value="">-- Load Saved Release --</option>
                     {recentReleases.map((rel) => (
                       <option key={rel.id} value={rel.id}>
-                        {rel.version} — {rel.title.substring(0, 24)}...
+                        {rel.version} — {rel.title.substring(0, 20)}...
                       </option>
                     ))}
                   </select>
