@@ -7,6 +7,15 @@ export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
+    // 1. Webhook Bearer Secret Verification (if STAMPLOG_WEBHOOK_SECRET is set)
+    const webhookSecret = process.env.STAMPLOG_WEBHOOK_SECRET;
+    if (webhookSecret) {
+      const authHeader = req.headers.get("authorization");
+      if (!authHeader || authHeader !== `Bearer ${webhookSecret}`) {
+        return Response.json({ success: false, error: "Unauthorized automated webhook token" }, { status: 401 });
+      }
+    }
+
     const body = await req.json();
     const {
       rawCommits,
@@ -17,10 +26,10 @@ export async function POST(req: Request) {
     } = body;
 
     if (!rawCommits || typeof rawCommits !== "string") {
-      return new Response("Missing required rawCommits payload string", { status: 400 });
+      return Response.json({ success: false, error: "Missing required rawCommits payload string" }, { status: 400 });
     }
 
-    // 1. Fetch or create project
+    // 2. Fetch or create project
     let project = await db.project.findFirst({
       where: { slug: projectSlug },
     });
@@ -56,7 +65,7 @@ export async function POST(req: Request) {
       3. Lead user-facing highlights with clear user benefits rather than implementation details.
     `;
 
-    // 2. Generate structured changelog via Gemini 3.6 Flash synchronously
+    // 3. Generate structured changelog via Gemini 3.6 Flash synchronously
     const { object: changelog } = await generateObject({
       model: google("gemini-3.6-flash"),
       schema: ChangelogSchema,
@@ -64,7 +73,7 @@ export async function POST(req: Request) {
       prompt: `Analyze the following raw git commits and synthesize the structured changelog for version ${version}:\n\n${rawCommits}`,
     });
 
-    // 3. Compute vector embedding (text-embedding-004)
+    // 4. Compute vector embedding (text-embedding-004)
     let embeddingVector: number[] | null = null;
     try {
       const textToEmbed = `${changelog.title}\n${changelog.executiveSummary}\n${JSON.stringify(changelog.userFacing.highlights)}`;
@@ -77,7 +86,7 @@ export async function POST(req: Request) {
       console.warn("Embedding generation skipped:", embedError);
     }
 
-    // 4. Save ReleaseNote to PostgreSQL
+    // 5. Save ReleaseNote to PostgreSQL
     const releaseNote = await db.releaseNote.create({
       data: {
         projectId: project.id,
@@ -121,6 +130,6 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Error in automated release ingestion:", error);
-    return new Response("Internal Server Error", { status: 500 });
+    return Response.json({ success: false, error: "Internal Server Error" }, { status: 500 });
   }
 }

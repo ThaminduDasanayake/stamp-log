@@ -40,6 +40,16 @@ export function parseGitHubRepoUrl(input: string): { owner: string; repo: string
   return null;
 }
 
+function sanitizeToken(token?: string): string | null {
+  if (!token) return null;
+  const clean = token.trim();
+  // Ensure token only contains valid token characters
+  if (!/^[a-zA-Z0-9_\-]+$/.test(clean)) {
+    return null;
+  }
+  return clean;
+}
+
 export async function fetchGitHubCommits({
   owner,
   repo,
@@ -53,18 +63,20 @@ export async function fetchGitHubCommits({
   branch?: string;
   perPage?: number;
 }) {
-  const authToken = token || process.env.GITHUB_TOKEN;
+  const rawToken = sanitizeToken(token) || sanitizeToken(process.env.GITHUB_TOKEN);
   const headers: Record<string, string> = {
     Accept: "application/vnd.github.v3+json",
     "User-Agent": "StampLog-App",
   };
 
-  if (authToken) {
-    headers["Authorization"] = `token ${authToken}`;
+  if (rawToken) {
+    headers["Authorization"] = `token ${rawToken}`;
   }
 
+  const safeOwner = encodeURIComponent(owner);
+  const safeRepo = encodeURIComponent(repo);
   const branchParam = branch ? `?sha=${encodeURIComponent(branch)}&per_page=${perPage}` : `?per_page=${perPage}`;
-  const url = `https://api.github.com/repos/${owner}/${repo}/commits${branchParam}`;
+  const url = `https://api.github.com/repos/${safeOwner}/${safeRepo}/commits${branchParam}`;
 
   const res = await fetch(url, { headers, cache: "no-store" });
   if (!res.ok) {
@@ -77,7 +89,7 @@ export async function fetchGitHubCommits({
     .map((c) => {
       const firstLine = c.commit.message.split("\n")[0];
       const shortSha = c.sha.substring(0, 7);
-      const author = c.commit.author.name;
+      const author = c.commit.author?.name || "Developer";
       return `${firstLine} (${shortSha} by ${author})`;
     })
     .join("\n");
@@ -96,14 +108,14 @@ export async function fetchUserGitHubRepos({
   username?: string;
   token?: string;
 }) {
-  const authToken = token || process.env.GITHUB_TOKEN;
+  const rawToken = sanitizeToken(token) || sanitizeToken(process.env.GITHUB_TOKEN);
   const headers: Record<string, string> = {
     Accept: "application/vnd.github.v3+json",
     "User-Agent": "StampLog-App",
   };
 
-  if (authToken) {
-    headers["Authorization"] = `token ${authToken}`;
+  if (rawToken) {
+    headers["Authorization"] = `token ${rawToken}`;
   }
 
   const url = username

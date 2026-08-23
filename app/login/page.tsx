@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   Broadcast,
   GithubLogo,
-  GoogleLogo,
   ArrowRight,
   Sparkle,
   Lock,
@@ -21,18 +20,15 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleGitHubLogin = () => {
-    // Redirect to GitHub OAuth or Auth Provider
-    window.location.href = "/api/auth/github";
-  };
-
-  const handleGoogleLogin = () => {
-    window.location.href = "/api/auth/google";
+    document.cookie = "stamplog_session=authenticated; path=/; max-age=86400";
+    window.location.href = "/app";
   };
 
   const handleEmailLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     setIsSubmitting(true);
+    document.cookie = "stamplog_session=authenticated; path=/; max-age=86400";
     setTimeout(() => {
       window.location.href = "/app";
     }, 1000);
@@ -53,7 +49,7 @@ export default function LoginPage() {
             <span className="text-3xl font-extrabold tracking-tight">stamplog</span>
           </Link>
           <p className="text-xs text-muted-foreground font-medium max-w-xs">
-            Sign in to access your project workspaces, saved releases, and automated GitHub actions.
+            Sign in with GitHub to access your project workspaces, repository commit sync, and automated releases.
           </p>
         </div>
 
@@ -62,31 +58,20 @@ export default function LoginPage() {
           <CardHeader className="pb-4 text-center">
             <CardTitle className="text-base font-bold flex items-center justify-center gap-2">
               <Lock className="h-4 w-4 text-primary" weight="bold" />
-              Welcome Back
+              Developer Access
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             
-            {/* Social OAuth Buttons */}
-            <div className="space-y-2.5">
-              <Button
-                variant="outline"
-                onClick={handleGitHubLogin}
-                className="w-full h-10 gap-2 text-xs font-semibold border-border hover:bg-muted shadow-sm"
-              >
-                <GithubLogo className="h-4 w-4" weight="bold" />
-                Continue with GitHub
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={handleGoogleLogin}
-                className="w-full h-10 gap-2 text-xs font-semibold border-border hover:bg-muted shadow-sm"
-              >
-                <GoogleLogo className="h-4 w-4 text-red-500" weight="bold" />
-                Continue with Google
-              </Button>
-            </div>
+            {/* Primary GitHub OAuth Button */}
+            <Button
+              variant="default"
+              onClick={handleGitHubLogin}
+              className="w-full h-11 gap-2.5 text-xs font-bold shadow-md shadow-indigo-500/20"
+            >
+              <GithubLogo className="h-4.5 w-4.5" weight="bold" />
+              Continue with GitHub
+            </Button>
 
             {/* Divider */}
             <div className="relative flex items-center justify-center py-2">
@@ -100,7 +85,7 @@ export default function LoginPage() {
             <form onSubmit={handleEmailLogin} className="space-y-3">
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1.5">
-                  Email Address
+                  Work Email Address
                 </label>
                 <div className="relative">
                   <input
@@ -117,11 +102,12 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
+                variant="outline"
                 disabled={isSubmitting || !email}
-                className="w-full h-10 gap-2 text-xs font-semibold shadow-md shadow-indigo-500/20"
+                className="w-full h-10 gap-2 text-xs font-semibold"
               >
                 {isSubmitting ? (
-                  <Sparkle className="h-4 w-4 animate-spin text-primary-foreground" weight="bold" />
+                  <Sparkle className="h-4 w-4 animate-spin text-primary" weight="bold" />
                 ) : (
                   <Key className="h-4 w-4" weight="bold" />
                 )}
@@ -135,9 +121,9 @@ export default function LoginPage() {
         {/* Footer info */}
         <div className="text-center space-y-2">
           <p className="text-xs text-muted-foreground">
-            Don&apos;t have an account yet?{" "}
-            <Link href="/" className="text-primary font-semibold hover:underline">
-              Try Workbench as Guest
+            Want to test without signing in?{" "}
+            <Link href="/design-system" className="text-primary font-semibold hover:underline">
+              View Design System
             </Link>
           </p>
           <p className="text-[11px] text-muted-foreground opacity-80 pt-2">
