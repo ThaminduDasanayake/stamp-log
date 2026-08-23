@@ -14,6 +14,7 @@ import {
   GitCommit,
   Tag,
   ShareNetwork,
+  Pencil,
 } from "@phosphor-icons/react/dist/ssr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -104,6 +105,11 @@ export default async function PublicReleasePage({ params }: PageProps) {
           </div>
 
           <div className="flex items-center gap-2">
+            <Link href={`/p/${projectSlug}/${encodeURIComponent(release.version)}/edit`}>
+              <Button variant="outline" size="sm" className="gap-1.5 text-xs border-indigo-500/30 text-primary hover:bg-muted">
+                <Pencil className="h-4 w-4" weight="bold" /> Edit Release
+              </Button>
+            </Link>
             <Link href={`/p/${projectSlug}`}>
               <Button variant="outline" size="sm" className="gap-1.5 text-xs">
                 <ArrowLeft className="h-4 w-4" weight="bold" /> All Releases
