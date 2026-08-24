@@ -297,6 +297,37 @@ export function ProjectTimelineDashboard() {
             </Button>
           </div>
 
+          {/* Animated Unreleased Changes Alert Banner */}
+          {alertInfo?.hasNewChanges && (
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-emerald-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-500 shrink-0">
+                  <BellRinging className="h-5 w-5" weight="bold" />
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold text-foreground flex items-center gap-2">
+                    Unreleased Changes Alert
+                    <Badge variant="exec" className="font-mono text-[10px]">
+                      {alertInfo.newCommitCount} New Commits
+                    </Badge>
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    New commits pushed to default branch since {alertInfo.latestVersion}. Ready for multi-audience release synthesis.
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                onClick={() => setIsModalOpen(true)}
+                size="sm"
+                className="gap-1.5 text-xs shrink-0 bg-amber-600 hover:bg-amber-700 text-white shadow-sm"
+              >
+                <Sparkle className="h-3.5 w-3.5" weight="fill" />
+                Generate Release Notes Now
+              </Button>
+            </div>
+          )}
+
           {/* Timeline Releases List */}
           {isLoadingReleases ? (
             <div className="p-12 text-center text-xs text-muted-foreground space-y-2">
