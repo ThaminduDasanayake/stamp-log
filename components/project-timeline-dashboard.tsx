@@ -63,6 +63,13 @@ export function ProjectTimelineDashboard() {
   const [releases, setReleases] = useState<ReleaseItem[]>([]);
 
   const [isSeeding, setIsSeeding] = useState(false);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
+  const [isLoadingReleases, setIsLoadingReleases] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Active view tab per release card ID
+  const [activeTabs, setActiveTabs] = useState<Record<string, "exec" | "user" | "dev">>({});
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const handleSeedData = async () => {
     setIsSeeding(true);
