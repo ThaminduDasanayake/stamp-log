@@ -127,9 +127,40 @@ export function ProjectTimelineDashboard() {
     }
   };
 
+  const [alertInfo, setAlertInfo] = useState<{
+    hasNewChanges: boolean;
+    newCommitCount: number;
+    latestVersion: string;
+    rawCommits: string;
+  } | null>(null);
+
+  const checkUnreleasedCommits = async (projectSlug: string) => {
+    try {
+      const res = await fetch("/api/github/check-updates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projectSlug }),
+      });
+      const data = await res.json();
+      if (data.success && data.hasNewChanges) {
+        setAlertInfo({
+          hasNewChanges: data.hasNewChanges,
+          newCommitCount: data.newCommitCount,
+          latestVersion: data.latestVersion,
+          rawCommits: data.rawCommits,
+        });
+      } else {
+        setAlertInfo(null);
+      }
+    } catch (err) {
+      console.warn("Failed to check unreleased commits:", err);
+    }
+  };
+
   useEffect(() => {
     if (selectedProject) {
       fetchReleasesForProject(selectedProject.slug);
+      checkUnreleasedCommits(selectedProject.slug);
     }
   }, [selectedProject]);
 
