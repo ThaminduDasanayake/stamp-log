@@ -22,12 +22,19 @@ import {
   SignOut,
   FolderSimple,
   BellRinging,
+  ChartBar,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AudienceMeter } from "@/components/ui/audience-meter";
 import { GenerateReleaseModal } from "@/components/generate-release-modal";
+import {
+  exportToMarkdown,
+  exportToNotion,
+  exportToHtmlEmail,
+  exportToGitHubRelease,
+} from "@/lib/exporters";
 
 interface ProjectItem {
   id: string;
@@ -175,13 +182,15 @@ export function ProjectTimelineDashboard() {
     setActiveTabs((prev) => ({ ...prev, [releaseId]: tab }));
   };
 
-  const handleCopyMarkdown = (rel: ReleaseItem) => {
-    const highlights = (rel.userHighlights || []).map((h: any) => `- **${h?.feature}**: ${h?.benefit}`).join("\n");
-    const tech = (rel.technicalUpdates || []).map((u: any) => `- [${u?.scope}] ${u?.detail}`).join("\n");
-    const md = `# ${rel.title} (${rel.version})\n\n## Executive Summary\n${rel.executiveSummary || ""}\n\n## User Highlights\n${highlights}\n\n## Technical Updates\n${tech}`;
-    
-    navigator.clipboard.writeText(md);
-    setCopiedId(rel.id);
+  const handleExportFormat = (rel: ReleaseItem, format: "md" | "notion" | "email" | "github") => {
+    let content = "";
+    if (format === "md") content = exportToMarkdown(rel);
+    else if (format === "notion") content = exportToNotion(rel);
+    else if (format === "email") content = exportToHtmlEmail(rel);
+    else if (format === "github") content = exportToGitHubRelease(rel);
+
+    navigator.clipboard.writeText(content);
+    setCopiedId(`${rel.id}-${format}`);
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -235,15 +244,27 @@ export function ProjectTimelineDashboard() {
           </Link>
 
           {selectedProject && (
-            <Link href={selectedProject.publicUrl} target="_blank">
-              <Badge
-                variant="outline"
-                className="px-3 py-1.5 text-xs gap-1.5 hover:bg-muted transition-colors cursor-pointer"
-              >
-                <Globe className="h-3.5 w-3.5 text-emerald-500" weight="bold" />
-                Public History
-              </Badge>
-            </Link>
+            <>
+              <Link href={`/p/${selectedProject.slug}/analytics`}>
+                <Badge
+                  variant="outline"
+                  className="px-3 py-1.5 text-xs gap-1.5 border-indigo-500/30 hover:bg-muted transition-colors cursor-pointer"
+                >
+                  <ChartBar className="h-3.5 w-3.5 text-primary" weight="bold" />
+                  Analytics
+                </Badge>
+              </Link>
+
+              <Link href={selectedProject.publicUrl} target="_blank">
+                <Badge
+                  variant="outline"
+                  className="px-3 py-1.5 text-xs gap-1.5 hover:bg-muted transition-colors cursor-pointer"
+                >
+                  <Globe className="h-3.5 w-3.5 text-emerald-500" weight="bold" />
+                  Public History
+                </Badge>
+              </Link>
+            </>
           )}
 
           <Link href="/design-system">
@@ -375,17 +396,26 @@ export function ProjectTimelineDashboard() {
                           </CardTitle>
                         </div>
 
-                        {/* Action Buttons */}
+                        {/* Action Buttons & Multi-Format Exporter */}
                         <div className="flex items-center gap-2 shrink-0">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleCopyMarkdown(rel)}
-                            className="gap-1 text-xs"
-                          >
-                            {copiedId === rel.id ? <CheckCircle className="h-3.5 w-3.5 text-emerald-500" weight="bold" /> : <Copy className="h-3.5 w-3.5" weight="bold" />}
-                            {copiedId === rel.id ? "Copied!" : "Copy MD"}
-                          </Button>
+                          <div className="relative">
+                            <select
+                              onChange={(e) => {
+                                if (e.target.value) {
+                                  handleExportFormat(rel, e.target.value as any);
+                                  e.target.value = "";
+                                }
+                              }}
+                              className="h-8 pl-2.5 pr-6 text-xs font-semibold rounded-lg border border-border bg-card text-foreground appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary shadow-sm"
+                            >
+                              <option value="">{copiedId?.startsWith(rel.id) ? "Copied!" : "Export As..."}</option>
+                              <option value="md">Raw Markdown (.md)</option>
+                              <option value="notion">Notion Blocks</option>
+                              <option value="email">HTML Email Newsletter</option>
+                              <option value="github">GitHub Release Payload</option>
+                            </select>
+                            <CaretDown className="h-3 w-3 absolute right-2 top-2.5 pointer-events-none text-muted-foreground" weight="bold" />
+                          </div>
 
                           {selectedProject && (
                             <Link href={`/p/${selectedProject.slug}/${encodeURIComponent(rel.version)}/edit`}>
