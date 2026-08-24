@@ -10,6 +10,7 @@ import {
   ArrowRight,
   Sparkle,
   Globe,
+  Rss,
 } from "@phosphor-icons/react/dist/ssr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -70,6 +71,11 @@ export default async function PublicProjectReleasesPage({ params }: PageProps) {
           </div>
 
           <div className="flex items-center gap-2">
+            <Link href={`/p/${projectSlug}/rss.xml`} target="_blank">
+              <Button variant="outline" size="sm" className="gap-1.5 text-xs border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-muted">
+                <Rss className="h-3.5 w-3.5" weight="bold" /> RSS Feed
+              </Button>
+            </Link>
             <Link href="/">
               <Button variant="outline" size="sm" className="gap-1 text-xs">
                 <Sparkle className="h-3.5 w-3.5 text-primary" weight="bold" />{" "}
