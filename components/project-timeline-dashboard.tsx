@@ -62,13 +62,22 @@ export function ProjectTimelineDashboard() {
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
   const [releases, setReleases] = useState<ReleaseItem[]>([]);
 
-  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
-  const [isLoadingReleases, setIsLoadingReleases] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(false);
 
-  // Active view tab per release card ID
-  const [activeTabs, setActiveTabs] = useState<Record<string, "exec" | "user" | "dev">>({});
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const handleSeedData = async () => {
+    setIsSeeding(true);
+    try {
+      const res = await fetch("/api/seed", { method: "POST" });
+      const data = await res.json();
+      if (data.success) {
+        await fetchProjects();
+      }
+    } catch (err) {
+      console.error("Failed to seed sample data:", err);
+    } finally {
+      setIsSeeding(false);
+    }
+  };
 
   // Fetch all user projects on mount
   const fetchProjects = async () => {
@@ -421,11 +430,28 @@ export function ProjectTimelineDashboard() {
               })}
             </div>
           ) : (
-            <Card className="p-8 text-center space-y-3">
-              <p className="text-sm font-medium text-foreground">No releases published for this project yet.</p>
-              <Button onClick={() => setIsModalOpen(true)} size="sm" className="gap-1.5 text-xs">
-                <Sparkle className="h-3.5 w-3.5" weight="fill" /> Generate First Release
-              </Button>
+            <Card className="p-8 text-center space-y-4">
+              <div className="space-y-1">
+                <p className="text-sm font-bold text-foreground">No releases published for this project yet.</p>
+                <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                  Generate a new release note with AI or populate sample release data to explore the timeline UI.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                <Button onClick={() => setIsModalOpen(true)} size="sm" className="gap-1.5 text-xs shadow-sm">
+                  <Sparkle className="h-3.5 w-3.5" weight="fill" /> Generate First Release
+                </Button>
+                <Button
+                  onClick={handleSeedData}
+                  disabled={isSeeding}
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 text-xs border-indigo-500/30 text-primary"
+                >
+                  <Broadcast className="h-3.5 w-3.5" weight="bold" />
+                  {isSeeding ? "Seeding..." : "Load Sample Releases"}
+                </Button>
+              </div>
             </Card>
           )}
 
