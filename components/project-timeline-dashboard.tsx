@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AudienceMeter } from "@/components/ui/audience-meter";
 import { GenerateReleaseModal } from "@/components/generate-release-modal";
+import { UserProfileMenu } from "@/components/user-profile-menu";
 import {
   exportToMarkdown,
   exportToNotion,
@@ -276,14 +277,7 @@ export function ProjectTimelineDashboard() {
             </Badge>
           </Link>
 
-          <button
-            onClick={handleSignOut}
-            title="Sign Out"
-            className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors text-xs flex items-center gap-1"
-          >
-            <SignOut className="h-3.5 w-3.5" weight="bold" />
-            <span className="hidden sm:inline">Sign Out</span>
-          </button>
+          <UserProfileMenu />
         </div>
       </header>
 
