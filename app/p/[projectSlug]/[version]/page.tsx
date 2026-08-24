@@ -46,11 +46,34 @@ export async function generateMetadata({
     return { title: "Release Not Found — StampLog" };
   }
 
+  const title = `${release.title} (${release.version}) — ${release.project.name}`;
+  const description =
+    release.executiveSummary ||
+    `Official release notes and changelog for ${release.version} of ${release.project.name}.`;
+  const ogImageUrl = `/p/${projectSlug}/${encodeURIComponent(release.version)}/og.png`;
+
   return {
-    title: `${release.title} (${release.version}) — ${release.project.name}`,
-    description:
-      release.executiveSummary ||
-      `Changelog for ${release.version} of ${release.project.name}`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
+    },
   };
 }
 
