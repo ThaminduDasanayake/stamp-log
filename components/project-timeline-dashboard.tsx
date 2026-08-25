@@ -1,40 +1,37 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  BroadcastIcon,
-  SparkleIcon,
-  GithubLogoIcon,
+  ArrowUpRightIcon,
+  BellRingingIcon,
   BriefcaseIcon,
-  User,
-  Code,
-  ShieldWarning,
-  CheckCircle,
-  Copy,
-  Clock,
+  BroadcastIcon,
   CaretDownIcon,
+  ChartBarIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  CodeIcon,
+  FolderSimpleIcon,
+  GitBranchIcon,
+  GithubLogoIcon,
   GlobeIcon,
-  Plus,
-  Pencil,
-  ArrowUpRight,
-  GitBranch,
-  SignOut,
-  FolderSimple,
-  BellRinging,
-  ChartBar,
+  PencilIcon,
+  ShieldWarningIcon,
+  SparkleIcon,
+  UserIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AudienceMeter } from "@/components/ui/audience-meter";
 import { GenerateReleaseModal } from "@/components/generate-release-modal";
 import { UserProfileMenu } from "@/components/user-profile-menu";
 import {
+  exportToGitHubRelease,
+  exportToHtmlEmail,
   exportToMarkdown,
   exportToNotion,
-  exportToHtmlEmail,
-  exportToGitHubRelease,
 } from "@/lib/exporters";
 
 interface ProjectItem {
@@ -211,7 +208,7 @@ export function ProjectTimelineDashboard() {
             className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
           >
             <div className="h-8 w-8 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-md shadow-indigo-500/20">
-              <Broadcast className="h-4.5 w-4.5" weight="bold" />
+              <BroadcastIcon className="h-4.5 w-4.5" weight="bold" />
             </div>
             <span className="text-lg font-extrabold tracking-tight hidden sm:inline">
               stamplog
@@ -222,7 +219,7 @@ export function ProjectTimelineDashboard() {
 
           {/* Project Switcher Dropdown */}
           <div className="relative flex items-center">
-            <FolderSimple
+            <FolderSimpleIcon
               className="h-4 w-4 absolute left-3 text-primary pointer-events-none"
               weight="bold"
             />
@@ -256,7 +253,7 @@ export function ProjectTimelineDashboard() {
                   variant="outline"
                   className="px-3 py-1.5 text-xs gap-1.5 border-indigo-500/30 hover:bg-muted transition-colors cursor-pointer"
                 >
-                  <ChartBar
+                  <ChartBarIcon
                     className="h-3.5 w-3.5 text-primary"
                     weight="bold"
                   />
@@ -324,10 +321,10 @@ export function ProjectTimelineDashboard() {
 
           {/* Animated Unreleased Changes Alert Banner */}
           {alertInfo?.hasNewChanges && (
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-emerald-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+            <div className="p-4 rounded-2xl bg-linear-to-r from-amber-500/10 via-indigo-500/10 to-emerald-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
               <div className="flex items-center gap-3">
                 <div className="h-9 w-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-500 shrink-0">
-                  <BellRinging className="h-5 w-5" weight="bold" />
+                  <BellRingingIcon className="h-5 w-5" weight="bold" />
                 </div>
                 <div>
                   <h3 className="text-xs font-bold text-foreground flex items-center gap-2">
@@ -395,7 +392,7 @@ export function ProjectTimelineDashboard() {
                               className="text-xs"
                             >
                               {rel.status === "PUBLISHED" ? (
-                                <CheckCircle
+                                <CheckCircleIcon
                                   className="h-3 w-3 text-emerald-500"
                                   weight="fill"
                                 />
@@ -404,7 +401,7 @@ export function ProjectTimelineDashboard() {
                             </Badge>
                             {rel.publishedAt && (
                               <span className="text-[11px] text-muted-foreground flex items-center gap-1">
-                                <Clock className="h-3 w-3" weight="bold" />
+                                <ClockIcon className="h-3 w-3" weight="bold" />
                                 {new Date(rel.publishedAt).toLocaleDateString(
                                   "en-US",
                                   {
@@ -464,7 +461,10 @@ export function ProjectTimelineDashboard() {
                                 size="sm"
                                 className="gap-1 text-xs border-indigo-500/30 text-primary hover:bg-muted"
                               >
-                                <Pencil className="h-3.5 w-3.5" weight="bold" />{" "}
+                                <PencilIcon
+                                  className="h-3.5 w-3.5"
+                                  weight="bold"
+                                />{" "}
                                 Edit
                               </Button>
                             </Link>
@@ -476,7 +476,10 @@ export function ProjectTimelineDashboard() {
                               variant="ghost"
                               className="h-8 w-8 text-muted-foreground hover:text-foreground"
                             >
-                              <ArrowUpRight className="h-4 w-4" weight="bold" />
+                              <ArrowUpRightIcon
+                                className="h-4 w-4"
+                                weight="bold"
+                              />
                             </Button>
                           </Link>
                         </div>
@@ -493,7 +496,7 @@ export function ProjectTimelineDashboard() {
                                 : "text-muted-foreground hover:text-foreground"
                             }`}
                           >
-                            <User className="h-3.5 w-3.5" weight="bold" />{" "}
+                            <UserIcon className="h-3.5 w-3.5" weight="bold" />{" "}
                             Customer
                           </button>
                           <button
@@ -518,7 +521,7 @@ export function ProjectTimelineDashboard() {
                                 : "text-muted-foreground hover:text-foreground"
                             }`}
                           >
-                            <Code className="h-3.5 w-3.5" weight="bold" />{" "}
+                            <CodeIcon className="h-3.5 w-3.5" weight="bold" />{" "}
                             Engineering
                           </button>
                         </div>
@@ -565,7 +568,7 @@ export function ProjectTimelineDashboard() {
                             {breakingChanges.length > 0 && (
                               <div className="p-2.5 rounded-lg bg-destructive/10 border border-destructive/20 space-y-1">
                                 <span className="text-xs font-bold text-destructive flex items-center gap-1">
-                                  <ShieldWarning
+                                  <ShieldWarningIcon
                                     className="h-3.5 w-3.5"
                                     weight="bold"
                                   />{" "}
@@ -655,7 +658,7 @@ export function ProjectTimelineDashboard() {
               <div className="space-y-2 text-xs text-muted-foreground border-t border-border/60 pt-3">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1.5">
-                    <GitBranch
+                    <GitBranchIcon
                       className="h-3.5 w-3.5 text-primary"
                       weight="bold"
                     />{" "}
@@ -695,7 +698,7 @@ export function ProjectTimelineDashboard() {
                       weight="bold"
                     />
                     Open Public Changelog Feed
-                    <ArrowUpRight className="h-3 w-3" weight="bold" />
+                    <ArrowUpRightIcon className="h-3 w-3" weight="bold" />
                   </Button>
                 </Link>
               )}

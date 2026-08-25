@@ -1,8 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { GithubLogo, SignOut, CaretDown } from "@phosphor-icons/react";
+import {
+  CaretDownIcon,
+  GithubLogoIcon,
+  SignOutIcon,
+} from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
 
 interface UserProfile {
@@ -38,7 +42,7 @@ export function UserProfileMenu() {
         onClick={handleSignOut}
         className="h-8 px-2.5 rounded-xl border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-1.5"
       >
-        <SignOut className="h-3.5 w-3.5" weight="bold" />
+        <SignOutIcon className="h-3.5 w-3.5" weight="bold" />
         Sign Out
       </button>
     );
@@ -64,12 +68,18 @@ export function UserProfileMenu() {
 
         <div className="flex items-center gap-1.5 text-xs font-bold text-foreground">
           <span className="hidden sm:inline">{user.name}</span>
-          <Badge variant="outline" className="font-mono text-[10px] px-1.5 py-0">
+          <Badge
+            variant="outline"
+            className="font-mono text-[10px] px-1.5 py-0"
+          >
             @{user.username}
           </Badge>
         </div>
 
-        <CaretDown className="h-3 w-3 text-muted-foreground" weight="bold" />
+        <CaretDownIcon
+          className="h-3 w-3 text-muted-foreground"
+          weight="bold"
+        />
       </button>
 
       {/* Profile Dropdown Menu */}
@@ -77,8 +87,14 @@ export function UserProfileMenu() {
         <div className="absolute right-0 mt-2 w-56 bg-card border border-border rounded-xl shadow-xl p-2 z-50 space-y-1 font-sans">
           <div className="p-2 border-b border-border/60">
             <p className="text-xs font-bold text-foreground">{user.name}</p>
-            <p className="text-[11px] font-mono text-muted-foreground">@{user.username}</p>
-            {user.email && <p className="text-[10px] text-muted-foreground opacity-80 mt-0.5">{user.email}</p>}
+            <p className="text-[11px] font-mono text-muted-foreground">
+              @{user.username}
+            </p>
+            {user.email && (
+              <p className="text-[10px] text-muted-foreground opacity-80 mt-0.5">
+                {user.email}
+              </p>
+            )}
           </div>
 
           <a
@@ -87,7 +103,7 @@ export function UserProfileMenu() {
             rel="noreferrer"
             className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
-            <GithubLogo className="h-4 w-4" weight="bold" />
+            <GithubLogoIcon className="h-4 w-4" weight="bold" />
             GitHub Profile
           </a>
 
@@ -95,7 +111,7 @@ export function UserProfileMenu() {
             onClick={handleSignOut}
             className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
           >
-            <SignOut className="h-4 w-4" weight="bold" />
+            <SignOutIcon className="h-4 w-4" weight="bold" />
             Sign Out
           </button>
         </div>
