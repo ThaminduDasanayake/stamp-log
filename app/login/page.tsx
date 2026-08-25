@@ -18,15 +18,14 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleGitHubLogin = () => {
-    document.cookie = "stamplog_session=authenticated; path=/; max-age=86400";
-    window.location.href = "/app";
+    // Redirect to GitHub OAuth / API route to fetch dynamic profile data
+    window.location.href = "/api/auth/github";
   };
 
   const handleEmailLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     setIsSubmitting(true);
-    document.cookie = "stamplog_session=authenticated; path=/; max-age=86400";
     setTimeout(() => {
       window.location.href = "/app";
     }, 1000);

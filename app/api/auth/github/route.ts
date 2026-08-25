@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
-import { getGitHubOAuthUrl } from "@/lib/auth-github";
+import { getGitHubOAuthUrl, fetchGitHubUserProfile } from "@/lib/auth-github";
 
 export const runtime = "nodejs";
 
 export async function GET(req: Request) {
   const clientId = process.env.GITHUB_CLIENT_ID;
+  const githubToken = process.env.GITHUB_TOKEN;
 
-  // If real GitHub OAuth Client ID is provided, redirect to GitHub OAuth
+  // 1. OAuth Redirect Flow (if GITHUB_CLIENT_ID is configured)
   if (clientId) {
     try {
       const url = getGitHubOAuthUrl();
@@ -16,21 +17,32 @@ export async function GET(req: Request) {
     }
   }
 
-  // Fallback Demo Login (Thamindu Dasanayake, @ThaminduDasanayake) when testing without GITHUB_CLIENT_ID
-  const demoProfile = {
-    name: "Thamindu Dasanayake",
-    username: "ThaminduDasanayake",
-    email: "thamindu@stamplog.dev",
-    avatarUrl: "https://avatars.githubusercontent.com/u/8924719?v=4",
-    authenticated: true,
-  };
+  // 2. Dynamic GitHub API Fetch Flow (if GITHUB_TOKEN is set in .env)
+  if (githubToken) {
+    try {
+      const profile = await fetchGitHubUserProfile(githubToken);
+      const userSession = {
+        name: profile.name || profile.login,
+        username: profile.login,
+        email: profile.email || `${profile.login}@users.noreply.github.com`,
+        avatarUrl: profile.avatar_url,
+        authenticated: true,
+      };
 
-  const response = NextResponse.redirect(new URL("/app", req.url));
-  response.cookies.set("stamplog_session", JSON.stringify(demoProfile), {
-    path: "/",
-    maxAge: 86400,
-    httpOnly: false,
-  });
+      console.log("🔐 Dynamic GitHub API User Session Fetched:", userSession);
 
-  return response;
+      const response = NextResponse.redirect(new URL("/app", req.url));
+      response.cookies.set("stamplog_session", JSON.stringify(userSession), {
+        path: "/",
+        maxAge: 86400 * 7,
+        httpOnly: false,
+      });
+      return response;
+    } catch (apiErr) {
+      console.warn("Failed to fetch GitHub profile via GITHUB_TOKEN:", apiErr);
+    }
+  }
+
+  // 3. Fallback: Prompt user to authenticate via GitHub
+  return NextResponse.redirect(new URL("/login?error=no_github_credentials", req.url));
 }

@@ -7,35 +7,31 @@ export async function GET() {
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get("stamplog_session")?.value;
 
+    console.log("👤 Raw Session Cookie Read in /api/auth/me:", sessionCookie);
+
     if (!sessionCookie) {
       return Response.json({ authenticated: false, user: null }, { status: 401 });
     }
 
     try {
       const parsed = JSON.parse(sessionCookie);
+
+      // Return strictly parsed user profile data dynamically fetched from GitHub
       return Response.json({
         authenticated: true,
         user: {
-          name: parsed.name || "GitHub Developer",
+          name: parsed.name || parsed.username || "Developer",
           username: parsed.username || "developer",
           email: parsed.email || null,
-          avatarUrl: parsed.avatarUrl || "https://avatars.githubusercontent.com/u/8924719?v=4",
+          avatarUrl: parsed.avatarUrl || null,
         },
       });
-    } catch {
-      // If simple cookie string
-      return Response.json({
-        authenticated: true,
-        user: {
-          name: "Thamindu Dasanayake",
-          username: "ThaminduDasanayake",
-          email: "thamindu@stamplog.dev",
-          avatarUrl: "https://avatars.githubusercontent.com/u/8924719?v=4",
-        },
-      });
+    } catch (parseErr) {
+      console.warn("⚠️ Unauthenticated or invalid session cookie format:", parseErr);
+      return Response.json({ authenticated: false, user: null }, { status: 401 });
     }
   } catch (error) {
-    console.error("Error fetching me session:", error);
+    console.error("❌ Error fetching me session:", error);
     return Response.json({ authenticated: false, user: null }, { status: 500 });
   }
 }

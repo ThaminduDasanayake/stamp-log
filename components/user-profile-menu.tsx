@@ -1,22 +1,23 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  BookOpenIcon,
-  GearIcon,
   GithubLogoIcon,
+  SignOutIcon,
+  GearIcon,
   PaletteIcon,
   PlusIcon,
-  SignOutIcon,
+  BookOpenIcon,
+  UserIcon,
 } from "@phosphor-icons/react";
 
 interface UserProfile {
   name: string;
   username: string;
   email: string | null;
-  avatarUrl: string;
+  avatarUrl: string | null;
 }
 
 export function UserProfileMenu() {
@@ -28,6 +29,7 @@ export function UserProfileMenu() {
     fetch("/api/auth/me")
       .then((res) => res.json())
       .then((data) => {
+        console.log("🎨 Frontend Profile Response (/api/auth/me):", data);
         if (data.authenticated && data.user) {
           setUser(data.user);
         }
@@ -51,41 +53,41 @@ export function UserProfileMenu() {
     window.location.href = "/login";
   };
 
-  const defaultAvatar = "https://avatars.githubusercontent.com/u/8924719?v=4";
-  const avatarSrc = user?.avatarUrl || defaultAvatar;
-  const userName = user?.name || "Thamindu Dasanayake";
-  const userHandle = user?.email;
+  const userName = user?.name || user?.username || "Developer";
+  const userHandle = user?.email || (user?.username ? `@${user.username}` : "Signed In");
 
   return (
     <div className="relative font-sans" ref={menuRef}>
-      {/* Trigger: ONLY the round User Avatar Image */}
+      
+      {/* Trigger: ONLY the User Avatar Image */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative h-8 w-8 rounded-full overflow-hidden border border-border/80 hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-sm shrink-0"
+        className="relative h-8 w-8 rounded-full overflow-hidden border border-border/80 hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-sm shrink-0 bg-muted flex items-center justify-center"
         title={userName}
       >
-        <Image
-          src={avatarSrc}
-          alt={userName}
-          width={32}
-          height={32}
-          className="object-cover h-full w-full"
-          unoptimized
-        />
+        {user?.avatarUrl ? (
+          <Image
+            src={user.avatarUrl}
+            alt={userName}
+            width={32}
+            height={32}
+            className="object-cover h-full w-full"
+            unoptimized
+          />
+        ) : (
+          <UserIcon className="h-4 w-4 text-muted-foreground" weight="bold" />
+        )}
       </button>
 
-      {/* Dropdown Menu (Vercel / Screenshot Style) */}
+      {/* Dropdown Menu */}
       {isOpen && (
         <div className="absolute right-0 mt-2 w-64 bg-card border border-border/80 rounded-2xl shadow-2xl p-2 z-50 space-y-1 backdrop-blur-md">
+          
           {/* Header Profile Info */}
           <div className="p-3 border-b border-border/60 flex items-start justify-between gap-2">
             <div className="space-y-0.5 overflow-hidden">
-              <p className="text-xs font-bold text-foreground truncate">
-                {userName}
-              </p>
-              <p className="text-[11px] font-mono text-muted-foreground truncate">
-                {userHandle}
-              </p>
+              <p className="text-xs font-bold text-foreground truncate">{userName}</p>
+              <p className="text-[11px] font-mono text-muted-foreground truncate">{userHandle}</p>
             </div>
             <Link
               href="/projects/import"
@@ -93,7 +95,7 @@ export function UserProfileMenu() {
               className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               title="Settings & Import"
             >
-              <GearIcon className="size-5" weight="duotone" />
+              <GearIcon className="h-4 w-4" weight="bold" />
             </Link>
           </div>
 
@@ -131,7 +133,7 @@ export function UserProfileMenu() {
             </Link>
 
             <a
-              href="https://github.com/ThaminduDasanayake/stamp-log"
+              href="https://github.com/ThaminduDasanayake/relay"
               target="_blank"
               rel="noreferrer"
               onClick={() => setIsOpen(false)}
@@ -161,6 +163,7 @@ export function UserProfileMenu() {
             </span>
             <span className="font-mono text-muted-foreground/70">v1.2.0</span>
           </div>
+
         </div>
       )}
     </div>

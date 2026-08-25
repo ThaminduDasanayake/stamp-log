@@ -51,6 +51,8 @@ export async function exchangeGitHubCodeForToken(code: string): Promise<string> 
   }
 
   const data = await res.json();
+  console.log("🔑 GitHub OAuth Token Response:", { access_token: data.access_token ? "EXISTS" : "NONE", scope: data.scope });
+
   if (data.error || !data.access_token) {
     throw new Error(data.error_description || "Failed to retrieve access_token from GitHub");
   }
@@ -72,5 +74,36 @@ export async function fetchGitHubUserProfile(accessToken: string): Promise<GitHu
   }
 
   const profile: GitHubUserProfile = await res.json();
+
+  // If public email is null, fetch primary verified email from /user/emails
+  if (!profile.email) {
+    try {
+      const emailRes = await fetch("https://api.github.com/user/emails", {
+        headers: {
+          Authorization: `token ${accessToken}`,
+          Accept: "application/vnd.github.v3+json",
+          "User-Agent": "StampLog-App",
+        },
+      });
+      if (emailRes.ok) {
+        const emails: { email: string; primary: boolean; verified: boolean }[] = await emailRes.json();
+        const primary = emails.find((e) => e.primary && e.verified) || emails[0];
+        if (primary) {
+          profile.email = primary.email;
+        }
+      }
+    } catch (emailErr) {
+      console.warn("Failed to fetch GitHub private emails:", emailErr);
+    }
+  }
+
+  console.log("🔍 GitHub Fetched User Profile Data:", {
+    id: profile.id,
+    login: profile.login,
+    name: profile.name,
+    email: profile.email,
+    avatar_url: profile.avatar_url,
+  });
+
   return profile;
 }
