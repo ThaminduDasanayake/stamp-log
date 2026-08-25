@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     }
 
     const fullRepo = `${parsed.owner}/${parsed.repo}`;
-    const slug = parsed.repo.toLowerCase().replace(/[^a-z0-9]/g, "-");
+    const slug = (name || parsed.repo).toLowerCase().replace(/[^a-z0-9]/g, "-");
     const projectName = name || parsed.repo;
 
     // Ensure Organization exists
@@ -53,7 +53,9 @@ export async function POST(req: Request) {
           description: description || `Connected to GitHub repo ${fullRepo}`,
           githubRepo: fullRepo,
           defaultBranch,
-          toneGuide: toneGuide || "Professional, concise, engaging for users, and technically rigorous for developers.",
+          toneGuide:
+            toneGuide ||
+            "Professional, concise, engaging for users, and technically rigorous for developers.",
         },
       });
     }

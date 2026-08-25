@@ -1,17 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   GithubLogo,
   Broadcast,
   CheckCircle,
   ArrowRight,
   Sparkle,
-  Star,
   GitBranch,
   MagnifyingGlass,
   ArrowLeft,
+  CaretDown,
+  Clock,
+  FolderSimple,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,222 +29,338 @@ interface RepoItem {
   defaultBranch: string;
   isPrivate: boolean;
   stars: number;
+  updatedAt?: string;
 }
 
-export default function ImportProjectsPage() {
-  const [usernameInput, setUsernameInput] = useState("");
+export default function VercelStyleImportPage() {
+  const router = useRouter();
+
+  const [username, setUsername] = useState("ThaminduDasanayake");
+  const [searchQuery, setSearchQuery] = useState("");
   const [repos, setRepos] = useState<RepoItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [isLoadingRepos, setIsLoadingRepos] = useState(true);
 
-  const [importingRepo, setImportingRepo] = useState<string | null>(null);
-  const [importedProjects, setImportedProjects] = useState<Record<string, string>>({});
+  // Selected Repo to Configure & Deploy
+  const [selectedRepo, setSelectedRepo] = useState<RepoItem | null>(null);
+  const [projectName, setProjectName] = useState("");
+  const [defaultBranch, setDefaultBranch] = useState("main");
+  const [toneGuide, setToneGuide] = useState(
+    "Professional, concise, engaging for users, and technically rigorous for developers."
+  );
+  const [isDeploying, setIsDeploying] = useState(false);
 
-  const handleFetchRepos = async () => {
-    if (!usernameInput.trim()) return;
-    setIsLoading(true);
-    setError("");
-    setRepos([]);
+  // 1. Fetch current logged-in user profile on mount
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.authenticated && data.user?.username) {
+          setUsername(data.user.username);
+          fetchReposForUsername(data.user.username);
+        } else {
+          fetchReposForUsername("ThaminduDasanayake");
+        }
+      })
+      .catch(() => {
+        fetchReposForUsername("ThaminduDasanayake");
+      });
+  }, []);
 
+  const fetchReposForUsername = async (userToFetch: string) => {
+    setIsLoadingRepos(true);
     try {
       const res = await fetch("/api/github/repos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: usernameInput.trim() }),
+        body: JSON.stringify({ username: userToFetch }),
       });
-
       const data = await res.json();
       if (data.success && Array.isArray(data.repos)) {
         setRepos(data.repos);
-      } else {
-        setError(data.error || "Failed to fetch repositories for username");
       }
-    } catch (err: any) {
-      setError(err?.message || "Connection error fetching repositories");
+    } catch (err) {
+      console.warn("Failed to fetch user repos:", err);
     } finally {
-      setIsLoading(false);
+      setIsLoadingRepos(false);
     }
   };
 
-  const handleImportRepo = async (repo: RepoItem) => {
-    setImportingRepo(repo.fullName);
+  // Filter repos by search query
+  const filteredRepos = repos.filter((r) =>
+    r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    r.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleStartImport = (repo: RepoItem) => {
+    setSelectedRepo(repo);
+    setProjectName(repo.name);
+    setDefaultBranch(repo.defaultBranch || "main");
+  };
+
+  const handleDeployProject = async () => {
+    if (!selectedRepo || !projectName.trim()) return;
+    setIsDeploying(true);
+
     try {
       const res = await fetch("/api/projects/import", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          repo: repo.fullName,
-          name: repo.name,
-          description: repo.description,
-          defaultBranch: repo.defaultBranch,
+          repo: selectedRepo.fullName,
+          name: projectName.trim(),
+          description: selectedRepo.description,
+          defaultBranch,
+          toneGuide,
         }),
       });
 
       const data = await res.json();
-      if (data.success && data.project?.publicUrl) {
-        setImportedProjects((prev) => ({
-          ...prev,
-          [repo.fullName]: data.project.publicUrl,
-        }));
+      if (data.success) {
+        // Redirect to Studio App Workspace
+        router.push("/app");
       }
     } catch (err) {
-      console.error("Error importing repository:", err);
+      console.error("Error deploying project:", err);
     } finally {
-      setImportingRepo(null);
+      setIsDeploying(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-indigo-500/20 selection:text-indigo-600">
       
-      {/* Header */}
+      {/* Top StampLog Header */}
       <header className="border-b border-border bg-card/60 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
         <div className="max-w-[1000px] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/" className="hover:opacity-80 transition-opacity">
+            <Link href="/app" className="hover:opacity-80 transition-opacity">
               <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-md shadow-indigo-500/20">
                 <Broadcast className="h-5 w-5" weight="bold" />
               </div>
             </Link>
             <div>
               <h1 className="text-xl font-bold tracking-tight text-foreground">
-                Import GitHub Repository
+                Import Git Repository
               </h1>
-              <p className="text-xs text-muted-foreground">Connect your GitHub repositories as StampLog projects</p>
+              <p className="text-xs text-muted-foreground">Vercel-Style Project Import Wizard</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <Link href="/">
+            <Link href="/app">
               <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-                <ArrowLeft className="h-4 w-4" weight="bold" /> Workbench
+                <ArrowLeft className="h-4 w-4" weight="bold" /> Back to Studio App
               </Button>
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Main Import Wizard */}
-      <main className="flex-1 max-w-[1000px] w-full mx-auto p-4 sm:p-8 space-y-6">
+      {/* Main Content Container */}
+      <main className="flex-1 max-w-[900px] w-full mx-auto p-4 sm:p-8 space-y-6">
         
-        {/* Search Input Card */}
-        <Card className="shadow-sm border-indigo-500/20 bg-accent/20">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-bold uppercase tracking-wider text-primary flex items-center gap-2">
-              <GithubLogo className="h-5 w-5" weight="bold" />
-              Search GitHub User or Organization
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Enter GitHub username or org (e.g. facebook, vercel, octocat)"
-                className="flex-1 h-10 px-3.5 text-xs font-mono rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                value={usernameInput}
-                onChange={(e) => setUsernameInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleFetchRepos()}
-              />
-              <Button
-                onClick={handleFetchRepos}
-                disabled={isLoading || !usernameInput.trim()}
-                className="h-10 px-5 gap-2 text-xs shadow-md shadow-indigo-500/20"
-              >
-                {isLoading ? (
-                  <Sparkle className="h-4 w-4 animate-spin" weight="bold" />
-                ) : (
-                  <MagnifyingGlass className="h-4 w-4" weight="bold" />
-                )}
-                {isLoading ? "Fetching..." : "Fetch Repositories"}
-              </Button>
+        {/* Step 1: Repository Picker (Vercel Style) */}
+        {!selectedRepo ? (
+          <div className="space-y-5">
+            
+            {/* Top Control Bar: Account Selector & Live Search Filter */}
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+              
+              {/* Account Selector Pill */}
+              <div className="sm:col-span-5 relative flex items-center">
+                <GithubLogo className="h-4 w-4 absolute left-3.5 text-primary pointer-events-none" weight="bold" />
+                <select
+                  value={username}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    fetchReposForUsername(e.target.value);
+                  }}
+                  className="w-full h-10 pl-10 pr-8 text-xs font-bold rounded-xl border border-border bg-card text-foreground appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                >
+                  <option value={username}>GitHub / @{username}</option>
+                  <option value="facebook">GitHub / @facebook</option>
+                  <option value="vercel">GitHub / @vercel</option>
+                </select>
+                <CaretDown className="h-3.5 w-3.5 absolute right-3 pointer-events-none text-muted-foreground" weight="bold" />
+              </div>
+
+              {/* Search Filter Input */}
+              <div className="sm:col-span-7 relative flex items-center">
+                <MagnifyingGlass className="h-4 w-4 absolute left-3.5 text-muted-foreground pointer-events-none" weight="bold" />
+                <input
+                  type="text"
+                  placeholder="Search repositories..."
+                  className="w-full h-10 pl-10 pr-3 text-xs font-mono rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+
             </div>
-            {error && (
-              <p className="text-xs text-destructive font-medium">{error}</p>
-            )}
-          </CardContent>
-        </Card>
 
-        {/* Repositories List */}
-        {repos.length > 0 && (
-          <div className="space-y-4">
-            <h2 className="text-base font-bold text-foreground flex items-center justify-between">
-              <span>Public Repositories ({repos.length})</span>
-              <span className="text-xs font-normal text-muted-foreground">Select a repository to import into StampLog</span>
-            </h2>
+            {/* Vercel-Style Dark Repository List Container */}
+            <Card className="shadow-lg border-border bg-card overflow-hidden">
+              <CardHeader className="py-3 px-5 border-b border-border/60 bg-muted/30 flex flex-row items-center justify-between">
+                <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <GithubLogo className="h-4 w-4 text-primary" weight="bold" />
+                  GitHub Repositories ({filteredRepos.length})
+                </CardTitle>
+                <Badge variant="outline" className="font-mono text-[10px]">
+                  Connected Account: @{username}
+                </Badge>
+              </CardHeader>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {repos.map((repo) => {
-                const isImported = Boolean(importedProjects[repo.fullName]);
-                const isImporting = importingRepo === repo.fullName;
-
-                return (
-                  <Card key={repo.id} className="border-border hover:border-indigo-500/30 transition-all hover:shadow-md">
-                    <CardHeader className="pb-2 flex flex-row items-start justify-between gap-2">
-                      <div className="space-y-1 overflow-hidden">
-                        <CardTitle className="text-sm font-bold truncate text-foreground flex items-center gap-1.5">
-                          <GithubLogo className="h-4 w-4 shrink-0 text-primary" weight="bold" />
-                          {repo.name}
-                        </CardTitle>
-                        <p className="text-[11px] font-mono text-muted-foreground truncate">{repo.fullName}</p>
-                      </div>
-
-                      {repo.isPrivate && (
-                        <Badge variant="outline" className="text-[10px] font-mono shrink-0">Private</Badge>
-                      )}
-                    </CardHeader>
-
-                    <CardContent className="space-y-3">
-                      <p className="text-xs text-muted-foreground line-clamp-2 min-h-[32px]">
-                        {repo.description || "No repository description provided."}
-                      </p>
-
-                      <div className="flex items-center justify-between pt-2 border-t border-border/60 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-3">
-                          <span className="flex items-center gap-1 font-mono text-[11px]">
-                            <GitBranch className="h-3.5 w-3.5 text-muted-foreground" weight="bold" />
-                            {repo.defaultBranch}
-                          </span>
-                          {repo.stars > 0 && (
-                            <span className="flex items-center gap-1 font-mono text-[11px]">
-                              <Star className="h-3.5 w-3.5 text-amber-500" weight="fill" />
-                              {repo.stars}
-                            </span>
-                          )}
+              <CardContent className="p-0 divide-y divide-border/60">
+                {isLoadingRepos ? (
+                  <div className="p-12 text-center text-xs text-muted-foreground space-y-2">
+                    <Sparkle className="h-6 w-6 animate-spin text-primary mx-auto" weight="bold" />
+                    <p>Loading repositories from GitHub API...</p>
+                  </div>
+                ) : filteredRepos.length > 0 ? (
+                  filteredRepos.map((repo) => (
+                    <div
+                      key={repo.id}
+                      className="p-4 sm:px-6 flex items-center justify-between gap-4 hover:bg-muted/40 transition-colors group"
+                    >
+                      <div className="flex items-center gap-3 overflow-hidden">
+                        {/* StampLog Styled Repo Icon */}
+                        <div className="h-9 w-9 rounded-xl bg-accent/60 border border-border flex items-center justify-center text-primary shrink-0">
+                          <FolderSimple className="h-5 w-5" weight="bold" />
                         </div>
 
-                        {isImported ? (
-                          <Link href={importedProjects[repo.fullName]}>
-                            <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
-                              <CheckCircle className="h-3.5 w-3.5" weight="fill" />
-                              Connected <ArrowRight className="h-3 w-3" weight="bold" />
-                            </Button>
-                          </Link>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="default"
-                            disabled={isImporting}
-                            onClick={() => handleImportRepo(repo)}
-                            className="h-7 px-3 text-xs gap-1 shadow-sm"
-                          >
-                            {isImporting ? (
-                              <Sparkle className="h-3 w-3 animate-spin" weight="bold" />
-                            ) : (
-                              <Broadcast className="h-3 w-3" weight="bold" />
+                        <div className="space-y-0.5 overflow-hidden">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors truncate">
+                              {repo.name}
+                            </h3>
+                            {repo.isPrivate && (
+                              <Badge variant="outline" className="text-[10px] font-mono shrink-0">
+                                Private
+                              </Badge>
                             )}
-                            {isImporting ? "Importing..." : "Import Project"}
-                          </Button>
-                        )}
+                          </div>
+                          <p className="text-[11px] font-mono text-muted-foreground truncate flex items-center gap-2">
+                            <span>{repo.fullName}</span>
+                            <span>•</span>
+                            <span className="flex items-center gap-1">
+                              <GitBranch className="h-3 w-3" weight="bold" />
+                              {repo.defaultBranch}
+                            </span>
+                          </p>
+                        </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+
+                      {/* Vercel-Style Import Button */}
+                      <Button
+                        size="sm"
+                        onClick={() => handleStartImport(repo)}
+                        className="h-8 px-4 text-xs font-bold shadow-md shadow-indigo-500/20 shrink-0"
+                      >
+                        Import
+                      </Button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-8 text-center text-xs text-muted-foreground space-y-2">
+                    <p>No repositories found matching &quot;{searchQuery}&quot;.</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+          </div>
+        ) : (
+          /* Step 2: Configure & Deploy Project Card (Vercel Style) */
+          <div className="space-y-5">
+            <div className="flex items-center justify-between border-b border-border pb-4">
+              <div>
+                <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                  Configure Project
+                  <Badge variant="user" className="font-mono text-xs">
+                    {selectedRepo.name}
+                  </Badge>
+                </h2>
+                <p className="text-xs text-muted-foreground">Connected to {selectedRepo.fullName}</p>
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedRepo(null)}
+                className="text-xs"
+              >
+                Change Repository
+              </Button>
             </div>
+
+            <Card className="shadow-lg border-indigo-500/30 border">
+              <CardContent className="p-6 space-y-5">
+                
+                {/* Project Name Input */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
+                    Project Name
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full h-10 px-3.5 text-xs font-bold rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
+                  />
+                </div>
+
+                {/* Default Branch */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
+                    Default Branch
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      className="w-full h-10 pl-9 pr-3 text-xs font-mono rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                      value={defaultBranch}
+                      onChange={(e) => setDefaultBranch(e.target.value)}
+                    />
+                    <GitBranch className="h-4 w-4 absolute left-3 top-3 text-primary" weight="bold" />
+                  </div>
+                </div>
+
+                {/* AI Brand Tone Guide */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
+                    AI Brand Tone Guide
+                  </label>
+                  <textarea
+                    className="w-full h-24 p-3 text-xs font-medium rounded-xl border border-border bg-muted/30 text-foreground focus:outline-none focus:ring-2 focus:ring-primary leading-relaxed resize-none"
+                    value={toneGuide}
+                    onChange={(e) => setToneGuide(e.target.value)}
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Guides Gemini 3.6 Flash on writing release notes that match your product&apos;s brand voice.
+                  </p>
+                </div>
+
+                {/* Deploy & Create Project Button */}
+                <Button
+                  onClick={handleDeployProject}
+                  disabled={isDeploying || !projectName.trim()}
+                  className="w-full h-11 gap-2 text-xs font-bold shadow-lg shadow-indigo-500/25 bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  {isDeploying ? (
+                    <Sparkle className="h-4 w-4 animate-spin text-white" weight="bold" />
+                  ) : (
+                    <CheckCircle className="h-4 w-4" weight="bold" />
+                  )}
+                  {isDeploying ? "Deploying Project..." : "Deploy & Create Project"}
+                </Button>
+
+              </CardContent>
+            </Card>
           </div>
         )}
 
       </main>
+
     </div>
   );
 }
