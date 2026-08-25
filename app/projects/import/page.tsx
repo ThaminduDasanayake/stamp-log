@@ -4,17 +4,15 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  GithubLogo,
-  Broadcast,
-  CheckCircle,
-  ArrowRight,
-  Sparkle,
-  GitBranch,
-  MagnifyingGlass,
-  ArrowLeft,
-  CaretDown,
-  Clock,
-  FolderSimple,
+  GithubLogoIcon,
+  BroadcastIcon,
+  CheckCircleIcon,
+  SparkleIcon,
+  GitBranchIcon,
+  MagnifyingGlassIcon,
+  ArrowLeftIcon,
+  CaretDownIcon,
+  FolderSimpleIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -135,7 +133,7 @@ export default function VercelStyleImportPage() {
           <div className="flex items-center gap-3">
             <Link href="/app" className="hover:opacity-80 transition-opacity">
               <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-md shadow-indigo-500/20">
-                <Broadcast className="h-5 w-5" weight="bold" />
+                <BroadcastIcon className="h-5 w-5" weight="bold" />
               </div>
             </Link>
             <div>
@@ -149,7 +147,7 @@ export default function VercelStyleImportPage() {
           <div className="flex items-center gap-2">
             <Link href="/app">
               <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-                <ArrowLeft className="h-4 w-4" weight="bold" /> Back to Studio App
+                <ArrowLeftIcon className="h-4 w-4" weight="bold" /> Back to Studio App
               </Button>
             </Link>
           </div>
@@ -168,7 +166,7 @@ export default function VercelStyleImportPage() {
               
               {/* Account Selector Pill */}
               <div className="sm:col-span-5 relative flex items-center">
-                <GithubLogo className="h-4 w-4 absolute left-3.5 text-primary pointer-events-none" weight="bold" />
+                <GithubLogoIcon className="h-4 w-4 absolute left-3.5 text-primary pointer-events-none" weight="bold" />
                 <select
                   value={username}
                   onChange={(e) => {
@@ -181,12 +179,12 @@ export default function VercelStyleImportPage() {
                   <option value="facebook">GitHub / @facebook</option>
                   <option value="vercel">GitHub / @vercel</option>
                 </select>
-                <CaretDown className="h-3.5 w-3.5 absolute right-3 pointer-events-none text-muted-foreground" weight="bold" />
+                <CaretDownIcon className="h-3.5 w-3.5 absolute right-3 pointer-events-none text-muted-foreground" weight="bold" />
               </div>
 
               {/* Search Filter Input */}
               <div className="sm:col-span-7 relative flex items-center">
-                <MagnifyingGlass className="h-4 w-4 absolute left-3.5 text-muted-foreground pointer-events-none" weight="bold" />
+                <MagnifyingGlassIcon className="h-4 w-4 absolute left-3.5 text-muted-foreground pointer-events-none" weight="bold" />
                 <input
                   type="text"
                   placeholder="Search repositories..."
@@ -202,7 +200,7 @@ export default function VercelStyleImportPage() {
             <Card className="shadow-lg border-border bg-card overflow-hidden">
               <CardHeader className="py-3 px-5 border-b border-border/60 bg-muted/30 flex flex-row items-center justify-between">
                 <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                  <GithubLogo className="h-4 w-4 text-primary" weight="bold" />
+                  <GithubLogoIcon className="h-4 w-4 text-primary" weight="bold" />
                   GitHub Repositories ({filteredRepos.length})
                 </CardTitle>
                 <Badge variant="outline" className="font-mono text-[10px]">
@@ -213,7 +211,7 @@ export default function VercelStyleImportPage() {
               <CardContent className="p-0 divide-y divide-border/60">
                 {isLoadingRepos ? (
                   <div className="p-12 text-center text-xs text-muted-foreground space-y-2">
-                    <Sparkle className="h-6 w-6 animate-spin text-primary mx-auto" weight="bold" />
+                    <SparkleIcon className="h-6 w-6 animate-spin text-primary mx-auto" weight="bold" />
                     <p>Loading repositories from GitHub API...</p>
                   </div>
                 ) : filteredRepos.length > 0 ? (
@@ -225,7 +223,7 @@ export default function VercelStyleImportPage() {
                       <div className="flex items-center gap-3 overflow-hidden">
                         {/* StampLog Styled Repo Icon */}
                         <div className="h-9 w-9 rounded-xl bg-accent/60 border border-border flex items-center justify-center text-primary shrink-0">
-                          <FolderSimple className="h-5 w-5" weight="bold" />
+                          <FolderSimpleIcon className="h-5 w-5" weight="bold" />
                         </div>
 
                         <div className="space-y-0.5 overflow-hidden">
@@ -243,7 +241,7 @@ export default function VercelStyleImportPage() {
                             <span>{repo.fullName}</span>
                             <span>•</span>
                             <span className="flex items-center gap-1">
-                              <GitBranch className="h-3 w-3" weight="bold" />
+                              <GitBranchIcon className="h-3 w-3" weight="bold" />
                               {repo.defaultBranch}
                             </span>
                           </p>
@@ -321,7 +319,7 @@ export default function VercelStyleImportPage() {
                       value={defaultBranch}
                       onChange={(e) => setDefaultBranch(e.target.value)}
                     />
-                    <GitBranch className="h-4 w-4 absolute left-3 top-3 text-primary" weight="bold" />
+                    <GitBranchIcon className="h-4 w-4 absolute left-3 top-3 text-primary" weight="bold" />
                   </div>
                 </div>
 
@@ -347,9 +345,9 @@ export default function VercelStyleImportPage() {
                   className="w-full h-11 gap-2 text-xs font-bold shadow-lg shadow-indigo-500/25 bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
                   {isDeploying ? (
-                    <Sparkle className="h-4 w-4 animate-spin text-white" weight="bold" />
+                    <SparkleIcon className="h-4 w-4 animate-spin text-white" weight="bold" />
                   ) : (
-                    <CheckCircle className="h-4 w-4" weight="bold" />
+                    <CheckCircleIcon className="h-4 w-4" weight="bold" />
                   )}
                   {isDeploying ? "Deploying Project..." : "Deploy & Create Project"}
                 </Button>

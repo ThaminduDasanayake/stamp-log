@@ -193,11 +193,6 @@ export function ProjectTimelineDashboard() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleSignOut = () => {
-    document.cookie = "stamplog_session=; path=/; max-age=0";
-    window.location.href = "/login";
-  };
-
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
       {/* Top Application Header with Project Switcher */}
@@ -276,21 +271,12 @@ export function ProjectTimelineDashboard() {
             </>
           )}
 
-          <Link href="/design-system">
-            <Badge
-              variant="outline"
-              className="px-3 py-1.5 text-xs gap-1.5 hover:bg-muted transition-colors cursor-pointer hidden md:flex"
-            >
-              Design System
-            </Badge>
-          </Link>
-
           <UserProfileMenu />
         </div>
       </header>
 
       {/* Main Timeline Workspace (Grid) */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <main className="flex-1 max-w-[1280px] w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Timeline Feed (8 cols) */}
         <div className="lg:col-span-8 space-y-6">
           <div className="flex items-center justify-between border-b border-border pb-4">
@@ -321,7 +307,7 @@ export function ProjectTimelineDashboard() {
 
           {/* Animated Unreleased Changes Alert Banner */}
           {alertInfo?.hasNewChanges && (
-            <div className="p-4 rounded-2xl bg-linear-to-r from-amber-500/10 via-indigo-500/10 to-emerald-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-emerald-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
               <div className="flex items-center gap-3">
                 <div className="h-9 w-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-500 shrink-0">
                   <BellRingingIcon className="h-5 w-5" weight="bold" />

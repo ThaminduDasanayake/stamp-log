@@ -4,18 +4,17 @@ import React, { useState, useEffect } from "react";
 import { useObject } from "@ai-sdk/react";
 import { ChangelogSchema } from "@/lib/schemas/changelog";
 import {
-  Broadcast,
-  Sparkle,
-  GithubLogo,
-  Briefcase,
-  User,
-  Code,
-  ShieldWarning,
-  CheckCircle,
-  FloppyDisk,
-  X,
-  ArrowClockwise,
-  GitCommit,
+  BroadcastIcon,
+  SparkleIcon,
+  GithubLogoIcon,
+  BriefcaseIcon,
+  UserIcon,
+  CodeIcon,
+  ShieldWarningIcon,
+  FloppyDiskIcon,
+  XIcon,
+  ArrowClockwiseIcon,
+  GitCommitIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -144,13 +143,13 @@ export function GenerateReleaseModal({
         <div className="p-6 border-b border-border flex items-center justify-between sticky top-0 bg-card z-10">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-md shadow-indigo-500/20">
-              <Broadcast className="h-6 w-6" weight="bold" />
+              <BroadcastIcon className="h-6 w-6" weight="bold" />
             </div>
             <div>
               <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
                 Generate New Release
                 <Badge variant="dev" className="text-xs">
-                  <Sparkle className="h-3.5 w-3.5" weight="fill" /> Gemini 3.6 Flash
+                  <SparkleIcon className="h-3.5 w-3.5" weight="fill" /> Gemini 3.6 Flash
                 </Badge>
               </h2>
               <p className="text-xs text-muted-foreground">Project: {project.name}</p>
@@ -158,7 +157,7 @@ export function GenerateReleaseModal({
           </div>
 
           <Button size="icon" variant="ghost" onClick={onClose} className="rounded-xl">
-            <X className="h-5 w-5" weight="bold" />
+            <XIcon className="h-5 w-5" weight="bold" />
           </Button>
         </div>
 
@@ -175,7 +174,7 @@ export function GenerateReleaseModal({
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <GithubLogo className="h-4 w-4" weight="bold" /> 1-Click GitHub Sync
+              <GithubLogoIcon className="h-4 w-4" weight="bold" /> 1-Click GitHub Sync
             </button>
 
             <button
@@ -186,7 +185,7 @@ export function GenerateReleaseModal({
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <GitCommit className="h-4 w-4" weight="bold" /> Manual Paste
+              <GitCommitIcon className="h-4 w-4" weight="bold" /> Manual Paste
             </button>
           </div>
 
@@ -211,9 +210,9 @@ export function GenerateReleaseModal({
                     className="h-10 px-5 gap-2 text-xs shadow-md shadow-indigo-500/20"
                   >
                     {isFetchingCommits || isLoading ? (
-                      <ArrowClockwise className="h-4 w-4 animate-spin" weight="bold" />
+                      <ArrowClockwiseIcon className="h-4 w-4 animate-spin" weight="bold" />
                     ) : (
-                      <GithubLogo className="h-4 w-4" weight="bold" />
+                      <GithubLogoIcon className="h-4 w-4" weight="bold" />
                     )}
                     {isFetchingCommits ? "Fetching Commits..." : isLoading ? "Streaming AI..." : "Sync & Synthesize"}
                   </Button>
@@ -242,9 +241,9 @@ export function GenerateReleaseModal({
                   className="w-full h-10 gap-2 text-xs shadow-md shadow-indigo-500/20"
                 >
                   {isLoading ? (
-                    <Sparkle className="h-4 w-4 animate-spin text-primary-foreground" weight="bold" />
+                    <SparkleIcon className="h-4 w-4 animate-spin text-primary-foreground" weight="bold" />
                   ) : (
-                    <Broadcast className="h-4 w-4" weight="bold" />
+                    <BroadcastIcon className="h-4 w-4" weight="bold" />
                   )}
                   {isLoading ? "Synthesizing AI..." : "Generate Multi-Audience Release"}
                 </Button>
@@ -272,7 +271,7 @@ export function GenerateReleaseModal({
                     onClick={() => handleSaveAndPublish("PUBLISHED")}
                     className="gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
                   >
-                    <FloppyDisk className="h-4 w-4" weight="bold" />
+                    <FloppyDiskIcon className="h-4 w-4" weight="bold" />
                     {isSaving ? "Publishing..." : "Save & Publish to Timeline"}
                   </Button>
                 </div>
@@ -290,7 +289,7 @@ export function GenerateReleaseModal({
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    <User className="h-4 w-4" weight="bold" /> Customer View
+                    <UserIcon className="h-4 w-4" weight="bold" /> Customer View
                   </button>
                   <button
                     onClick={() => setActiveTab("exec")}
@@ -300,7 +299,7 @@ export function GenerateReleaseModal({
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    <Briefcase className="h-4 w-4" weight="bold" /> Executive View
+                    <BriefcaseIcon className="h-4 w-4" weight="bold" /> Executive View
                   </button>
                   <button
                     onClick={() => setActiveTab("dev")}
@@ -310,7 +309,7 @@ export function GenerateReleaseModal({
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    <Code className="h-4 w-4" weight="bold" /> Engineering View
+                    <CodeIcon className="h-4 w-4" weight="bold" /> Engineering View
                   </button>
                 </div>
 
@@ -350,7 +349,7 @@ export function GenerateReleaseModal({
                     {object.developerFacing?.breakingChanges && object.developerFacing.breakingChanges.length > 0 && (
                       <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 space-y-1">
                         <span className="text-xs font-bold text-destructive flex items-center gap-1">
-                          <ShieldWarning className="h-4 w-4" weight="bold" /> Breaking Changes
+                          <ShieldWarningIcon className="h-4 w-4" weight="bold" /> Breaking Changes
                         </span>
                         {object.developerFacing.breakingChanges.map((b: any, i: number) => (
                           <div key={i}>

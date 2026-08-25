@@ -11,3 +11,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 # Project Package Manager Rule
 
 - **Always use `pnpm`**: This project uses `pnpm` exclusively (`pnpm dev`, `pnpm run build`, `pnpm add <pkg>`, `pnpm dlx`). Do NOT use `npm` or `yarn`.
+
+# Phosphor Icons Naming Rule
+
+- **Phosphor Icon Names**: When using `@phosphor-icons/react` or `@phosphor-icons/react/dist/ssr`, ALWAYS append the word `Icon` at the end of every icon component name (e.g., `ArrowUpRightIcon`, `BellRingingIcon`, `BriefcaseIcon`, `GithubLogoIcon`, `BroadcastIcon`, `SparkleIcon`, `CheckCircleIcon`, `UserIcon`, `CodeIcon`).

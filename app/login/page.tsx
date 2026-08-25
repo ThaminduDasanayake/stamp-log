@@ -3,16 +3,14 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  Broadcast,
-  GithubLogo,
-  ArrowRight,
-  Sparkle,
-  Lock,
-  EnvelopeSimple,
-  Key,
+  BroadcastIcon,
+  GithubLogoIcon,
+  SparkleIcon,
+  LockIcon,
+  EnvelopeSimpleIcon,
+  KeyIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default function LoginPage() {
@@ -44,7 +42,7 @@ export default function LoginPage() {
         <div className="flex flex-col items-center text-center space-y-3">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg shadow-indigo-500/20">
-              <Broadcast className="h-7 w-7" weight="bold" />
+              <BroadcastIcon className="h-7 w-7" weight="bold" />
             </div>
             <span className="text-3xl font-extrabold tracking-tight">stamplog</span>
           </Link>
@@ -57,7 +55,7 @@ export default function LoginPage() {
         <Card className="shadow-lg border-border">
           <CardHeader className="pb-4 text-center">
             <CardTitle className="text-base font-bold flex items-center justify-center gap-2">
-              <Lock className="h-4 w-4 text-primary" weight="bold" />
+              <LockIcon className="h-4 w-4 text-primary" weight="bold" />
               Developer Access
             </CardTitle>
           </CardHeader>
@@ -69,7 +67,7 @@ export default function LoginPage() {
               onClick={handleGitHubLogin}
               className="w-full h-11 gap-2.5 text-xs font-bold shadow-md shadow-indigo-500/20"
             >
-              <GithubLogo className="h-4.5 w-4.5" weight="bold" />
+              <GithubLogoIcon className="h-4.5 w-4.5" weight="bold" />
               Continue with GitHub
             </Button>
 
@@ -96,7 +94,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
-                  <EnvelopeSimple className="h-4 w-4 absolute left-3 top-3 text-muted-foreground" weight="bold" />
+                  <EnvelopeSimpleIcon className="h-4 w-4 absolute left-3 top-3 text-muted-foreground" weight="bold" />
                 </div>
               </div>
 
@@ -107,9 +105,9 @@ export default function LoginPage() {
                 className="w-full h-10 gap-2 text-xs font-semibold"
               >
                 {isSubmitting ? (
-                  <Sparkle className="h-4 w-4 animate-spin text-primary" weight="bold" />
+                  <SparkleIcon className="h-4 w-4 animate-spin text-primary" weight="bold" />
                 ) : (
-                  <Key className="h-4 w-4" weight="bold" />
+                  <KeyIcon className="h-4 w-4" weight="bold" />
                 )}
                 {isSubmitting ? "Signing in..." : "Send Magic Link"}
               </Button>
