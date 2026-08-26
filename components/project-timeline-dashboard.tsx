@@ -275,8 +275,34 @@ export function ProjectTimelineDashboard() {
         </div>
       </header>
 
-      {/* Main Timeline Workspace (Grid) */}
-      <main className="flex-1 max-w-[1280px] w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* Main Workspace */}
+      <main className="flex-1 max-w-[1280px] w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
+        {!selectedProject && !isLoadingProjects ? (
+          <div className="max-w-md w-full mx-auto my-12 text-center space-y-6">
+            <Card className="p-8 shadow-xl border-indigo-500/30 border space-y-5 bg-card">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto shadow-md shadow-indigo-500/10">
+                <BroadcastIcon className="h-8 w-8" weight="bold" />
+              </div>
+
+              <div className="space-y-2">
+                <h2 className="text-xl font-bold tracking-tight text-foreground">
+                  Welcome to StampLog
+                </h2>
+                <p className="text-xs text-muted-foreground leading-relaxed max-w-xs mx-auto">
+                  Connect a GitHub repository to start synthesizing automated multi-audience release notes with Gemini 3.6 Flash.
+                </p>
+              </div>
+
+              <Link href="/projects/import">
+                <Button className="w-full h-11 gap-2 text-xs font-bold shadow-lg shadow-indigo-500/25">
+                  <GithubLogoIcon className="h-4.5 w-4.5" weight="bold" />
+                  Import GitHub Repository
+                </Button>
+              </Link>
+            </Card>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
         {/* Left Column: Timeline Feed (8 cols) */}
         <div className="lg:col-span-8 space-y-6">
           <div className="flex items-center justify-between border-b border-border pb-4">
@@ -691,7 +717,9 @@ export function ProjectTimelineDashboard() {
             </CardContent>
           </Card>
         </div>
-      </main>
+      </div>
+    )}
+  </main>
 
       {/* AI Release Generation Modal */}
       {selectedProject && (

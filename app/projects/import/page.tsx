@@ -42,9 +42,6 @@ export default function VercelStyleImportPage() {
   const [selectedRepo, setSelectedRepo] = useState<RepoItem | null>(null);
   const [projectName, setProjectName] = useState("");
   const [defaultBranch, setDefaultBranch] = useState("main");
-  const [toneGuide, setToneGuide] = useState(
-    "Professional, concise, engaging for users, and technically rigorous for developers."
-  );
   const [isDeploying, setIsDeploying] = useState(false);
 
   // 1. Fetch current logged-in user profile on mount
@@ -108,7 +105,6 @@ export default function VercelStyleImportPage() {
           name: projectName.trim(),
           description: selectedRepo.description,
           defaultBranch,
-          toneGuide,
         }),
       });
 
@@ -269,91 +265,98 @@ export default function VercelStyleImportPage() {
           </div>
         ) : (
           /* Step 2: Configure & Deploy Project Card (Vercel Style) */
-          <div className="space-y-5">
-            <div className="flex items-center justify-between border-b border-border pb-4">
-              <div>
-                <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                  Configure Project
-                  <Badge variant="user" className="font-mono text-xs">
-                    {selectedRepo.name}
-                  </Badge>
-                </h2>
-                <p className="text-xs text-muted-foreground">Connected to {selectedRepo.fullName}</p>
+          <div className="space-y-6">
+            <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
+              New Project
+            </h2>
+
+            <Card className="shadow-lg border-border bg-card overflow-hidden">
+              
+              {/* "Importing from GitHub" Banner */}
+              <div className="p-4 sm:px-6 bg-muted/30 border-b border-border/60">
+                <p className="text-xs text-muted-foreground mb-2">Importing from GitHub</p>
+                <div className="flex items-center gap-3 text-sm font-mono text-foreground">
+                  <GithubLogoIcon className="h-5 w-5 text-foreground" weight="fill" />
+                  <span className="font-semibold">{selectedRepo.fullName}</span>
+                  <div className="flex items-center gap-1.5 text-muted-foreground ml-1">
+                    <GitBranchIcon className="h-3.5 w-3.5" weight="bold" />
+                    <span>{defaultBranch}</span>
+                  </div>
+                </div>
               </div>
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSelectedRepo(null)}
-                className="text-xs"
-              >
-                Change Repository
-              </Button>
-            </div>
-
-            <Card className="shadow-lg border-indigo-500/30 border">
-              <CardContent className="p-6 space-y-5">
+              {/* Form Content */}
+              <CardContent className="p-4 sm:p-6 space-y-6">
                 
-                {/* Project Name Input */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
-                    Project Name
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full h-10 px-3.5 text-xs font-bold rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
-                    value={projectName}
-                    onChange={(e) => setProjectName(e.target.value)}
-                  />
-                </div>
+                <p className="text-sm text-foreground">
+                  Choose where you want to create the project and give it a name.
+                </p>
 
-                {/* Default Branch */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
-                    Default Branch
-                  </label>
-                  <div className="relative">
+                {/* Team & Project Name Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-end relative">
+                  
+                  {/* Decorative Slash between cols (hidden on mobile) */}
+                  <div className="hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-2 text-2xl font-light text-muted-foreground/30 pointer-events-none">
+                    /
+                  </div>
+
+                  {/* Left: Connected Account (Read-only Team equivalent) */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground">
+                      Connected Account
+                    </label>
+                    <div className="w-full h-10 px-3 flex items-center justify-between rounded-md border border-border/60 bg-muted/40 text-foreground cursor-not-allowed">
+                      <div className="flex items-center gap-2">
+                        <div className="h-4 w-4 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+                          <div className="h-2 w-2 rounded-full bg-emerald-500" />
+                        </div>
+                        <span className="text-xs font-semibold">@{username}</span>
+                      </div>
+                      <Badge variant="outline" className="text-[10px] opacity-80 border-border/60 bg-background">Owner</Badge>
+                    </div>
+                  </div>
+
+                  {/* Right: Project Name Input */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground">
+                      Project Name
+                    </label>
                     <input
                       type="text"
-                      className="w-full h-10 pl-9 pr-3 text-xs font-mono rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
-                      value={defaultBranch}
-                      onChange={(e) => setDefaultBranch(e.target.value)}
+                      className="w-full h-10 px-3.5 text-xs font-mono font-medium rounded-md border border-border/60 bg-background text-foreground focus:outline-none focus:border-primary transition-colors"
+                      value={projectName}
+                      onChange={(e) => setProjectName(e.target.value)}
                     />
-                    <GitBranchIcon className="h-4 w-4 absolute left-3 top-3 text-primary" weight="bold" />
                   </div>
                 </div>
 
-                {/* AI Brand Tone Guide */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
-                    AI Brand Tone Guide
-                  </label>
-                  <textarea
-                    className="w-full h-24 p-3 text-xs font-medium rounded-xl border border-border bg-muted/30 text-foreground focus:outline-none focus:ring-2 focus:ring-primary leading-relaxed resize-none"
-                    value={toneGuide}
-                    onChange={(e) => setToneGuide(e.target.value)}
-                  />
-                  <p className="text-[11px] text-muted-foreground">
-                    Guides Gemini 3.6 Flash on writing release notes that match your product&apos;s brand voice.
-                  </p>
+                <div className="pt-2">
+                  <Button
+                    onClick={handleDeployProject}
+                    disabled={isDeploying || !projectName.trim()}
+                    className="w-full h-11 text-sm font-semibold shadow-sm bg-foreground hover:bg-foreground/90 text-background rounded-md transition-all"
+                  >
+                    {isDeploying ? (
+                      <SparkleIcon className="h-4 w-4 animate-spin mr-2" weight="bold" />
+                    ) : null}
+                    {isDeploying ? "Deploying..." : "Deploy"}
+                  </Button>
                 </div>
-
-                {/* Deploy & Create Project Button */}
-                <Button
-                  onClick={handleDeployProject}
-                  disabled={isDeploying || !projectName.trim()}
-                  className="w-full h-11 gap-2 text-xs font-bold shadow-lg shadow-indigo-500/25 bg-emerald-600 hover:bg-emerald-700 text-white"
-                >
-                  {isDeploying ? (
-                    <SparkleIcon className="h-4 w-4 animate-spin text-white" weight="bold" />
-                  ) : (
-                    <CheckCircleIcon className="h-4 w-4" weight="bold" />
-                  )}
-                  {isDeploying ? "Deploying Project..." : "Deploy & Create Project"}
-                </Button>
-
+                
               </CardContent>
             </Card>
+
+            <div className="text-center pt-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedRepo(null)}
+                className="text-xs text-muted-foreground hover:text-foreground"
+              >
+                Cancel and pick another repository
+              </Button>
+            </div>
+
           </div>
         )}
 
