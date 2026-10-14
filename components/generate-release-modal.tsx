@@ -41,9 +41,11 @@ export function GenerateReleaseModal({
   onReleaseCreated,
 }: GenerateReleaseModalProps) {
   const [inputMode, setInputMode] = useState<"github" | "manual">("github");
-  const [githubRepoInput, setGithubRepoInput] = useState(project.githubRepo || "");
+  const [githubRepoInput, setGithubRepoInput] = useState(
+    project.githubRepo || "",
+  );
   const [rawCommitsInput, setRawCommitsInput] = useState("");
-  const [activeTab, setActiveTab] = useState<"exec" | "user" | "dev">("user");
+  const [activeTab, setActiveTab] = useState<"user" | "exec" | "dev">("user");
 
   const [isFetchingCommits, setIsFetchingCommits] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -62,7 +64,6 @@ export function GenerateReleaseModal({
 
   if (!isOpen) return null;
 
-  // Auto-fetch commits from GitHub and trigger AI synthesis
   const handleFetchAndGenerate = async () => {
     const targetRepo = githubRepoInput.trim() || project.githubRepo;
     if (!targetRepo) {
@@ -77,7 +78,10 @@ export function GenerateReleaseModal({
       const res = await fetch("/api/github/commits", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repo: targetRepo, branch: project.defaultBranch }),
+        body: JSON.stringify({
+          repo: targetRepo,
+          branch: project.defaultBranch,
+        }),
       });
       const data = await res.json();
 
@@ -136,116 +140,134 @@ export function GenerateReleaseModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 font-sans">
-      <div className="bg-card border border-border rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
-        
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 font-sans">
+      <div className="bg-white dark:bg-[#0a0a0a] border border-[#ebebeb] dark:border-[#1f1f1f] rounded-[6px] max-w-3xl w-full max-h-[85vh] overflow-y-auto shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col">
         {/* Modal Header */}
-        <div className="p-6 border-b border-border flex items-center justify-between sticky top-0 bg-card z-10">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-md shadow-indigo-500/20">
-              <BroadcastIcon className="h-6 w-6" weight="bold" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                Generate New Release
-                <Badge variant="dev" className="text-xs">
-                  <SparkleIcon className="h-3.5 w-3.5" weight="fill" /> Gemini 3.6 Flash
-                </Badge>
+        <div className="px-6 py-4 border-b border-[#ebebeb] dark:border-[#1f1f1f] flex items-center justify-between sticky top-0 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur z-10">
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-medium text-[#171717] dark:text-white">
+                Generate Release
               </h2>
-              <p className="text-xs text-muted-foreground">Project: {project.name}</p>
+              <Badge variant="pixel" className="text-[10px]">
+                {project.name}
+              </Badge>
             </div>
+            <p className="text-xs text-[#666666] dark:text-[#888888]">
+              Synthesize multi-audience release notes with Gemini 3.6 Flash
+            </p>
           </div>
 
-          <Button size="icon" variant="ghost" onClick={onClose} className="rounded-xl">
-            <XIcon className="h-5 w-5" weight="bold" />
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={onClose}
+            className="h-8 w-8 text-[#8f8f8f] hover:text-[#171717] dark:hover:text-white"
+          >
+            <XIcon className="h-4 w-4" weight="bold" />
           </Button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 space-y-6 flex-1">
-          
-          {/* Input Mode Selector */}
-          <div className="flex items-center gap-2 p-1 bg-muted rounded-xl border border-border/60 max-w-md">
+        <div className="p-6 space-y-5 flex-1">
+          {/* Segmented Mode Selector */}
+          <div className="flex items-center gap-1 p-0.5 bg-[#f5f5f5] dark:bg-[#111111] rounded-[4px] border border-[#ebebeb] dark:border-[#222222] max-w-xs">
             <button
               onClick={() => setInputMode("github")}
-              className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+              className={`flex-1 py-1.5 px-3 rounded-[3px] text-xs font-medium flex items-center justify-center gap-1.5 transition-all ${
                 inputMode === "github"
-                  ? "bg-card text-primary shadow-sm border border-border/60"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-white dark:bg-[#1f1f1f] text-[#171717] dark:text-white shadow-[0_1px_2px_rgba(0,0,0,0.05)] border border-[#ebebeb] dark:border-[#262626]"
+                  : "text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white"
               }`}
             >
-              <GithubLogoIcon className="h-4 w-4" weight="bold" /> 1-Click GitHub Sync
+              <GithubLogoIcon className="h-3.5 w-3.5" weight="bold" />
+              GitHub Sync
             </button>
 
             <button
               onClick={() => setInputMode("manual")}
-              className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+              className={`flex-1 py-1.5 px-3 rounded-[3px] text-xs font-medium flex items-center justify-center gap-1.5 transition-all ${
                 inputMode === "manual"
-                  ? "bg-card text-primary shadow-sm border border-border/60"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-white dark:bg-[#1f1f1f] text-[#171717] dark:text-white shadow-[0_1px_2px_rgba(0,0,0,0.05)] border border-[#ebebeb] dark:border-[#262626]"
+                  : "text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white"
               }`}
             >
-              <GitCommitIcon className="h-4 w-4" weight="bold" /> Manual Paste
+              <GitCommitIcon className="h-3.5 w-3.5" weight="bold" />
+              Manual Logs
             </button>
           </div>
 
-          {/* Mode 1: GitHub Sync Input */}
+          {/* Mode 1: GitHub Sync */}
           {inputMode === "github" ? (
-            <Card className="border-indigo-500/20 bg-accent/20">
+            <Card className="bg-[#fafafa] dark:bg-[#080808]">
               <CardContent className="p-4 space-y-3">
-                <label className="text-xs font-bold uppercase tracking-wider text-primary block">
+                <label className="text-xs font-medium text-[#666666] dark:text-[#888888] block">
                   GitHub Repository (owner/repo)
                 </label>
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder="e.g. ThaminduDasanayake/relay or facebook/react"
-                    className="flex-1 h-10 px-3.5 text-xs font-mono rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="e.g. facebook/react or vercel/next.js"
+                    className="flex-1 h-9 px-3 text-xs font-mono rounded-[4px] border border-[#ebebeb] dark:border-[#262626] bg-white dark:bg-[#111111] text-[#171717] dark:text-[#ededed] focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
                     value={githubRepoInput}
                     onChange={(e) => setGithubRepoInput(e.target.value)}
                   />
                   <Button
                     onClick={handleFetchAndGenerate}
-                    disabled={isFetchingCommits || isLoading || !githubRepoInput.trim()}
-                    className="h-10 px-5 gap-2 text-xs shadow-md shadow-indigo-500/20"
+                    disabled={
+                      isFetchingCommits || isLoading || !githubRepoInput.trim()
+                    }
+                    className="h-9 px-4 gap-2 text-xs font-medium"
                   >
                     {isFetchingCommits || isLoading ? (
-                      <ArrowClockwiseIcon className="h-4 w-4 animate-spin" weight="bold" />
+                      <ArrowClockwiseIcon
+                        className="h-3.5 w-3.5 animate-spin"
+                        weight="bold"
+                      />
                     ) : (
-                      <GithubLogoIcon className="h-4 w-4" weight="bold" />
+                      <SparkleIcon className="h-3.5 w-3.5" weight="fill" />
                     )}
-                    {isFetchingCommits ? "Fetching Commits..." : isLoading ? "Streaming AI..." : "Sync & Synthesize"}
+                    {isFetchingCommits
+                      ? "Fetching..."
+                      : isLoading
+                        ? "Synthesizing..."
+                        : "Fetch & Synthesize"}
                   </Button>
                 </div>
                 {fetchError && (
-                  <p className="text-xs text-destructive font-medium">{fetchError}</p>
+                  <p className="text-xs text-[#ee0000] font-medium">
+                    {fetchError}
+                  </p>
                 )}
               </CardContent>
             </Card>
           ) : (
-            /* Mode 2: Manual Textarea Input */
-            <Card>
+            /* Mode 2: Manual Logs */
+            <Card className="bg-[#fafafa] dark:bg-[#080808]">
               <CardContent className="p-4 space-y-3">
-                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground block">
-                  Paste Raw Commit Logs / PR Titles / Issue Notes
+                <label className="text-xs font-medium text-[#666666] dark:text-[#888888] block">
+                  Paste Git Commits / PR Notes
                 </label>
                 <textarea
-                  placeholder="feat(auth): add OAuth2 refresh token rotation #102&#10;fix(dashboard): resolve chart re-render memory leak #105"
-                  className="w-full h-36 p-3 text-xs font-mono rounded-xl border border-border bg-muted/30 text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                  placeholder="feat(auth): add OAuth2 refresh token rotation #102&#10;fix(dashboard): resolve chart memory leak #105"
+                  className="w-full h-32 p-3 text-xs font-mono rounded-[4px] border border-[#ebebeb] dark:border-[#262626] bg-white dark:bg-[#111111] text-[#171717] dark:text-[#ededed] focus:outline-none focus:ring-1 focus:ring-[#0070f3] resize-none leading-relaxed"
                   value={rawCommitsInput}
                   onChange={(e) => setRawCommitsInput(e.target.value)}
                 />
                 <Button
                   onClick={handleManualGenerate}
                   disabled={isLoading || !rawCommitsInput.trim()}
-                  className="w-full h-10 gap-2 text-xs shadow-md shadow-indigo-500/20"
+                  className="w-full h-9 gap-2 text-xs font-medium"
                 >
                   {isLoading ? (
-                    <SparkleIcon className="h-4 w-4 animate-spin text-primary-foreground" weight="bold" />
+                    <SparkleIcon
+                      className="h-3.5 w-3.5 animate-spin"
+                      weight="fill"
+                    />
                   ) : (
-                    <BroadcastIcon className="h-4 w-4" weight="bold" />
+                    <SparkleIcon className="h-3.5 w-3.5" weight="fill" />
                   )}
-                  {isLoading ? "Synthesizing AI..." : "Generate Multi-Audience Release"}
+                  {isLoading ? "Synthesizing AI..." : "Generate Release Notes"}
                 </Button>
               </CardContent>
             </Card>
@@ -253,123 +275,146 @@ export function GenerateReleaseModal({
 
           {/* AI Output Stream Preview */}
           {object && (
-            <Card className="border-indigo-500/30 shadow-md">
-              <CardHeader className="pb-3 border-b border-border/60 flex flex-row items-center justify-between">
+            <Card className="border-[#ebebeb] dark:border-[#262626]">
+              <CardHeader className="pb-3 border-b border-[#ebebeb] dark:border-[#1f1f1f] flex flex-row items-center justify-between">
                 <div>
-                  <Badge variant="outline" className="font-mono text-xs mb-1">
+                  <Badge variant="pixel" className="text-[10px] mb-1">
                     {object.version || "v1.0.0"}
                   </Badge>
-                  <CardTitle className="text-base font-bold text-foreground">
+                  <CardTitle className="text-sm font-medium">
                     {object.title || "Generating release title..."}
                   </CardTitle>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    disabled={isSaving}
-                    onClick={() => handleSaveAndPublish("PUBLISHED")}
-                    className="gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
-                  >
-                    <FloppyDiskIcon className="h-4 w-4" weight="bold" />
-                    {isSaving ? "Publishing..." : "Save & Publish to Timeline"}
-                  </Button>
-                </div>
+                <Button
+                  size="sm"
+                  disabled={isSaving}
+                  onClick={() => handleSaveAndPublish("PUBLISHED")}
+                  className="h-8 gap-1.5 text-xs font-medium"
+                >
+                  <FloppyDiskIcon className="h-3.5 w-3.5" weight="bold" />
+                  {isSaving ? "Saving..." : "Publish to Timeline"}
+                </Button>
               </CardHeader>
 
-              <CardContent className="p-5 space-y-4">
-                
-                {/* Multi-Audience Tabs */}
-                <div className="flex items-center gap-2 p-1 bg-muted rounded-xl border border-border/60">
+              <CardContent className="p-4 space-y-4">
+                {/* Persona Segment Tabs */}
+                <div className="flex items-center gap-1 p-0.5 bg-[#f5f5f5] dark:bg-[#111111] rounded-[4px] border border-[#ebebeb] dark:border-[#222222] max-w-sm">
                   <button
                     onClick={() => setActiveTab("user")}
-                    className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    className={`flex-1 py-1 px-2.5 rounded-[3px] text-xs font-medium flex items-center justify-center gap-1 transition-all ${
                       activeTab === "user"
-                        ? "bg-card text-emerald-600 dark:text-emerald-400 shadow-sm border border-border/60"
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "bg-white dark:bg-[#1f1f1f] text-[#00876c] shadow-[0_1px_2px_rgba(0,0,0,0.05)] border border-[#ebebeb] dark:border-[#262626]"
+                        : "text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white"
                     }`}
                   >
-                    <UserIcon className="h-4 w-4" weight="bold" /> Customer View
+                    <UserIcon className="h-3 w-3" weight="bold" />
+                    Customer
                   </button>
                   <button
                     onClick={() => setActiveTab("exec")}
-                    className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    className={`flex-1 py-1 px-2.5 rounded-[3px] text-xs font-medium flex items-center justify-center gap-1 transition-all ${
                       activeTab === "exec"
-                        ? "bg-card text-amber-600 dark:text-amber-400 shadow-sm border border-border/60"
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "bg-white dark:bg-[#1f1f1f] text-[#bd5200] shadow-[0_1px_2px_rgba(0,0,0,0.05)] border border-[#ebebeb] dark:border-[#262626]"
+                        : "text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white"
                     }`}
                   >
-                    <BriefcaseIcon className="h-4 w-4" weight="bold" /> Executive View
+                    <BriefcaseIcon className="h-3 w-3" weight="bold" />
+                    Executive
                   </button>
                   <button
                     onClick={() => setActiveTab("dev")}
-                    className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                    className={`flex-1 py-1 px-2.5 rounded-[3px] text-xs font-medium flex items-center justify-center gap-1 transition-all ${
                       activeTab === "dev"
-                        ? "bg-card text-indigo-600 dark:text-indigo-400 shadow-sm border border-border/60"
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "bg-white dark:bg-[#1f1f1f] text-[#0070f3] shadow-[0_1px_2px_rgba(0,0,0,0.05)] border border-[#ebebeb] dark:border-[#262626]"
+                        : "text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white"
                     }`}
                   >
-                    <CodeIcon className="h-4 w-4" weight="bold" /> Engineering View
+                    <CodeIcon className="h-3 w-3" weight="bold" />
+                    Developer
                   </button>
                 </div>
 
-                {/* Tab 1: Customer View */}
+                {/* View 1: Customer */}
                 {activeTab === "user" && (
-                  <div className="space-y-3 text-xs">
-                    {object.userFacing?.highlights && object.userFacing.highlights.length > 0 ? (
-                      <div className="space-y-2">
-                        {object.userFacing.highlights.map((h: any, i: number) => (
-                          <div key={i} className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
-                            <strong className="text-foreground font-semibold">{h?.feature}:</strong>{" "}
-                            <span className="text-muted-foreground">{h?.benefit}</span>
-                          </div>
-                        ))}
+                  <div className="space-y-2 text-xs">
+                    {object.userFacing?.highlights &&
+                    object.userFacing.highlights.length > 0 ? (
+                      <div className="space-y-1.5">
+                        {object.userFacing.highlights.map(
+                          (h: any, i: number) => (
+                            <div
+                              key={i}
+                              className="p-2.5 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]"
+                            >
+                              <strong className="text-[#171717] dark:text-[#ededed] font-medium">
+                                {h?.feature}:
+                              </strong>{" "}
+                              <span className="text-[#666666] dark:text-[#888888]">
+                                {h?.benefit}
+                              </span>
+                            </div>
+                          ),
+                        )}
                       </div>
                     ) : (
-                      <p className="text-xs text-muted-foreground italic">Awaiting feature highlights...</p>
+                      <p className="text-xs text-[#8f8f8f] italic">
+                        Awaiting feature stream...
+                      </p>
                     )}
                   </div>
                 )}
 
-                {/* Tab 2: Executive View */}
+                {/* View 2: Executive */}
                 {activeTab === "exec" && (
                   <div className="space-y-3">
-                    <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/20">
-                      <p className="text-xs font-medium text-foreground leading-relaxed">
-                        {object.executiveSummary || "Generating strategic summary..."}
+                    <div className="p-3 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]">
+                      <p className="text-xs text-[#171717] dark:text-[#ededed] leading-relaxed">
+                        {object.executiveSummary ||
+                          "Generating strategic executive summary..."}
                       </p>
                     </div>
-                    <AudienceMeter execPercent={30} userPercent={50} devPercent={20} />
+                    <AudienceMeter
+                      execPercent={30}
+                      userPercent={50}
+                      devPercent={20}
+                    />
                   </div>
                 )}
 
-                {/* Tab 3: Engineering View */}
+                {/* View 3: Developer */}
                 {activeTab === "dev" && (
-                  <div className="space-y-3 text-xs">
-                    {object.developerFacing?.breakingChanges && object.developerFacing.breakingChanges.length > 0 && (
-                      <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 space-y-1">
-                        <span className="text-xs font-bold text-destructive flex items-center gap-1">
-                          <ShieldWarningIcon className="h-4 w-4" weight="bold" /> Breaking Changes
-                        </span>
-                        {object.developerFacing.breakingChanges.map((b: any, i: number) => (
-                          <div key={i}>
-                            <code className="bg-background px-1.5 py-0.5 rounded text-destructive font-mono font-semibold">
-                              {b?.target}
-                            </code>
-                            <p className="text-muted-foreground pl-2">{b?.migrationStep}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                  <div className="space-y-2 text-xs">
+                    {object.developerFacing?.breakingChanges &&
+                      object.developerFacing.breakingChanges.length > 0 && (
+                        <div className="p-2.5 rounded-[4px] bg-[#ee0000]/5 border border-[#ee0000]/20 space-y-1">
+                          <span className="text-xs font-medium text-[#ee0000] flex items-center gap-1">
+                            <ShieldWarningIcon
+                              className="h-3.5 w-3.5"
+                              weight="bold"
+                            />
+                            Breaking Changes
+                          </span>
+                          {object.developerFacing.breakingChanges.map(
+                            (b: any, i: number) => (
+                              <div key={i} className="pt-1">
+                                <code className="bg-white dark:bg-black px-1.5 py-0.5 rounded text-[#ee0000] font-mono text-[11px] border border-[#ee0000]/20">
+                                  {b?.target}
+                                </code>
+                                <p className="text-[#666666] dark:text-[#888888] mt-1 pl-1">
+                                  {b?.migrationStep}
+                                </p>
+                              </div>
+                            ),
+                          )}
+                        </div>
+                      )}
                   </div>
                 )}
-
               </CardContent>
             </Card>
           )}
-
         </div>
-
       </div>
     </div>
   );

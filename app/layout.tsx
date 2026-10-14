@@ -1,21 +1,9 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
+import { GeistPixelSquare } from "geist/font/pixel";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-  fallback: ["system-ui", "sans-serif"],
-});
-
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  display: "swap",
-  fallback: ["monospace"],
-});
 
 export const metadata: Metadata = {
   title: "StampLog — AI-Powered Release Notes Engine",
@@ -34,14 +22,16 @@ export default function RootLayout({
       className={cn(
         "h-full",
         "antialiased",
-        plusJakartaSans.variable,
-        geistMono.variable,
+        GeistSans.variable,
+        GeistMono.variable,
+        GeistPixelSquare.variable,
         "font-sans",
       )}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-indigo-500/20 selection:text-indigo-600 dark:selection:text-indigo-400">
+      <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-[#171717] selection:text-white dark:selection:bg-white dark:selection:text-[#171717]">
         {children}
       </body>
     </html>
   );
 }
+

@@ -3,14 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import {
-  Broadcast,
-  CheckCircle,
-  Tag,
-  Clock,
-  ArrowRight,
-  Sparkle,
-  Globe,
-  Rss,
+  BroadcastIcon,
+  CheckCircleIcon,
+  TagIcon,
+  ClockIcon,
+  ArrowRightIcon,
+  SparkleIcon,
+  GlobeIcon,
+  RssIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,8 +32,8 @@ export async function generateMetadata({
   });
 
   return {
-    title: `${project?.name || "Project"} Changelog Timeline — StampLog`,
-    description: `Official public release history and changelog timeline for ${project?.name || "project"}.`,
+    title: `${project?.name || "Project"} Changelog — StampLog`,
+    description: `Public release history and changelog for ${project?.name || "project"}.`,
   };
 }
 
@@ -52,34 +52,45 @@ export default async function PublicProjectReleasesPage({ params }: PageProps) {
   const releases = project?.releaseNotes || [];
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-indigo-500/20 selection:text-indigo-600">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#000000] text-[#171717] dark:text-[#ededed] flex flex-col font-sans selection:bg-[#171717] selection:text-white dark:selection:bg-white dark:selection:text-[#171717]">
       {/* Public Header */}
-      <header className="border-b border-border bg-card/60 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
-        <div className="max-w-[1000px] mx-auto flex items-center justify-between">
+      <header className="border-b border-[#ebebeb] dark:border-[#1f1f1f] bg-white/90 dark:bg-black/90 backdrop-blur-md sticky top-0 z-50 px-6 h-14 flex items-center justify-between">
+        <div className="max-w-[900px] w-full mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-md shadow-indigo-500/20">
-              <Broadcast className="h-5 w-5" weight="bold" />
-            </div>
+            <Link
+              href="/"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            >
+              <div className="h-6 w-6 bg-[#171717] dark:bg-white flex items-center justify-center rounded-[3px]">
+                <svg
+                  className="h-3.5 w-3.5 fill-white dark:fill-black"
+                  viewBox="0 0 76 65"
+                  aria-hidden="true"
+                >
+                  <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
+                </svg>
+              </div>
+            </Link>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground">
+              <h1 className="text-sm font-medium tracking-tight text-[#171717] dark:text-white">
                 {project?.name || "StampLog Project"}
               </h1>
-              <p className="text-xs text-muted-foreground">
-                Public Release History & Changelogs
-              </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             <Link href={`/p/${projectSlug}/rss.xml`} target="_blank">
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-muted">
-                <Rss className="h-3.5 w-3.5" weight="bold" /> RSS Feed
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2.5 text-xs gap-1.5 text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white"
+              >
+                <RssIcon className="h-3.5 w-3.5" weight="bold" /> RSS Feed
               </Button>
             </Link>
-            <Link href="/">
-              <Button variant="outline" size="sm" className="gap-1 text-xs">
-                <Sparkle className="h-3.5 w-3.5 text-primary" weight="bold" />{" "}
-                AI Workbench
+            <Link href="/app">
+              <Button variant="default" size="sm" className="h-8 px-3 text-xs">
+                Launch Studio
               </Button>
             </Link>
           </div>
@@ -87,45 +98,40 @@ export default async function PublicProjectReleasesPage({ params }: PageProps) {
       </header>
 
       {/* Main Release Feed */}
-      <main className="flex-1 max-w-[1000px] w-full mx-auto p-4 sm:p-8 space-y-8">
-        <div className="space-y-2 border-b border-border pb-6">
-          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
-            <Globe className="h-6 w-6 text-primary" weight="bold" />
-            Release History Timeline
+      <main className="flex-1 max-w-[900px] w-full mx-auto p-4 sm:p-8 space-y-6">
+        <div className="space-y-1 pb-4 border-b border-[#ebebeb] dark:border-[#1f1f1f]">
+          <h2 className="text-2xl font-medium tracking-tight text-[#171717] dark:text-white">
+            Release Changelog
           </h2>
-          <p className="text-sm text-muted-foreground">
-            Explore feature announcements, performance updates, and developer
-            notes across all published versions.
+          <p className="text-xs text-[#666666] dark:text-[#888888]">
+            Feature highlights, resolved issues, and migration notes.
           </p>
         </div>
 
-        {/* Releases Timeline List */}
+        {/* Releases List */}
         {releases.length > 0 ? (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {releases.map((rel) => (
               <Card
                 key={rel.id}
-                className="border-border hover:border-indigo-500/30 transition-all hover:shadow-md"
+                className="hover:border-[#8f8f8f] transition-all"
               >
                 <CardHeader className="pb-3 flex flex-row items-start justify-between gap-4">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <Badge
-                        variant="outline"
-                        className="font-mono text-xs bg-muted"
-                      >
+                      <Badge variant="pixel" className="text-[10px]">
                         {rel.version}
                       </Badge>
-                      <Badge variant="user" className="text-xs">
-                        <CheckCircle
-                          className="h-3 w-3 text-emerald-500"
+                      <Badge variant="user" className="text-[11px]">
+                        <CheckCircleIcon
+                          className="h-3 w-3 text-[#00876c]"
                           weight="fill"
-                        />{" "}
+                        />
                         Published
                       </Badge>
                       {rel.publishedAt && (
-                        <span className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Clock className="h-3.5 w-3.5" weight="bold" />
+                        <span className="text-[11px] font-mono text-[#8f8f8f] flex items-center gap-1">
+                          <ClockIcon className="h-3 w-3" weight="bold" />
                           {new Date(rel.publishedAt).toLocaleDateString(
                             "en-US",
                             {
@@ -137,7 +143,7 @@ export default async function PublicProjectReleasesPage({ params }: PageProps) {
                         </span>
                       )}
                     </div>
-                    <CardTitle className="text-xl font-bold mt-1 text-foreground">
+                    <CardTitle className="text-base font-medium mt-1">
                       {rel.title}
                     </CardTitle>
                   </div>
@@ -148,18 +154,18 @@ export default async function PublicProjectReleasesPage({ params }: PageProps) {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="gap-1 text-xs shrink-0"
+                      className="h-7 px-2.5 text-xs gap-1 shrink-0 font-medium"
                     >
-                      View Release{" "}
-                      <ArrowRight className="h-3.5 w-3.5" weight="bold" />
+                      View Notes{" "}
+                      <ArrowRightIcon className="h-3 w-3" weight="bold" />
                     </Button>
                   </Link>
                 </CardHeader>
 
-                <CardContent className="space-y-3">
-                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                <CardContent>
+                  <p className="text-xs text-[#666666] dark:text-[#888888] leading-relaxed line-clamp-2">
                     {rel.executiveSummary ||
-                      "Continuous software improvements and feature announcements."}
+                      "Continuous improvements and feature releases."}
                   </p>
                 </CardContent>
               </Card>
@@ -167,33 +173,19 @@ export default async function PublicProjectReleasesPage({ params }: PageProps) {
           </div>
         ) : (
           <Card className="p-8 text-center space-y-3">
-            <p className="text-sm font-medium text-foreground">
-              No published releases found for this project yet.
+            <p className="text-sm font-medium text-[#171717] dark:text-white">
+              No published releases yet.
             </p>
-            <p className="text-xs text-muted-foreground">
-              Generate a new release note in the AI Workbench and click
-              &quot;Save &amp; Publish&quot; to populate your changelog feed.
+            <p className="text-xs text-[#666666] dark:text-[#888888]">
+              Releases published in the Studio workspace will appear here.
             </p>
-            <Link href="/">
-              <Button
-                size="sm"
-                variant="default"
-                className="mt-2 gap-1.5 text-xs"
-              >
-                Open AI Workbench{" "}
-                <ArrowRight className="h-3.5 w-3.5" weight="bold" />
-              </Button>
-            </Link>
           </Card>
         )}
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border py-6 text-center text-xs text-muted-foreground">
-        <p className="font-medium text-foreground">stamplog</p>
-        <p className="mt-1 opacity-80">
-          Official AI release notes from raw git logs.
-        </p>
+      <footer className="border-t border-[#ebebeb] dark:border-[#1f1f1f] py-6 text-center text-xs text-[#8f8f8f]">
+        <p>stamplog • Release Intelligence</p>
       </footer>
     </div>
   );

@@ -5,22 +5,22 @@ import Link from "next/link";
 import { useObject } from "@ai-sdk/react";
 import { ChangelogSchema } from "@/lib/schemas/changelog";
 import {
-  Broadcast,
-  Sparkle,
-  Briefcase,
-  User,
-  Code,
-  ShieldWarning,
-  CheckCircle,
-  Copy,
-  GitCommit,
-  FloppyDisk,
-  ArrowUpRight,
-  Globe,
-  Clock,
-  CaretDown,
-  GithubLogo,
-  ArrowClockwise,
+  BroadcastIcon,
+  SparkleIcon,
+  BriefcaseIcon,
+  UserIcon,
+  CodeIcon,
+  ShieldWarningIcon,
+  CheckCircleIcon,
+  CopyIcon,
+  GitCommitIcon,
+  FloppyDiskIcon,
+  ArrowUpRightIcon,
+  GlobeIcon,
+  ClockIcon,
+  CaretDownIcon,
+  GithubLogoIcon,
+  ArrowClockwiseIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -47,12 +47,18 @@ interface SavedReleaseItem {
   createdAt: string;
 }
 
-export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Project" }: GeneratorStudioProps) {
+export function GeneratorStudio({
+  projectId = "demo",
+  projectName = "StampLog Project",
+}: GeneratorStudioProps) {
   const [inputLogs, setInputLogs] = useState("");
-  const [activeTab, setActiveTab] = useState<"exec" | "user" | "dev">("user");
+  const [activeTab, setActiveTab] = useState<"user" | "exec" | "dev">("user");
   const [copied, setCopied] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveResult, setSaveResult] = useState<{ publicUrl: string; version: string } | null>(null);
+  const [saveResult, setSaveResult] = useState<{
+    publicUrl: string;
+    version: string;
+  } | null>(null);
 
   // GitHub Repo Quick-Sync State
   const [githubRepoInput, setGithubRepoInput] = useState("");
@@ -62,14 +68,15 @@ export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Pr
   // Recent saved releases state
   const [recentReleases, setRecentReleases] = useState<SavedReleaseItem[]>([]);
   const [selectedReleaseId, setSelectedReleaseId] = useState<string>("");
-  const [loadedRelease, setLoadedRelease] = useState<SavedReleaseItem | null>(null);
+  const [loadedRelease, setLoadedRelease] = useState<SavedReleaseItem | null>(
+    null,
+  );
 
   const { object, submit, isLoading, stop } = useObject({
     api: "/api/releases/generate",
     schema: ChangelogSchema,
   });
 
-  // Fetch recent saved releases from PostgreSQL on mount
   const fetchRecentReleases = async () => {
     try {
       const res = await fetch("/api/releases/recent?projectSlug=demo");
@@ -94,7 +101,6 @@ export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Pr
     submit({ projectId, rawCommits: inputLogs });
   };
 
-  // Zero-Paste GitHub Repo Sync handler
   const handleFetchGitHubCommits = async () => {
     if (!githubRepoInput.trim()) return;
     setIsFetchingRepo(true);
@@ -113,13 +119,14 @@ export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Pr
 
       if (data.success && data.rawCommits) {
         setInputLogs(data.rawCommits);
-        // Automatically trigger Gemini synthesis with fetched commits
         submit({ projectId, rawCommits: data.rawCommits });
       } else {
         setRepoError(data.error || "Failed to fetch GitHub commits");
       }
     } catch (err: any) {
-      setRepoError(err?.message || "Connection error fetching GitHub repository");
+      setRepoError(
+        err?.message || "Connection error fetching GitHub repository",
+      );
     } finally {
       setIsFetchingRepo(false);
     }
@@ -142,21 +149,34 @@ export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Pr
     }
   };
 
-  // Determine current active preview data (streaming object OR loaded saved release)
   const displayVersion = object?.version || loadedRelease?.version || "vX.X.X";
-  const displayTitle = object?.title || loadedRelease?.title || "Release Title generating...";
-  const displayExecSummary = object?.executiveSummary || loadedRelease?.executiveSummary || "";
-  const displayHighlights = object?.userFacing?.highlights || loadedRelease?.userHighlights || [];
-  const displayFixes = object?.userFacing?.fixes || loadedRelease?.userFixes || [];
-  const displayBreaking = object?.developerFacing?.breakingChanges || loadedRelease?.breakingChanges || [];
-  const displayTech = object?.developerFacing?.technicalUpdates || loadedRelease?.technicalUpdates || [];
+  const displayTitle =
+    object?.title || loadedRelease?.title || "Release Title generating...";
+  const displayExecSummary =
+    object?.executiveSummary || loadedRelease?.executiveSummary || "";
+  const displayHighlights =
+    object?.userFacing?.highlights || loadedRelease?.userHighlights || [];
+  const displayFixes =
+    object?.userFacing?.fixes || loadedRelease?.userFixes || [];
+  const displayBreaking =
+    object?.developerFacing?.breakingChanges ||
+    loadedRelease?.breakingChanges ||
+    [];
+  const displayTech =
+    object?.developerFacing?.technicalUpdates ||
+    loadedRelease?.technicalUpdates ||
+    [];
 
   const handleCopyMarkdown = () => {
     const title = displayTitle;
     const version = displayVersion;
     const summary = displayExecSummary;
-    const highlights = displayHighlights.map((h: any) => `- **${h?.feature}**: ${h?.benefit}`).join("\n");
-    const tech = displayTech.map((u: any) => `- [${u?.scope}] ${u?.detail}`).join("\n");
+    const highlights = displayHighlights
+      .map((h: any) => `- **${h?.feature}**: ${h?.benefit}`)
+      .join("\n");
+    const tech = displayTech
+      .map((u: any) => `- [${u?.scope}] ${u?.detail}`)
+      .join("\n");
 
     const md = `# ${title} (${version})\n\n## Executive Summary\n${summary}\n\n## User Highlights\n${highlights}\n\n## Technical Updates\n${tech}`;
     navigator.clipboard.writeText(md);
@@ -165,8 +185,12 @@ export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Pr
   };
 
   const handleSaveRelease = async (status: "DRAFT" | "PUBLISHED") => {
-    const currentVersion = displayVersion !== "vX.X.X" ? displayVersion : "v1.0.0";
-    const currentTitle = displayTitle !== "Release Title generating..." ? displayTitle : "New Release";
+    const currentVersion =
+      displayVersion !== "vX.X.X" ? displayVersion : "v1.0.0";
+    const currentTitle =
+      displayTitle !== "Release Title generating..."
+        ? displayTitle
+        : "New Release";
 
     setIsSaving(true);
     try {
@@ -202,44 +226,48 @@ export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Pr
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 sm:p-6 max-w-[1280px] mx-auto font-sans">
-      
-      {/* Left Workbench Form (5 cols) */}
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 sm:p-6 max-w-[1240px] mx-auto font-sans">
+      {/* Left Workbench (5 cols) */}
       <div className="lg:col-span-5 space-y-4">
-        
         {/* Quick Sync GitHub Repo Card */}
-        <Card className="shadow-sm border-indigo-500/20 bg-accent/30">
+        <Card className="bg-[#fafafa] dark:bg-[#080808]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
-              <GithubLogo className="h-4 w-4" weight="bold" /> Zero-Paste GitHub Repo Sync
+            <CardTitle className="text-xs font-medium uppercase tracking-wider text-[#666666] dark:text-[#888888] flex items-center gap-2">
+              <GithubLogoIcon className="h-4 w-4 text-[#171717] dark:text-white" weight="bold" />
+              1-Click GitHub Sync
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="owner/repo (e.g. facebook/react)"
-                className="flex-1 h-9 px-3 text-xs font-mono rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="owner/repo (e.g. vercel/next.js)"
+                className="flex-1 h-8 px-3 text-xs font-mono rounded-[4px] border border-[#ebebeb] dark:border-[#262626] bg-white dark:bg-[#111111] text-[#171717] dark:text-[#ededed] focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
                 value={githubRepoInput}
                 onChange={(e) => setGithubRepoInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleFetchGitHubCommits()}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && handleFetchGitHubCommits()
+                }
               />
               <Button
                 size="sm"
                 onClick={handleFetchGitHubCommits}
                 disabled={isFetchingRepo || isLoading || !githubRepoInput.trim()}
-                className="h-9 px-3 gap-1.5 text-xs shadow-sm"
+                className="h-8 px-3 gap-1.5 text-xs font-medium"
               >
                 {isFetchingRepo ? (
-                  <ArrowClockwise className="h-3.5 w-3.5 animate-spin" weight="bold" />
+                  <ArrowClockwiseIcon
+                    className="h-3.5 w-3.5 animate-spin"
+                    weight="bold"
+                  />
                 ) : (
-                  <GithubLogo className="h-3.5 w-3.5" weight="bold" />
+                  <GithubLogoIcon className="h-3.5 w-3.5" weight="bold" />
                 )}
-                {isFetchingRepo ? "Fetching..." : "Sync & AI"}
+                {isFetchingRepo ? "Fetching..." : "Fetch"}
               </Button>
             </div>
             {repoError && (
-              <p className="text-[11px] text-destructive font-medium leading-none pt-1">
+              <p className="text-[11px] text-[#ee0000] font-medium leading-none pt-1">
                 {repoError}
               </p>
             )}
@@ -247,42 +275,44 @@ export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Pr
         </Card>
 
         {/* Input Workbench Card */}
-        <Card className="shadow-sm">
+        <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between gap-2">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <GitCommit className="h-5 w-5 text-primary" weight="bold" />
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <GitCommitIcon className="h-4 w-4 text-[#171717] dark:text-white" weight="bold" />
                 Raw Input Workbench
               </CardTitle>
 
-              {/* Selector for Saved Releases */}
               {recentReleases.length > 0 && (
                 <div className="relative">
                   <select
                     value={selectedReleaseId}
                     onChange={(e) => handleSelectRelease(e.target.value)}
-                    className="h-8 pl-2.5 pr-6 text-xs font-mono rounded-lg border border-border bg-muted/50 text-foreground appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="h-7 pl-2 pr-6 text-xs font-mono rounded-[4px] border border-[#ebebeb] dark:border-[#262626] bg-[#fafafa] dark:bg-[#111111] text-[#171717] dark:text-[#ededed] appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
                   >
-                    <option value="">-- Load Saved Release --</option>
+                    <option value="">Load saved...</option>
                     {recentReleases.map((rel) => (
                       <option key={rel.id} value={rel.id}>
-                        {rel.version} — {rel.title.substring(0, 20)}...
+                        {rel.version} — {rel.title.substring(0, 18)}...
                       </option>
                     ))}
                   </select>
-                  <CaretDown className="h-3 w-3 absolute right-2 top-2.5 pointer-events-none text-muted-foreground" weight="bold" />
+                  <CaretDownIcon
+                    className="h-3 w-3 absolute right-1.5 top-2 pointer-events-none text-[#8f8f8f]"
+                    weight="bold"
+                  />
                 </div>
               )}
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1.5">
-                Paste Commit Logs / PR Titles / Issue Dumps
+              <label className="text-xs font-medium text-[#666666] dark:text-[#888888] block mb-1.5">
+                Commit Logs / PR Titles
               </label>
               <textarea
-                placeholder="feat(auth): add OAuth2 refresh token rotation #102&#10;fix(dashboard): resolve chart re-render memory leak #105&#10;breaking(api): deprecate v1 auth headers"
-                className="w-full h-80 rounded-xl border border-border bg-muted/30 p-3 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary leading-relaxed resize-none"
+                placeholder="feat(auth): add OAuth2 refresh token rotation #102&#10;fix(dashboard): resolve chart memory leak #105"
+                className="w-full h-72 rounded-[4px] border border-[#ebebeb] dark:border-[#262626] bg-[#fafafa] dark:bg-[#111111] p-3 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-[#0070f3] leading-relaxed resize-none text-[#171717] dark:text-[#ededed]"
                 value={inputLogs}
                 onChange={(e) => setInputLogs(e.target.value)}
               />
@@ -292,22 +322,30 @@ export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Pr
               <Button
                 onClick={handleGenerate}
                 disabled={isLoading || !inputLogs.trim()}
-                className="flex-1 gap-2 shadow-md shadow-indigo-500/20"
+                className="flex-1 h-9 gap-2 text-xs font-medium"
               >
                 {isLoading ? (
                   <>
-                    <Sparkle className="h-4 w-4 animate-spin text-primary-foreground" weight="bold" />
-                    Synthesizing with Gemini...
+                    <SparkleIcon
+                      className="h-3.5 w-3.5 animate-spin"
+                      weight="fill"
+                    />
+                    Synthesizing...
                   </>
                 ) : (
                   <>
-                    <Broadcast className="h-4 w-4" weight="bold" />
-                    Generate Multi-Audience Release
+                    <SparkleIcon className="h-3.5 w-3.5" weight="fill" />
+                    Synthesize Release Notes
                   </>
                 )}
               </Button>
               {isLoading && (
-                <Button variant="outline" size="sm" onClick={() => stop()}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => stop()}
+                  className="h-9 px-3 text-xs"
+                >
                   Stop
                 </Button>
               )}
@@ -316,36 +354,48 @@ export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Pr
         </Card>
       </div>
 
-      {/* Right Real-Time Streaming Output (7 cols) */}
+      {/* Right Streaming Output (7 cols) */}
       <div className="lg:col-span-7 space-y-4">
-        <Card className="shadow-sm border-indigo-500/20">
-          <CardHeader className="pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60">
+        <Card>
+          <CardHeader className="pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#ebebeb] dark:border-[#1f1f1f]">
             <div>
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="font-mono text-xs bg-muted">
+                <Badge variant="pixel" className="text-[10px]">
                   {displayVersion}
                 </Badge>
                 {isLoading && (
-                  <Badge variant="user" className="text-xs animate-pulse">
-                    <Sparkle className="h-3 w-3" weight="fill" /> Streaming...
+                  <Badge variant="user" className="text-[11px] animate-pulse">
+                    Streaming...
                   </Badge>
                 )}
                 {loadedRelease && (
-                  <Badge variant="exec" className="text-xs">
-                    <Clock className="h-3 w-3" weight="bold" /> Loaded from DB
+                  <Badge variant="outline" className="text-[11px]">
+                    <ClockIcon className="h-3 w-3" weight="bold" /> Loaded
                   </Badge>
                 )}
               </div>
-              <CardTitle className="text-lg font-bold mt-1">
+              <CardTitle className="text-base font-medium mt-1">
                 {displayTitle}
               </CardTitle>
             </div>
 
             {(object || loadedRelease) && (
               <div className="flex items-center gap-2 shrink-0">
-                <Button variant="outline" size="sm" onClick={handleCopyMarkdown} className="gap-1 text-xs">
-                  {copied ? <CheckCircle className="h-4 w-4 text-emerald-500" weight="bold" /> : <Copy className="h-4 w-4" weight="bold" />}
-                  {copied ? "Copied!" : "Copy MD"}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyMarkdown}
+                  className="h-7 px-2.5 text-xs gap-1"
+                >
+                  {copied ? (
+                    <CheckCircleIcon
+                      className="h-3.5 w-3.5 text-[#00876c]"
+                      weight="bold"
+                    />
+                  ) : (
+                    <CopyIcon className="h-3.5 w-3.5" weight="bold" />
+                  )}
+                  {copied ? "Copied" : "Copy MD"}
                 </Button>
 
                 <Button
@@ -353,135 +403,158 @@ export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Pr
                   size="sm"
                   disabled={isSaving}
                   onClick={() => handleSaveRelease("PUBLISHED")}
-                  className="gap-1 text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+                  className="h-7 px-3 text-xs gap-1.5 font-medium"
                 >
-                  <FloppyDisk className="h-4 w-4" weight="bold" />
+                  <FloppyDiskIcon className="h-3.5 w-3.5" weight="bold" />
                   {isSaving ? "Saving..." : "Save & Publish"}
                 </Button>
               </div>
             )}
           </CardHeader>
 
-          {/* Success Banner if Saved or Loaded */}
+          {/* Success Banner */}
           {saveResult && (
-            <div className="mx-6 mt-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-2 text-xs">
-              <span className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300 font-medium">
-                <CheckCircle className="h-4 w-4 shrink-0 text-emerald-500" weight="bold" />
-                Release {saveResult.version} is live on public changelog!
+            <div className="mx-5 mt-4 p-3 rounded-[4px] bg-[#00876c]/8 border border-[#00876c]/25 flex items-center justify-between gap-2 text-xs">
+              <span className="flex items-center gap-1.5 text-[#00876c] font-medium">
+                <CheckCircleIcon
+                  className="h-3.5 w-3.5 shrink-0"
+                  weight="bold"
+                />
+                Release {saveResult.version} is live on changelog!
               </span>
               <Link href={saveResult.publicUrl} target="_blank">
-                <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
-                  <Globe className="h-3.5 w-3.5" weight="bold" />
-                  View Public URL
-                  <ArrowUpRight className="h-3 w-3" weight="bold" />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 text-xs gap-1 border-[#00876c]/30 text-[#00876c]"
+                >
+                  <GlobeIcon className="h-3 w-3" weight="bold" />
+                  View
+                  <ArrowUpRightIcon className="h-3 w-3" weight="bold" />
                 </Button>
               </Link>
             </div>
           )}
 
-          <CardContent className="p-6 space-y-5">
-            
-            {/* Multi-Audience View Tabs */}
-            <div className="flex items-center gap-2 p-1 bg-muted rounded-xl border border-border/60">
+          <CardContent className="p-5 space-y-4">
+            {/* Persona Segment Tabs */}
+            <div className="flex items-center gap-1 p-0.5 bg-[#f5f5f5] dark:bg-[#111111] rounded-[4px] border border-[#ebebeb] dark:border-[#222222] max-w-sm">
               <button
                 onClick={() => setActiveTab("user")}
-                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                className={`flex-1 py-1 px-2.5 rounded-[3px] text-xs font-medium flex items-center justify-center gap-1.5 transition-all ${
                   activeTab === "user"
-                    ? "bg-card text-emerald-600 dark:text-emerald-400 shadow-sm border border-border/60"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-white dark:bg-[#1f1f1f] text-[#00876c] shadow-[0_1px_2px_rgba(0,0,0,0.05)] border border-[#ebebeb] dark:border-[#262626]"
+                    : "text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white"
                 }`}
               >
-                <User className="h-4 w-4" weight="bold" /> Customer View
+                <UserIcon className="h-3 w-3" weight="bold" /> Customer
               </button>
               <button
                 onClick={() => setActiveTab("exec")}
-                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                className={`flex-1 py-1 px-2.5 rounded-[3px] text-xs font-medium flex items-center justify-center gap-1.5 transition-all ${
                   activeTab === "exec"
-                    ? "bg-card text-amber-600 dark:text-amber-400 shadow-sm border border-border/60"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-white dark:bg-[#1f1f1f] text-[#bd5200] shadow-[0_1px_2px_rgba(0,0,0,0.05)] border border-[#ebebeb] dark:border-[#262626]"
+                    : "text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white"
                 }`}
               >
-                <Briefcase className="h-4 w-4" weight="bold" /> Executive View
+                <BriefcaseIcon className="h-3 w-3" weight="bold" /> Executive
               </button>
               <button
                 onClick={() => setActiveTab("dev")}
-                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                className={`flex-1 py-1 px-2.5 rounded-[3px] text-xs font-medium flex items-center justify-center gap-1.5 transition-all ${
                   activeTab === "dev"
-                    ? "bg-card text-indigo-600 dark:text-indigo-400 shadow-sm border border-border/60"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-white dark:bg-[#1f1f1f] text-[#0070f3] shadow-[0_1px_2px_rgba(0,0,0,0.05)] border border-[#ebebeb] dark:border-[#262626]"
+                    : "text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white"
                 }`}
               >
-                <Code className="h-4 w-4" weight="bold" /> Engineering View
+                <CodeIcon className="h-3 w-3" weight="bold" /> Developer
               </button>
             </div>
 
-            {/* TAB CONTENT: Customer View */}
+            {/* TAB CONTENT: Customer */}
             {activeTab === "user" && (
               <div className="space-y-4">
-                <div>
-                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                    New Features & Enhancements
+                <div className="space-y-2">
+                  <h4 className="text-xs font-medium text-[#666666] dark:text-[#888888] uppercase tracking-wider">
+                    Feature Highlights
                   </h4>
                   {displayHighlights.length > 0 ? (
-                    <ul className="space-y-2">
+                    <div className="space-y-1.5">
                       {displayHighlights.map((h: any, i: number) => (
-                        <li key={i} className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20 text-xs leading-relaxed">
-                          <strong className="text-foreground font-semibold">{h?.feature}:</strong>{" "}
-                          <span className="text-muted-foreground">{h?.benefit}</span>
-                        </li>
+                        <div
+                          key={i}
+                          className="p-2.5 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222] text-xs leading-relaxed"
+                        >
+                          <strong className="text-[#171717] dark:text-[#ededed] font-medium">
+                            {h?.feature}:
+                          </strong>{" "}
+                          <span className="text-[#666666] dark:text-[#888888]">
+                            {h?.benefit}
+                          </span>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   ) : (
-                    <p className="text-xs text-muted-foreground italic">Awaiting feature highlights stream...</p>
+                    <p className="text-xs text-[#8f8f8f] italic">
+                      Awaiting feature stream...
+                    </p>
                   )}
                 </div>
 
-                <div>
-                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                    Resolved Customer Issues
-                  </h4>
-                  {displayFixes.length > 0 ? (
-                    <ul className="list-disc pl-4 text-xs text-muted-foreground space-y-1">
+                {displayFixes.length > 0 && (
+                  <div className="space-y-1.5">
+                    <h4 className="text-xs font-medium text-[#666666] dark:text-[#888888] uppercase tracking-wider">
+                      Bug Fixes
+                    </h4>
+                    <ul className="list-disc pl-4 text-xs text-[#666666] dark:text-[#888888] space-y-1">
                       {displayFixes.map((f: any, i: number) => (
                         <li key={i}>{f}</li>
                       ))}
                     </ul>
-                  ) : (
-                    <p className="text-xs text-muted-foreground italic">No bug fixes reported yet.</p>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             )}
 
-            {/* TAB CONTENT: Executive View */}
+            {/* TAB CONTENT: Executive */}
             {activeTab === "exec" && (
-              <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-2">
-                  <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <Briefcase className="h-4 w-4" weight="bold" /> Executive Summary
+              <div className="space-y-3">
+                <div className="p-3 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222] space-y-2">
+                  <span className="text-xs font-medium text-[#bd5200] flex items-center gap-1.5">
+                    <BriefcaseIcon className="h-3.5 w-3.5" weight="bold" />
+                    Strategic Summary
                   </span>
-                  <p className="text-sm font-medium text-foreground leading-relaxed">
-                    {displayExecSummary || "Generating strategic summary for leadership..."}
+                  <p className="text-xs text-[#171717] dark:text-[#ededed] leading-relaxed">
+                    {displayExecSummary ||
+                      "Generating strategic summary for leadership..."}
                   </p>
                 </div>
-                <AudienceMeter execPercent={30} userPercent={50} devPercent={20} />
+                <AudienceMeter
+                  execPercent={30}
+                  userPercent={50}
+                  devPercent={20}
+                />
               </div>
             )}
 
-            {/* TAB CONTENT: Developer View */}
+            {/* TAB CONTENT: Developer */}
             {activeTab === "dev" && (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {displayBreaking.length > 0 && (
-                  <div className="p-3.5 rounded-xl bg-destructive/10 border border-destructive/20 space-y-2">
-                    <span className="text-xs font-bold text-destructive uppercase tracking-wider flex items-center gap-1.5">
-                      <ShieldWarning className="h-4 w-4" weight="bold" /> Breaking Changes Detected
+                  <div className="p-2.5 rounded-[4px] bg-[#ee0000]/5 border border-[#ee0000]/20 space-y-1.5">
+                    <span className="text-xs font-medium text-[#ee0000] flex items-center gap-1">
+                      <ShieldWarningIcon
+                        className="h-3.5 w-3.5"
+                        weight="bold"
+                      />
+                      Breaking Changes
                     </span>
                     {displayBreaking.map((b: any, i: number) => (
                       <div key={i} className="text-xs space-y-1">
-                        <code className="bg-background/80 px-1.5 py-0.5 rounded text-destructive font-mono font-semibold">
+                        <code className="bg-white dark:bg-black px-1.5 py-0.5 rounded text-[#ee0000] font-mono text-[11px] border border-[#ee0000]/20">
                           {b?.target}
                         </code>
-                        <p className="text-muted-foreground pl-2 border-l-2 border-destructive/40">
+                        <p className="text-[#666666] dark:text-[#888888] pl-1">
                           {b?.migrationStep}
                         </p>
                       </div>
@@ -489,31 +562,36 @@ export function GeneratorStudio({ projectId = "demo", projectName = "StampLog Pr
                   </div>
                 )}
 
-                <div>
-                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                    Technical & Infrastructure Scopes
-                  </h4>
-                  {displayTech.length > 0 ? (
-                    <div className="space-y-2">
+                {displayTech.length > 0 && (
+                  <div className="space-y-1.5">
+                    <h4 className="text-xs font-medium text-[#666666] dark:text-[#888888] uppercase tracking-wider">
+                      Technical Scopes
+                    </h4>
+                    <div className="space-y-1.5">
                       {displayTech.map((u: any, i: number) => (
-                        <div key={i} className="p-2.5 rounded-lg bg-muted/40 border border-border/60 flex items-start gap-2 text-xs">
-                          <Badge variant="dev" className="font-mono text-[10px] shrink-0">
+                        <div
+                          key={i}
+                          className="p-2 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222] flex items-start gap-2 text-xs"
+                        >
+                          <Badge
+                            variant="dev"
+                            className="font-mono text-[10px] shrink-0"
+                          >
                             {u?.scope}
                           </Badge>
-                          <span className="text-muted-foreground">{u?.detail}</span>
+                          <span className="text-[#666666] dark:text-[#888888]">
+                            {u?.detail}
+                          </span>
                         </div>
                       ))}
                     </div>
-                  ) : (
-                    <p className="text-xs text-muted-foreground italic">Awaiting technical updates stream...</p>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
         </Card>
       </div>
-
     </div>
   );
 }

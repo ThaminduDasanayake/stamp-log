@@ -44,7 +44,6 @@ export default function VercelStyleImportPage() {
   const [defaultBranch, setDefaultBranch] = useState("main");
   const [isDeploying, setIsDeploying] = useState(false);
 
-  // 1. Fetch current logged-in user profile on mount
   useEffect(() => {
     fetch("/api/auth/me")
       .then((res) => res.json())
@@ -80,10 +79,10 @@ export default function VercelStyleImportPage() {
     }
   };
 
-  // Filter repos by search query
-  const filteredRepos = repos.filter((r) =>
-    r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    r.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredRepos = repos.filter(
+    (r) =>
+      r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      r.fullName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleStartImport = (repo: RepoItem) => {
@@ -110,7 +109,6 @@ export default function VercelStyleImportPage() {
 
       const data = await res.json();
       if (data.success) {
-        // Redirect to Studio App Workspace
         router.push("/app");
       }
     } catch (err) {
@@ -121,119 +119,134 @@ export default function VercelStyleImportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-indigo-500/20 selection:text-indigo-600">
-      
-      {/* Top StampLog Header */}
-      <header className="border-b border-border bg-card/60 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
-        <div className="max-w-[1000px] mx-auto flex items-center justify-between">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#000000] text-[#171717] dark:text-[#ededed] flex flex-col font-sans selection:bg-[#171717] selection:text-white dark:selection:bg-white dark:selection:text-[#171717]">
+      {/* Vercel Header */}
+      <header className="border-b border-[#ebebeb] dark:border-[#1f1f1f] bg-white/90 dark:bg-black/90 backdrop-blur-md sticky top-0 z-50 px-6 h-14 flex items-center justify-between">
+        <div className="max-w-[1000px] w-full mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/app" className="hover:opacity-80 transition-opacity">
-              <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-md shadow-indigo-500/20">
-                <BroadcastIcon className="h-5 w-5" weight="bold" />
+            <Link
+              href="/app"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            >
+              <div className="h-6 w-6 bg-[#171717] dark:bg-white flex items-center justify-center rounded-[3px]">
+                <svg
+                  className="h-3.5 w-3.5 fill-white dark:fill-black"
+                  viewBox="0 0 76 65"
+                  aria-hidden="true"
+                >
+                  <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
+                </svg>
               </div>
+              <span className="font-semibold text-sm tracking-tight">
+                stamplog
+              </span>
             </Link>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground">
-                Import Git Repository
-              </h1>
-              <p className="text-xs text-muted-foreground">Vercel-Style Project Import Wizard</p>
-            </div>
+
+            <span className="text-[#8f8f8f] text-sm">/</span>
+            <span className="text-xs text-[#8f8f8f]">Import Git Repository</span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Link href="/app">
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-                <ArrowLeftIcon className="h-4 w-4" weight="bold" /> Back to Studio App
-              </Button>
-            </Link>
-          </div>
+          <Link href="/app">
+            <Button variant="ghost" size="sm" className="h-8 px-2.5 text-xs gap-1.5">
+              <ArrowLeftIcon className="h-3.5 w-3.5" weight="bold" /> Back
+            </Button>
+          </Link>
         </div>
       </header>
 
-      {/* Main Content Container */}
+      {/* Main Content */}
       <main className="flex-1 max-w-[900px] w-full mx-auto p-4 sm:p-8 space-y-6">
-        
-        {/* Step 1: Repository Picker (Vercel Style) */}
         {!selectedRepo ? (
-          <div className="space-y-5">
-            
-            {/* Top Control Bar: Account Selector & Live Search Filter */}
+          <div className="space-y-4">
+            <div>
+              <h1 className="text-2xl font-medium tracking-tight text-[#171717] dark:text-white">
+                Import Git Repository
+              </h1>
+              <p className="text-xs text-[#666666] dark:text-[#888888] mt-1">
+                Select a GitHub repository to configure automated release synthesis.
+              </p>
+            </div>
+
+            {/* Filter Bar */}
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-              
-              {/* Account Selector Pill */}
               <div className="sm:col-span-5 relative flex items-center">
-                <GithubLogoIcon className="h-4 w-4 absolute left-3.5 text-primary pointer-events-none" weight="bold" />
+                <GithubLogoIcon
+                  className="h-4 w-4 absolute left-3 text-[#171717] dark:text-white pointer-events-none"
+                  weight="bold"
+                />
                 <select
                   value={username}
                   onChange={(e) => {
                     setUsername(e.target.value);
                     fetchReposForUsername(e.target.value);
                   }}
-                  className="w-full h-10 pl-10 pr-8 text-xs font-bold rounded-xl border border-border bg-card text-foreground appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                  className="w-full h-9 pl-9 pr-8 text-xs font-medium rounded-[4px] border border-[#ebebeb] dark:border-[#262626] bg-white dark:bg-[#111111] text-[#171717] dark:text-[#ededed] appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
                 >
                   <option value={username}>GitHub / @{username}</option>
                   <option value="facebook">GitHub / @facebook</option>
                   <option value="vercel">GitHub / @vercel</option>
                 </select>
-                <CaretDownIcon className="h-3.5 w-3.5 absolute right-3 pointer-events-none text-muted-foreground" weight="bold" />
+                <CaretDownIcon
+                  className="h-3 w-3 absolute right-2.5 pointer-events-none text-[#8f8f8f]"
+                  weight="bold"
+                />
               </div>
 
-              {/* Search Filter Input */}
               <div className="sm:col-span-7 relative flex items-center">
-                <MagnifyingGlassIcon className="h-4 w-4 absolute left-3.5 text-muted-foreground pointer-events-none" weight="bold" />
+                <MagnifyingGlassIcon
+                  className="h-4 w-4 absolute left-3 text-[#8f8f8f] pointer-events-none"
+                  weight="bold"
+                />
                 <input
                   type="text"
                   placeholder="Search repositories..."
-                  className="w-full h-10 pl-10 pr-3 text-xs font-mono rounded-xl border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                  className="w-full h-9 pl-9 pr-3 text-xs font-mono rounded-[4px] border border-[#ebebeb] dark:border-[#262626] bg-white dark:bg-[#111111] text-[#171717] dark:text-[#ededed] focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-
             </div>
 
-            {/* Vercel-Style Dark Repository List Container */}
-            <Card className="shadow-lg border-border bg-card overflow-hidden">
-              <CardHeader className="py-3 px-5 border-b border-border/60 bg-muted/30 flex flex-row items-center justify-between">
-                <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                  <GithubLogoIcon className="h-4 w-4 text-primary" weight="bold" />
-                  GitHub Repositories ({filteredRepos.length})
+            {/* Repository List */}
+            <Card className="overflow-hidden">
+              <CardHeader className="py-2.5 px-4 border-b border-[#ebebeb] dark:border-[#1f1f1f] bg-[#fafafa] dark:bg-[#111111] flex flex-row items-center justify-between">
+                <CardTitle className="text-xs font-medium uppercase tracking-wider text-[#666666] dark:text-[#888888]">
+                  Repositories ({filteredRepos.length})
                 </CardTitle>
-                <Badge variant="outline" className="font-mono text-[10px]">
-                  Connected Account: @{username}
-                </Badge>
+                <span className="font-mono text-[11px] text-[#8f8f8f]">
+                  @{username}
+                </span>
               </CardHeader>
 
-              <CardContent className="p-0 divide-y divide-border/60">
+              <CardContent className="p-0 divide-y divide-[#ebebeb] dark:divide-[#1f1f1f]">
                 {isLoadingRepos ? (
-                  <div className="p-12 text-center text-xs text-muted-foreground space-y-2">
-                    <SparkleIcon className="h-6 w-6 animate-spin text-primary mx-auto" weight="bold" />
+                  <div className="p-12 text-center text-xs text-[#8f8f8f] space-y-2">
+                    <div className="h-4 w-4 border-2 border-[#171717] dark:border-white border-t-transparent rounded-full animate-spin mx-auto" />
                     <p>Loading repositories from GitHub API...</p>
                   </div>
                 ) : filteredRepos.length > 0 ? (
                   filteredRepos.map((repo) => (
                     <div
                       key={repo.id}
-                      className="p-4 sm:px-6 flex items-center justify-between gap-4 hover:bg-muted/40 transition-colors group"
+                      className="p-3.5 px-4 sm:px-5 flex items-center justify-between gap-4 hover:bg-[#fafafa] dark:hover:bg-[#111111] transition-colors"
                     >
                       <div className="flex items-center gap-3 overflow-hidden">
-                        {/* StampLog Styled Repo Icon */}
-                        <div className="h-9 w-9 rounded-xl bg-accent/60 border border-border flex items-center justify-center text-primary shrink-0">
-                          <FolderSimpleIcon className="h-5 w-5" weight="bold" />
-                        </div>
-
+                        <FolderSimpleIcon className="h-4 w-4 text-[#8f8f8f] shrink-0" weight="bold" />
                         <div className="space-y-0.5 overflow-hidden">
                           <div className="flex items-center gap-2">
-                            <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors truncate">
+                            <h3 className="text-xs font-medium text-[#171717] dark:text-[#ededed] truncate">
                               {repo.name}
                             </h3>
                             {repo.isPrivate && (
-                              <Badge variant="outline" className="text-[10px] font-mono shrink-0">
+                              <Badge
+                                variant="outline"
+                                className="text-[10px] font-mono py-0 px-1"
+                              >
                                 Private
                               </Badge>
                             )}
                           </div>
-                          <p className="text-[11px] font-mono text-muted-foreground truncate flex items-center gap-2">
+                          <p className="text-[11px] font-mono text-[#8f8f8f] truncate flex items-center gap-2">
                             <span>{repo.fullName}</span>
                             <span>•</span>
                             <span className="flex items-center gap-1">
@@ -244,86 +257,76 @@ export default function VercelStyleImportPage() {
                         </div>
                       </div>
 
-                      {/* Vercel-Style Import Button */}
                       <Button
                         size="sm"
+                        variant="default"
                         onClick={() => handleStartImport(repo)}
-                        className="h-8 px-4 text-xs font-bold shadow-md shadow-indigo-500/20 shrink-0"
+                        className="h-7 px-3 text-xs font-medium shrink-0"
                       >
                         Import
                       </Button>
                     </div>
                   ))
                 ) : (
-                  <div className="p-8 text-center text-xs text-muted-foreground space-y-2">
-                    <p>No repositories found matching &quot;{searchQuery}&quot;.</p>
+                  <div className="p-8 text-center text-xs text-[#8f8f8f]">
+                    No repositories found matching &quot;{searchQuery}&quot;.
                   </div>
                 )}
               </CardContent>
             </Card>
-
           </div>
         ) : (
-          /* Step 2: Configure & Deploy Project Card (Vercel Style) */
-          <div className="space-y-6">
-            <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
-              New Project
-            </h2>
+          /* Step 2: Configure & Deploy */
+          <div className="space-y-5">
+            <div>
+              <h1 className="text-2xl font-medium tracking-tight text-[#171717] dark:text-white">
+                New Project
+              </h1>
+              <p className="text-xs text-[#666666] dark:text-[#888888] mt-1">
+                Configure your repository workspace settings.
+              </p>
+            </div>
 
-            <Card className="shadow-lg border-border bg-card overflow-hidden">
-              
-              {/* "Importing from GitHub" Banner */}
-              <div className="p-4 sm:px-6 bg-muted/30 border-b border-border/60">
-                <p className="text-xs text-muted-foreground mb-2">Importing from GitHub</p>
-                <div className="flex items-center gap-3 text-sm font-mono text-foreground">
-                  <GithubLogoIcon className="h-5 w-5 text-foreground" weight="fill" />
+            <Card className="overflow-hidden">
+              <div className="p-4 px-5 bg-[#fafafa] dark:bg-[#111111] border-b border-[#ebebeb] dark:border-[#1f1f1f]">
+                <p className="text-[11px] text-[#8f8f8f] uppercase font-mono mb-1.5">
+                  Importing from GitHub
+                </p>
+                <div className="flex items-center gap-2 text-xs font-mono text-[#171717] dark:text-white">
+                  <GithubLogoIcon className="h-4 w-4" weight="fill" />
                   <span className="font-semibold">{selectedRepo.fullName}</span>
-                  <div className="flex items-center gap-1.5 text-muted-foreground ml-1">
-                    <GitBranchIcon className="h-3.5 w-3.5" weight="bold" />
-                    <span>{defaultBranch}</span>
-                  </div>
+                  <span className="text-[#8f8f8f] flex items-center gap-1 ml-1">
+                    <GitBranchIcon className="h-3 w-3" weight="bold" />
+                    {defaultBranch}
+                  </span>
                 </div>
               </div>
 
-              {/* Form Content */}
-              <CardContent className="p-4 sm:p-6 space-y-6">
-                
-                <p className="text-sm text-foreground">
-                  Choose where you want to create the project and give it a name.
-                </p>
-
-                {/* Team & Project Name Row */}
+              <CardContent className="p-5 sm:p-6 space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-end relative">
-                  
-                  {/* Decorative Slash between cols (hidden on mobile) */}
-                  <div className="hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-2 text-2xl font-light text-muted-foreground/30 pointer-events-none">
+                  <div className="hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-1 text-2xl font-light text-[#8f8f8f]/40 pointer-events-none">
                     /
                   </div>
 
-                  {/* Left: Connected Account (Read-only Team equivalent) */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground">
-                      Connected Account
+                    <label className="text-xs font-medium text-[#666666] dark:text-[#888888]">
+                      Account
                     </label>
-                    <div className="w-full h-10 px-3 flex items-center justify-between rounded-md border border-border/60 bg-muted/40 text-foreground cursor-not-allowed">
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
-                          <div className="h-2 w-2 rounded-full bg-emerald-500" />
-                        </div>
-                        <span className="text-xs font-semibold">@{username}</span>
-                      </div>
-                      <Badge variant="outline" className="text-[10px] opacity-80 border-border/60 bg-background">Owner</Badge>
+                    <div className="w-full h-9 px-3 flex items-center justify-between rounded-[4px] border border-[#ebebeb] dark:border-[#262626] bg-[#fafafa] dark:bg-[#111111] text-xs font-medium text-[#171717] dark:text-[#ededed]">
+                      <span>@{username}</span>
+                      <Badge variant="outline" className="text-[10px] py-0">
+                        Owner
+                      </Badge>
                     </div>
                   </div>
 
-                  {/* Right: Project Name Input */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground">
+                    <label className="text-xs font-medium text-[#666666] dark:text-[#888888]">
                       Project Name
                     </label>
                     <input
                       type="text"
-                      className="w-full h-10 px-3.5 text-xs font-mono font-medium rounded-md border border-border/60 bg-background text-foreground focus:outline-none focus:border-primary transition-colors"
+                      className="w-full h-9 px-3 text-xs font-mono font-medium rounded-[4px] border border-[#ebebeb] dark:border-[#262626] bg-white dark:bg-[#0a0a0a] text-[#171717] dark:text-[#ededed] focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
                       value={projectName}
                       onChange={(e) => setProjectName(e.target.value)}
                     />
@@ -334,34 +337,27 @@ export default function VercelStyleImportPage() {
                   <Button
                     onClick={handleDeployProject}
                     disabled={isDeploying || !projectName.trim()}
-                    className="w-full h-11 text-sm font-semibold shadow-sm bg-foreground hover:bg-foreground/90 text-background rounded-md transition-all"
+                    className="w-full h-10 text-xs font-medium"
                   >
-                    {isDeploying ? (
-                      <SparkleIcon className="h-4 w-4 animate-spin mr-2" weight="bold" />
-                    ) : null}
-                    {isDeploying ? "Deploying..." : "Deploy"}
+                    {isDeploying ? "Importing Project..." : "Deploy Workspace"}
                   </Button>
                 </div>
-                
               </CardContent>
             </Card>
 
-            <div className="text-center pt-2">
+            <div className="text-center">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSelectedRepo(null)}
-                className="text-xs text-muted-foreground hover:text-foreground"
+                className="text-xs text-[#666666] hover:text-[#171717] dark:text-[#888888] dark:hover:text-white"
               >
                 Cancel and pick another repository
               </Button>
             </div>
-
           </div>
         )}
-
       </main>
-
     </div>
   );
 }
