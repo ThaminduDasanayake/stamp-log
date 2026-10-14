@@ -3,23 +3,21 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  BroadcastIcon,
-  CheckCircleIcon,
-  BriefcaseIcon,
-  UserIcon,
-  CodeIcon,
-  ShieldWarningIcon,
   ArrowLeftIcon,
-  FloppyDiskIcon,
-  PlusIcon,
-  TrashIcon,
-  GlobeIcon,
   ArrowUpRightIcon,
+  BriefcaseIcon,
+  CheckCircleIcon,
+  CodeIcon,
+  FloppyDiskIcon,
+  GlobeIcon,
+  PlusIcon,
   SparkleIcon,
+  TrashIcon,
+  UserIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ReleaseEditorProps {
   release: {

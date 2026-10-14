@@ -21,7 +21,9 @@ export interface GitHubRepoItem {
   updated_at: string;
 }
 
-export function parseGitHubRepoUrl(input: string): { owner: string; repo: string } | null {
+export function parseGitHubRepoUrl(
+  input: string,
+): { owner: string; repo: string } | null {
   if (!input) return null;
   const clean = input.trim().replace(/\/$/, "");
 
@@ -63,7 +65,8 @@ export async function fetchGitHubCommits({
   branch?: string;
   perPage?: number;
 }) {
-  const rawToken = sanitizeToken(token) || sanitizeToken(process.env.GITHUB_TOKEN);
+  const rawToken =
+    sanitizeToken(token) || sanitizeToken(process.env.GITHUB_TOKEN);
   const headers: Record<string, string> = {
     Accept: "application/vnd.github.v3+json",
     "User-Agent": "StampLog-App",
@@ -75,7 +78,9 @@ export async function fetchGitHubCommits({
 
   const safeOwner = encodeURIComponent(owner);
   const safeRepo = encodeURIComponent(repo);
-  const branchParam = branch ? `?sha=${encodeURIComponent(branch)}&per_page=${perPage}` : `?per_page=${perPage}`;
+  const branchParam = branch
+    ? `?sha=${encodeURIComponent(branch)}&per_page=${perPage}`
+    : `?per_page=${perPage}`;
   const url = `https://api.github.com/repos/${safeOwner}/${safeRepo}/commits${branchParam}`;
 
   const res = await fetch(url, { headers, cache: "no-store" });
@@ -108,7 +113,8 @@ export async function fetchUserGitHubRepos({
   username?: string;
   token?: string;
 }) {
-  const rawToken = sanitizeToken(token) || sanitizeToken(process.env.GITHUB_TOKEN);
+  const rawToken =
+    sanitizeToken(token) || sanitizeToken(process.env.GITHUB_TOKEN);
   const headers: Record<string, string> = {
     Accept: "application/vnd.github.v3+json",
     "User-Agent": "StampLog-App",

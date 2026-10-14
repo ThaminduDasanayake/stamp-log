@@ -1,25 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useObject } from "@ai-sdk/react";
 import { ChangelogSchema } from "@/lib/schemas/changelog";
 import {
-  BroadcastIcon,
-  SparkleIcon,
-  GithubLogoIcon,
-  BriefcaseIcon,
-  UserIcon,
-  CodeIcon,
-  CheckCircleIcon,
-  ShieldWarningIcon,
-  FloppyDiskIcon,
-  XIcon,
   ArrowClockwiseIcon,
+  BriefcaseIcon,
+  CheckCircleIcon,
+  CodeIcon,
+  FloppyDiskIcon,
   GitCommitIcon,
+  GithubLogoIcon,
+  ShieldWarningIcon,
+  SparkleIcon,
+  UserIcon,
+  XIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AudienceMeter } from "@/components/ui/audience-meter";
 
 interface GenerateReleaseModalProps {
@@ -412,8 +411,14 @@ export function GenerateReleaseModal({
                       </div>
                     ) : (
                       <div className="p-2.5 rounded-[4px] bg-[#00876c]/5 border border-[#00876c]/20 flex items-center gap-2 text-xs text-[#00876c]">
-                        <CheckCircleIcon className="h-3.5 w-3.5" weight="fill" />
-                        <span>No breaking API or contract changes detected in this release.</span>
+                        <CheckCircleIcon
+                          className="h-3.5 w-3.5"
+                          weight="fill"
+                        />
+                        <span>
+                          No breaking API or contract changes detected in this
+                          release.
+                        </span>
                       </div>
                     )}
 

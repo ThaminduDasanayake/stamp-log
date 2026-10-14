@@ -3,21 +3,19 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import {
-  BroadcastIcon,
-  CheckCircleIcon,
-  BriefcaseIcon,
-  UserIcon,
-  CodeIcon,
-  ShieldWarningIcon,
   ArrowLeftIcon,
+  BriefcaseIcon,
+  CheckCircleIcon,
   ClockIcon,
-  GitCommitIcon,
-  TagIcon,
+  CodeIcon,
   PencilIcon,
+  ShieldWarningIcon,
+  TagIcon,
+  UserIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AudienceMeter } from "@/components/ui/audience-meter";
 
 interface PageProps {
@@ -226,10 +224,16 @@ export default async function PublicReleasePage({ params }: PageProps) {
           {userHighlights.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {userHighlights.map((h, idx) => (
-                <Card key={idx} className="hover:border-[#8f8f8f] transition-all">
+                <Card
+                  key={idx}
+                  className="hover:border-[#8f8f8f] transition-all"
+                >
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xs font-medium text-[#171717] dark:text-[#ededed] flex items-center gap-1.5">
-                      <TagIcon className="h-3.5 w-3.5 text-[#00876c]" weight="bold" />
+                      <TagIcon
+                        className="h-3.5 w-3.5 text-[#00876c]"
+                        weight="bold"
+                      />
                       {h?.feature || "Feature"}
                     </CardTitle>
                   </CardHeader>

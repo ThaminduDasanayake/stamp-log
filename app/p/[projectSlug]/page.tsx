@@ -1,20 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import {
-  BroadcastIcon,
-  CheckCircleIcon,
-  TagIcon,
-  ClockIcon,
   ArrowRightIcon,
-  SparkleIcon,
-  GlobeIcon,
+  CheckCircleIcon,
+  ClockIcon,
   RssIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PageProps {
   params: Promise<{

@@ -45,7 +45,8 @@ export async function POST(req: Request) {
     });
 
     const latestRelease = project.releaseNotes[0];
-    const lastShippedAt = latestRelease?.publishedAt || latestRelease?.createdAt;
+    const lastShippedAt =
+      latestRelease?.publishedAt || latestRelease?.createdAt;
 
     // Check if commits exist
     const hasNewChanges = commitCount > 0;
@@ -69,8 +70,13 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("Error checking GitHub updates:", error);
     return Response.json(
-      { hasNewChanges: false, newCommitCount: 0, rawCommits: "", recentCommits: [] },
-      { status: 500 }
+      {
+        hasNewChanges: false,
+        newCommitCount: 0,
+        rawCommits: "",
+        recentCommits: [],
+      },
+      { status: 500 },
     );
   }
 }

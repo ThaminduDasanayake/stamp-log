@@ -21,7 +21,10 @@ export async function POST(req: Request) {
     } = body;
 
     if (!releaseId) {
-      return Response.json({ success: false, error: "Missing releaseId parameter" }, { status: 400 });
+      return Response.json(
+        { success: false, error: "Missing releaseId parameter" },
+        { status: 400 },
+      );
     }
 
     // 1. Fetch existing ReleaseNote
@@ -31,7 +34,10 @@ export async function POST(req: Request) {
     });
 
     if (!existing) {
-      return Response.json({ success: false, error: "Release note not found" }, { status: 404 });
+      return Response.json(
+        { success: false, error: "Release note not found" },
+        { status: 404 },
+      );
     }
 
     // 2. Compute updated vector embedding (text-embedding-004)
@@ -53,14 +59,23 @@ export async function POST(req: Request) {
       .set({
         version: version || existing.version,
         title: title || existing.title,
-        executiveSummary: executiveSummary !== undefined ? executiveSummary : existing.executiveSummary,
+        executiveSummary:
+          executiveSummary !== undefined
+            ? executiveSummary
+            : existing.executiveSummary,
         userHighlights: userHighlights || existing.userHighlights,
         userFixes: userFixes || existing.userFixes,
         breakingChanges: breakingChanges || existing.breakingChanges,
         technicalUpdates: technicalUpdates || existing.technicalUpdates,
         status: status ? status : existing.status,
-        publishedAt: status === "PUBLISHED" && !existing.publishedAt ? new Date() : existing.publishedAt,
-        embedding: embeddingVector && embeddingVector.length === 768 ? embeddingVector : existing.embedding,
+        publishedAt:
+          status === "PUBLISHED" && !existing.publishedAt
+            ? new Date()
+            : existing.publishedAt,
+        embedding:
+          embeddingVector && embeddingVector.length === 768
+            ? embeddingVector
+            : existing.embedding,
         updatedAt: new Date(),
       })
       .where(eq(releaseNotes.id, releaseId))
@@ -78,6 +93,9 @@ export async function POST(req: Request) {
     });
   } catch (error: any) {
     console.error("Error updating release note:", error);
-    return Response.json({ success: false, error: error?.message || "Internal Server Error" }, { status: 500 });
+    return Response.json(
+      { success: false, error: error?.message || "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

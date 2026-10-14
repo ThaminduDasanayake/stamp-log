@@ -3,18 +3,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import {
-  BroadcastIcon,
-  LightningIcon,
-  CheckCircleIcon,
-  ShieldWarningIcon,
   ArrowLeftIcon,
-  ClockIcon,
   ChartBarIcon,
+  CheckCircleIcon,
+  LightningIcon,
+  ShieldWarningIcon,
   UserIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PageProps {
   params: Promise<{
@@ -147,7 +145,10 @@ export default async function ProjectAnalyticsPage({ params }: PageProps) {
             <CardHeader className="pb-2">
               <CardTitle className="text-xs font-medium uppercase tracking-wider text-[#666666] dark:text-[#888888] flex items-center justify-between">
                 <span>Velocity</span>
-                <LightningIcon className="h-3.5 w-3.5 text-[#0070f3]" weight="bold" />
+                <LightningIcon
+                  className="h-3.5 w-3.5 text-[#0070f3]"
+                  weight="bold"
+                />
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -190,13 +191,18 @@ export default async function ProjectAnalyticsPage({ params }: PageProps) {
             <CardHeader className="pb-2">
               <CardTitle className="text-xs font-medium uppercase tracking-wider text-[#666666] dark:text-[#888888] flex items-center justify-between">
                 <span>Features</span>
-                <UserIcon className="h-3.5 w-3.5 text-[#bd5200]" weight="bold" />
+                <UserIcon
+                  className="h-3.5 w-3.5 text-[#bd5200]"
+                  weight="bold"
+                />
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-mono text-[#171717] dark:text-[#ededed]">
                 {totalFeatures}{" "}
-                <span className="text-xs font-normal text-[#8f8f8f]">items</span>
+                <span className="text-xs font-normal text-[#8f8f8f]">
+                  items
+                </span>
               </div>
               <p className="text-[11px] text-[#8f8f8f] mt-1">
                 Customer highlights shipped

@@ -1,25 +1,19 @@
 import Link from "next/link";
 import {
-  BroadcastIcon,
-  SparkleIcon,
-  PaletteIcon,
-  GithubLogoIcon,
-  LockIcon,
   ArrowRightIcon,
-  CheckCircleIcon,
   BriefcaseIcon,
-  UserIcon,
+  BroadcastIcon,
   CodeIcon,
-  ShieldWarningIcon,
+  GitCommitIcon,
+  GithubLogoIcon,
   GlobeIcon,
   LightningIcon,
-  GitBranchIcon,
-  GitCommitIcon,
   TerminalIcon,
+  UserIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function LandingPage() {
   return (
@@ -180,7 +174,10 @@ export default function LandingPage() {
             <div className="lg:col-span-5 p-5 bg-[#fafafa] dark:bg-[#080808] font-mono text-xs space-y-3">
               <div className="flex items-center justify-between text-[11px] text-[#8f8f8f] uppercase font-sans font-medium tracking-wider pb-2 border-b border-[#ebebeb] dark:border-[#1f1f1f]">
                 <span className="flex items-center gap-1.5">
-                  <GitCommitIcon className="h-3.5 w-3.5 text-[#171717] dark:text-white" weight="bold" />
+                  <GitCommitIcon
+                    className="h-3.5 w-3.5 text-[#171717] dark:text-white"
+                    weight="bold"
+                  />
                   Raw Git Input (Commits & PRs)
                 </span>
                 <span className="font-mono text-[10px]">main branch</span>
@@ -188,7 +185,9 @@ export default function LandingPage() {
 
               <div className="space-y-2 text-[11px] leading-relaxed text-[#4d4d4d] dark:text-[#a1a1aa]">
                 <div className="p-2 rounded-[4px] bg-white dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]">
-                  <span className="text-[#0070f3] font-semibold">feat(auth):</span>{" "}
+                  <span className="text-[#0070f3] font-semibold">
+                    feat(auth):
+                  </span>{" "}
                   add OAuth2 refresh token rotation #102
                   <div className="text-[10px] text-[#8f8f8f] mt-0.5">
                     commit 7f3a9e • 2h ago
@@ -196,7 +195,9 @@ export default function LandingPage() {
                 </div>
 
                 <div className="p-2 rounded-[4px] bg-white dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]">
-                  <span className="text-[#00876c] font-semibold">fix(perf):</span>{" "}
+                  <span className="text-[#00876c] font-semibold">
+                    fix(perf):
+                  </span>{" "}
                   optimize Postgres indexes for query latency #105
                   <div className="text-[10px] text-[#8f8f8f] mt-0.5">
                     commit 3b2d1c • 4h ago
@@ -204,7 +205,9 @@ export default function LandingPage() {
                 </div>
 
                 <div className="p-2 rounded-[4px] bg-white dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]">
-                  <span className="text-[#ee0000] font-semibold">breaking(api):</span>{" "}
+                  <span className="text-[#ee0000] font-semibold">
+                    breaking(api):
+                  </span>{" "}
                   deprecate v1 auth headers, migrate to Bearer token
                   <div className="text-[10px] text-[#8f8f8f] mt-0.5">
                     commit 9a4f21 • 6h ago
@@ -212,7 +215,9 @@ export default function LandingPage() {
                 </div>
 
                 <div className="p-2 rounded-[4px] bg-white dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]">
-                  <span className="text-[#7928ca] font-semibold">ci(deploy):</span>{" "}
+                  <span className="text-[#7928ca] font-semibold">
+                    ci(deploy):
+                  </span>{" "}
                   automated release dispatch webhook on git tag
                   <div className="text-[10px] text-[#8f8f8f] mt-0.5">
                     commit 1d8c4e • 8h ago
@@ -245,12 +250,16 @@ export default function LandingPage() {
                 <div className="p-3 rounded-[4px] border border-[#ebebeb] dark:border-[#222222] bg-[#fafafa] dark:bg-[#111111] space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-medium text-[#00876c] flex items-center gap-1.5">
-                      <UserIcon className="h-3.5 w-3.5" weight="bold" /> Customer View
+                      <UserIcon className="h-3.5 w-3.5" weight="bold" />{" "}
+                      Customer View
                     </span>
-                    <span className="text-[10px] font-mono text-[#8f8f8f]">Plain Language</span>
+                    <span className="text-[10px] font-mono text-[#8f8f8f]">
+                      Plain Language
+                    </span>
                   </div>
                   <p className="text-xs text-[#4d4d4d] dark:text-[#a1a1aa] leading-relaxed">
-                    Users will enjoy seamless automatic session continuation and 45% faster dashboard navigation loading speeds.
+                    Users will enjoy seamless automatic session continuation and
+                    45% faster dashboard navigation loading speeds.
                   </p>
                 </div>
 
@@ -258,12 +267,17 @@ export default function LandingPage() {
                 <div className="p-3 rounded-[4px] border border-[#ebebeb] dark:border-[#222222] bg-[#fafafa] dark:bg-[#111111] space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-medium text-[#bd5200] flex items-center gap-1.5">
-                      <BriefcaseIcon className="h-3.5 w-3.5" weight="bold" /> Executive Summary
+                      <BriefcaseIcon className="h-3.5 w-3.5" weight="bold" />{" "}
+                      Executive Summary
                     </span>
-                    <span className="text-[10px] font-mono text-[#8f8f8f]">Leadership</span>
+                    <span className="text-[10px] font-mono text-[#8f8f8f]">
+                      Leadership
+                    </span>
                   </div>
                   <p className="text-xs text-[#4d4d4d] dark:text-[#a1a1aa] leading-relaxed">
-                    Completes SOC-2 session security compliance and significantly reduces cloud database latency for enterprise customers.
+                    Completes SOC-2 session security compliance and
+                    significantly reduces cloud database latency for enterprise
+                    customers.
                   </p>
                 </div>
 
@@ -271,14 +285,20 @@ export default function LandingPage() {
                 <div className="p-3 rounded-[4px] border border-[#ebebeb] dark:border-[#222222] bg-[#fafafa] dark:bg-[#111111] space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-medium text-[#0070f3] flex items-center gap-1.5">
-                      <CodeIcon className="h-3.5 w-3.5" weight="bold" /> Engineering Notes
+                      <CodeIcon className="h-3.5 w-3.5" weight="bold" />{" "}
+                      Engineering Notes
                     </span>
-                    <Badge variant="destructive" className="text-[10px] py-0 px-2">
+                    <Badge
+                      variant="destructive"
+                      className="text-[10px] py-0 px-2"
+                    >
                       Breaking
                     </Badge>
                   </div>
                   <div className="text-xs font-mono text-[#4d4d4d] dark:text-[#a1a1aa]">
-                    <code>GET /v1/auth/*</code> requires <code>Authorization: Bearer &lt;token&gt;</code>. Migrate SDK to v2.4.0.
+                    <code>GET /v1/auth/*</code> requires{" "}
+                    <code>Authorization: Bearer &lt;token&gt;</code>. Migrate
+                    SDK to v2.4.0.
                   </div>
                 </div>
               </div>
@@ -295,13 +315,15 @@ export default function LandingPage() {
         <div className="max-w-[1100px] mx-auto space-y-10">
           <div className="text-left space-y-2 max-w-xl">
             <span className="font-pixel text-xs text-[#0070f3] tracking-wider uppercase">
-              // ARCHITECTURE
+              {"// ARCHITECTURE"}
             </span>
             <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-[#171717] dark:text-white">
               One source of truth. Three distinct lenses.
             </h2>
             <p className="text-sm text-[#666666] dark:text-[#888888] leading-relaxed">
-              Different stakeholders need completely different information. StampLog analyzes commit structures and outputs three targeted views instantly.
+              Different stakeholders need completely different information.
+              StampLog analyzes commit structures and outputs three targeted
+              views instantly.
             </p>
           </div>
 
@@ -310,7 +332,8 @@ export default function LandingPage() {
             <Card className="hover:border-[#8f8f8f] transition-colors">
               <CardHeader className="pb-3 space-y-2">
                 <Badge variant="user" className="w-fit text-xs">
-                  <UserIcon className="h-3.5 w-3.5" weight="bold" /> Customer View
+                  <UserIcon className="h-3.5 w-3.5" weight="bold" /> Customer
+                  View
                 </Badge>
                 <CardTitle className="text-base font-medium">
                   User-Facing Highlights
@@ -318,7 +341,9 @@ export default function LandingPage() {
               </CardHeader>
               <CardContent className="text-xs text-[#666666] dark:text-[#888888] leading-relaxed space-y-2">
                 <p>
-                  Filters out commit hashes, PR numbers, and internal refactors. Translates technical changes into tangible benefits and clear bug fixes.
+                  Filters out commit hashes, PR numbers, and internal refactors.
+                  Translates technical changes into tangible benefits and clear
+                  bug fixes.
                 </p>
               </CardContent>
             </Card>
@@ -327,7 +352,8 @@ export default function LandingPage() {
             <Card className="hover:border-[#8f8f8f] transition-colors">
               <CardHeader className="pb-3 space-y-2">
                 <Badge variant="exec" className="w-fit text-xs">
-                  <BriefcaseIcon className="h-3.5 w-3.5" weight="bold" /> Executive View
+                  <BriefcaseIcon className="h-3.5 w-3.5" weight="bold" />{" "}
+                  Executive View
                 </Badge>
                 <CardTitle className="text-base font-medium">
                   Strategic Milestone Summary
@@ -335,7 +361,8 @@ export default function LandingPage() {
               </CardHeader>
               <CardContent className="text-xs text-[#666666] dark:text-[#888888] leading-relaxed space-y-2">
                 <p>
-                  A 2-sentence executive summary for VP and leadership syncs, paired with an audience impact breakdown metric bar.
+                  A 2-sentence executive summary for VP and leadership syncs,
+                  paired with an audience impact breakdown metric bar.
                 </p>
               </CardContent>
             </Card>
@@ -344,7 +371,8 @@ export default function LandingPage() {
             <Card className="hover:border-[#8f8f8f] transition-colors">
               <CardHeader className="pb-3 space-y-2">
                 <Badge variant="dev" className="w-fit text-xs">
-                  <CodeIcon className="h-3.5 w-3.5" weight="bold" /> Engineering View
+                  <CodeIcon className="h-3.5 w-3.5" weight="bold" /> Engineering
+                  View
                 </Badge>
                 <CardTitle className="text-base font-medium">
                   Breaking Changes &amp; Scopes
@@ -352,7 +380,9 @@ export default function LandingPage() {
               </CardHeader>
               <CardContent className="text-xs text-[#666666] dark:text-[#888888] leading-relaxed space-y-2">
                 <p>
-                  Extracts API contract changes, migration instructions, and technical scope tags (<code>[Auth]</code>, <code>[CI/CD]</code>, <code>[DB]</code>).
+                  Extracts API contract changes, migration instructions, and
+                  technical scope tags (<code>[Auth]</code>,{" "}
+                  <code>[CI/CD]</code>, <code>[DB]</code>).
                 </p>
               </CardContent>
             </Card>
@@ -374,7 +404,8 @@ export default function LandingPage() {
               Zero-Paste GitHub Sync
             </h3>
             <p className="text-xs text-[#666666] dark:text-[#888888] leading-relaxed">
-              Connect any GitHub repository (`owner/repo`) to stream commits automatically via the GitHub REST API.
+              Connect any GitHub repository (`owner/repo`) to stream commits
+              automatically via the GitHub REST API.
             </p>
           </div>
 
@@ -386,7 +417,9 @@ export default function LandingPage() {
               Public Changelog Pages &amp; RSS
             </h3>
             <p className="text-xs text-[#666666] dark:text-[#888888] leading-relaxed">
-              Publish SEO-optimized changelog feeds (<code>/p/[slug]/[version]</code>) with built-in RSS and OpenGraph image cards.
+              Publish SEO-optimized changelog feeds (
+              <code>/p/[slug]/[version]</code>) with built-in RSS and OpenGraph
+              image cards.
             </p>
           </div>
 
@@ -398,7 +431,8 @@ export default function LandingPage() {
               Automated GitHub Action Relay
             </h3>
             <p className="text-xs text-[#666666] dark:text-[#888888] leading-relaxed">
-              Trigger release synthesis on every <code>git push --tags</code> via GitHub Actions using the webhook endpoint.
+              Trigger release synthesis on every <code>git push --tags</code>{" "}
+              via GitHub Actions using the webhook endpoint.
             </p>
           </div>
         </div>
@@ -410,13 +444,18 @@ export default function LandingPage() {
         >
           <div className="flex items-center justify-between text-[11px] text-[#888888] pb-2 border-b border-[#222222]">
             <span className="flex items-center gap-2">
-              <TerminalIcon className="h-3.5 w-3.5 text-[#0070f3]" weight="bold" />
+              <TerminalIcon
+                className="h-3.5 w-3.5 text-[#0070f3]"
+                weight="bold"
+              />
               .github/workflows/stamplog-release.yml
             </span>
-            <span className="font-pixel text-[10px] text-[#50e3c2]">WEBHOOK AUTOMATION</span>
+            <span className="font-pixel text-[10px] text-[#50e3c2]">
+              WEBHOOK AUTOMATION
+            </span>
           </div>
           <pre className="overflow-x-auto text-[#d4d4d4] text-[11px] leading-relaxed">
-{`name: StampLog Release Notes
+            {`name: StampLog Release Notes
 on:
   push:
     tags: ['v*']

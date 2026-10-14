@@ -7,14 +7,21 @@ export async function POST(req: Request) {
     const { repo, token, branch } = await req.json();
 
     if (!repo || typeof repo !== "string") {
-      return Response.json({ success: false, error: "Missing repository string" }, { status: 400 });
+      return Response.json(
+        { success: false, error: "Missing repository string" },
+        { status: 400 },
+      );
     }
 
     const parsed = parseGitHubRepoUrl(repo);
     if (!parsed) {
       return Response.json(
-        { success: false, error: "Invalid GitHub repository format (use owner/repo or github.com URL)" },
-        { status: 400 }
+        {
+          success: false,
+          error:
+            "Invalid GitHub repository format (use owner/repo or github.com URL)",
+        },
+        { status: 400 },
       );
     }
 
@@ -35,8 +42,11 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("Error in /api/github/commits:", error);
     return Response.json(
-      { success: false, error: error?.message || "Failed to fetch GitHub commits" },
-      { status: 500 }
+      {
+        success: false,
+        error: error?.message || "Failed to fetch GitHub commits",
+      },
+      { status: 500 },
     );
   }
 }

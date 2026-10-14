@@ -29,7 +29,8 @@ export async function GET() {
       defaultBranch: p.defaultBranch || "main",
       releaseCount: p.releaseNotes.length,
       latestVersion: p.releaseNotes[0]?.version || null,
-      lastShippedAt: p.releaseNotes[0]?.publishedAt || p.releaseNotes[0]?.createdAt || null,
+      lastShippedAt:
+        p.releaseNotes[0]?.publishedAt || p.releaseNotes[0]?.createdAt || null,
       publicUrl: `/p/${p.slug}`,
     }));
 

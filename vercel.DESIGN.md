@@ -82,20 +82,20 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 
 ### Hierarchy
 
-| Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |
-|------|------|------|--------|-------------|----------------|-------|
-| Display Extra-Large | GeistSans | `72px` | `450` | `83.52px` | `0px` | Hero headlines, primary landing page titles |
-| Display Large | GeistSans | `64px` | `450` | `64px` | `0px` | Major section headers, page titles |
-| Display Medium | GeistSans | `56px` | `450` | `56px` | `0px` | Feature section headers |
-| Display Small | GeistSans | `48px` | `450` | `56px` | `0px` | Subsection headers |
-| Heading Small | GeistSans | `32px` | `450` | `40px` | `0px` | Card titles, compact headers |
-| Body Large | GeistSans | `20px` | `500` | `26px` | `0px` | Feature descriptions, prominent body text |
-| Body Default | GeistSans | `20px` | `400` | `36px` | `0px` | Standard paragraph text |
-| Body Medium | GeistSans | `16px` | `400` | `24px` | `0px` | Navigation, links, inline text |
-| Label | GeistSans | `14px` | `500` | `20px` | `0px` | Form labels, button text, captions |
-| Label Small | GeistSans | `14px` | `400` | `20px` | `0px` | Helper text, secondary captions |
-| Code Default | Geist Mono | `16px` | `400` | `24px` | `0px` | Inline and block code snippets |
-| Code Small | Geist Mono | `13px` | `400` | `20px` | `0px` | Token references, compact code |
+| Role                | Font       | Size   | Weight | Line Height | Letter Spacing | Notes                                       |
+| ------------------- | ---------- | ------ | ------ | ----------- | -------------- | ------------------------------------------- |
+| Display Extra-Large | GeistSans  | `72px` | `450`  | `83.52px`   | `0px`          | Hero headlines, primary landing page titles |
+| Display Large       | GeistSans  | `64px` | `450`  | `64px`      | `0px`          | Major section headers, page titles          |
+| Display Medium      | GeistSans  | `56px` | `450`  | `56px`      | `0px`          | Feature section headers                     |
+| Display Small       | GeistSans  | `48px` | `450`  | `56px`      | `0px`          | Subsection headers                          |
+| Heading Small       | GeistSans  | `32px` | `450`  | `40px`      | `0px`          | Card titles, compact headers                |
+| Body Large          | GeistSans  | `20px` | `500`  | `26px`      | `0px`          | Feature descriptions, prominent body text   |
+| Body Default        | GeistSans  | `20px` | `400`  | `36px`      | `0px`          | Standard paragraph text                     |
+| Body Medium         | GeistSans  | `16px` | `400`  | `24px`      | `0px`          | Navigation, links, inline text              |
+| Label               | GeistSans  | `14px` | `500`  | `20px`      | `0px`          | Form labels, button text, captions          |
+| Label Small         | GeistSans  | `14px` | `400`  | `20px`      | `0px`          | Helper text, secondary captions             |
+| Code Default        | Geist Mono | `16px` | `400`  | `24px`      | `0px`          | Inline and block code snippets              |
+| Code Small          | Geist Mono | `13px` | `400`  | `20px`      | `0px`          | Token references, compact code              |
 
 ### Principles
 
@@ -110,6 +110,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 ### Buttons
 
 **Primary Button**
+
 - **Background:** `#171717`
 - **Text Color:** `#FFFFFF`
 - **Font Size:** `14px`
@@ -125,6 +126,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 - **Disabled State:** Opacity `0.50` on background, `#8F8F8F` text, no shadow
 
 **Secondary Button**
+
 - **Background:** `rgba(0, 0, 0, 0)` (transparent)
 - **Text Color:** `#171717`
 - **Font Size:** `14px`
@@ -140,6 +142,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 - **Disabled State:** Text `#8F8F8F`, border `#EDEDED`
 
 **Ghost Button**
+
 - **Background:** `rgba(0, 0, 0, 0)`
 - **Text Color:** `#4D4D4D`
 - **Font Size:** `14px`
@@ -157,6 +160,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 ### Cards & Containers
 
 **Card (Elevated)**
+
 - **Background:** `#FFFFFF`
 - **Text Color:** `#171717`
 - **Font Size:** `16px`
@@ -170,6 +174,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 - **Hover State:** Shadow intensifies, subtle scale `1.02x`
 
 **Card (Flat)**
+
 - **Background:** `rgba(0, 0, 0, 0)` or `#FAFAFA`
 - **Text Color:** `#171717`
 - **Font Size:** `16px`
@@ -181,6 +186,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 - **Line Height:** `24px`
 
 **Pricing Card**
+
 - **Background:** `#FFFFFF`
 - **Border:** `1px solid #EBEBEB`
 - **Padding:** `40px 32px`
@@ -192,6 +198,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 ### Inputs & Forms
 
 **Text Input**
+
 - **Background:** `#FFFFFF`
 - **Text Color:** `#171717`
 - **Font Size:** `14px`
@@ -208,12 +215,14 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 - **Disabled State:** Background `#FAFAFA`, border `#EDEDED`, text `#8F8F8F`
 
 **Form Label**
+
 - **Font Size:** `14px`
 - **Font Weight:** `500`
 - **Color:** `#171717`
 - **Margin Bottom:** `8px`
 
 **Helper Text**
+
 - **Font Size:** `12px`
 - **Font Weight:** `400`
 - **Color:** `#8F8F8F`
@@ -222,6 +231,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 ### Navigation
 
 **Top Navigation Bar**
+
 - **Background:** `rgba(0, 0, 0, 0)` or `#FFFFFF`
 - **Text Color:** `#171717`
 - **Font Size:** `16px`
@@ -233,6 +243,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 - **Line Height:** `24px`
 
 **Navigation Link**
+
 - **Color:** `#171717`
 - **Font Size:** `14px` or `16px` depending on context
 - **Font Weight:** `400`
@@ -240,6 +251,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 - **Active State:** Color `#0070F3`, font-weight `500`
 
 **Mobile Hamburger Menu Button**
+
 - **Background:** `rgba(0, 0, 0, 0)`
 - **Icon Color:** `#171717`
 - **Size:** `24px × 24px`
@@ -249,6 +261,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 ### Badges & Tags
 
 **Default Badge**
+
 - **Background:** `#FAFAFA`
 - **Text Color:** `#171717`
 - **Font Size:** `12px`
@@ -258,6 +271,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 - **Border:** `1px solid #EBEBEB`
 
 **Featured/Popular Badge**
+
 - **Background:** `#7928CA` or `#0070F3`
 - **Text Color:** `#FFFFFF`
 - **Font Size:** `12px`
@@ -266,6 +280,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 - **Border Radius:** `999px`
 
 **Status Badge (Success)**
+
 - **Background:** `rgba(80, 227, 194, 0.1)`
 - **Text Color:** `#50E3C2`
 - **Font Size:** `12px`
@@ -274,6 +289,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 - **Border Radius:** `999px`
 
 **Status Badge (Warning)**
+
 - **Background:** `rgba(255, 153, 0, 0.1)`
 - **Text Color:** `#FF9900`
 - **Font Size:** `12px`
@@ -282,6 +298,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 - **Border Radius:** `999px`
 
 **Status Badge (Error)**
+
 - **Background:** `rgba(238, 0, 0, 0.1)`
 - **Text Color:** `#EE0000`
 - **Font Size:** `12px`
@@ -292,6 +309,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 ### Links
 
 **Text Link**
+
 - **Color:** `#0070F3`
 - **Font Size:** `16px`
 - **Font Weight:** `400`
@@ -302,6 +320,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 - **Focus State:** Box-shadow `rgb(255, 255, 255) 0px 0px 0px 2px, rgb(0, 114, 245) 0px 0px 0px 4px`
 
 **Inline Link**
+
 - **Color:** `#0070F3`
 - **Underline:** underline
 - **Hover State:** Opacity `0.80`, underline thickens slightly
@@ -313,6 +332,7 @@ Vercel's design system embodies a modern, minimalist aesthetic built for develop
 **Base Unit:** `4px`
 
 **Scale:**
+
 - `4px` - Micro spacing (button icon gaps, tight padding)
 - `8px` - Minimal spacing (form padding, compact margins)
 - `12px` - Small spacing (button padding, input side padding)
@@ -352,13 +372,13 @@ Vercel prioritizes aggressive whitespace to create visual breathing room and red
 
 ## 6. Depth & Elevation
 
-| Level | Treatment | Use |
-|-------|-----------|-----|
-| Flat | No shadow | Text links, ghost buttons, flat cards without elevation |
-| Subtle | `rgba(0, 0, 0, 0.02) 0px 1px 1px 0px` | Hover states on buttons, very light card lifts |
-| Small | `rgba(0, 0, 0, 0.08) 0px 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 4px 8px 0px` | Elevated cards, dropdown menus |
-| Medium | `rgba(0, 0, 0, 0.04) 0px 2px 2px 0px` | Pricing cards, featured panels |
-| Large | `rgba(0, 0, 0, 0.04) 0px 8px 16px -4px` | Modals, popovers, elevated navigation |
+| Level  | Treatment                                                                  | Use                                                     |
+| ------ | -------------------------------------------------------------------------- | ------------------------------------------------------- |
+| Flat   | No shadow                                                                  | Text links, ghost buttons, flat cards without elevation |
+| Subtle | `rgba(0, 0, 0, 0.02) 0px 1px 1px 0px`                                      | Hover states on buttons, very light card lifts          |
+| Small  | `rgba(0, 0, 0, 0.08) 0px 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 4px 8px 0px` | Elevated cards, dropdown menus                          |
+| Medium | `rgba(0, 0, 0, 0.04) 0px 2px 2px 0px`                                      | Pricing cards, featured panels                          |
+| Large  | `rgba(0, 0, 0, 0.04) 0px 8px 16px -4px`                                    | Modals, popovers, elevated navigation                   |
 
 **Shadow Philosophy:** Vercel uses soft, dispersed shadows that avoid harsh black drop-shadows. Shadows primarily serve to separate layered content and create subtle depth. The primary shadow strategy involves a combination of border separation and gentle blur to maintain a clean, modern aesthetic. Shadows are never solid black; they employ `rgba(0, 0, 0, 0.02–0.08)` depending on depth level.
 
@@ -412,12 +432,12 @@ Vercel prioritizes aggressive whitespace to create visual breathing room and red
 
 ### Breakpoints
 
-| Name | Width | Key Changes |
-|------|-------|-------------|
-| Mobile | `0px–640px` | Single-column layout, `16px` horizontal padding, typography scales down by 20–30%, full-width buttons, collapsed navigation, `32px` section gaps |
-| Tablet | `641px–1024px` | 2-column grid, `24px` horizontal padding, display sizes reduce by 10–15%, navigation compacts but remains visible, `48px` section gaps |
-| Desktop | `1025px–1440px` | 3–4 column layouts, `40px` horizontal padding, full typography scale, expanded navigation, `72px–120px` section gaps |
-| Large Desktop | `1441px+` | Fixed max-width containers (`1440px`), centered on page with flanking whitespace, full navigation bar, maximum spacing |
+| Name          | Width           | Key Changes                                                                                                                                      |
+| ------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Mobile        | `0px–640px`     | Single-column layout, `16px` horizontal padding, typography scales down by 20–30%, full-width buttons, collapsed navigation, `32px` section gaps |
+| Tablet        | `641px–1024px`  | 2-column grid, `24px` horizontal padding, display sizes reduce by 10–15%, navigation compacts but remains visible, `48px` section gaps           |
+| Desktop       | `1025px–1440px` | 3–4 column layouts, `40px` horizontal padding, full typography scale, expanded navigation, `72px–120px` section gaps                             |
+| Large Desktop | `1441px+`       | Fixed max-width containers (`1440px`), centered on page with flanking whitespace, full navigation bar, maximum spacing                           |
 
 ### Touch Targets
 

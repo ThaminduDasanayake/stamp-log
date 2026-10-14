@@ -13,7 +13,7 @@ function escapeXml(unsafe: string): string {
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ projectSlug: string }> }
+  { params }: { params: Promise<{ projectSlug: string }> },
 ) {
   try {
     const { projectSlug } = await params;
@@ -47,7 +47,10 @@ export async function GET(
 
         const highlights = (rel.userHighlights as any[]) || [];
         const highlightsHtml = highlights
-          .map((h) => `<li><strong>${escapeXml(h?.feature || "")}:</strong> ${escapeXml(h?.benefit || "")}</li>`)
+          .map(
+            (h) =>
+              `<li><strong>${escapeXml(h?.feature || "")}:</strong> ${escapeXml(h?.benefit || "")}</li>`,
+          )
           .join("");
 
         const contentHtml = `

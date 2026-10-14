@@ -47,10 +47,13 @@ export async function GET(req: Request) {
       authenticated: true,
     };
 
-    console.log("🔐 GitHub OAuth Session Created (/api/auth/callback/github):", {
-      username: userSession.username,
-      email: userSession.email,
-    });
+    console.log(
+      "🔐 GitHub OAuth Session Created (/api/auth/callback/github):",
+      {
+        username: userSession.username,
+        email: userSession.email,
+      },
+    );
 
     const response = NextResponse.redirect(new URL("/app", baseUrl));
     response.cookies.set("stamplog_session", JSON.stringify(userSession), {
@@ -62,7 +65,10 @@ export async function GET(req: Request) {
 
     return response;
   } catch (error: any) {
-    console.error("❌ Error in GitHub OAuth callback (/api/auth/callback/github):", error);
+    console.error(
+      "❌ Error in GitHub OAuth callback (/api/auth/callback/github):",
+      error,
+    );
     const baseUrl =
       process.env.BETTER_AUTH_URL ||
       process.env.NEXT_PUBLIC_APP_URL ||

@@ -1,4 +1,12 @@
-import { pgTable, text, timestamp, pgEnum, jsonb, index, unique } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  pgEnum,
+  jsonb,
+  index,
+  unique,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { customType } from "drizzle-orm/pg-core";
 
@@ -24,7 +32,11 @@ export const vector = customType<{ data: number[]; driverData: string }>({
   },
 });
 
-export const releaseStatusEnum = pgEnum("ReleaseStatus", ["DRAFT", "REVIEW", "PUBLISHED"]);
+export const releaseStatusEnum = pgEnum("ReleaseStatus", [
+  "DRAFT",
+  "REVIEW",
+  "PUBLISHED",
+]);
 
 export const organizations = pgTable("Organization", {
   id: text("id")
@@ -32,7 +44,9 @@ export const organizations = pgTable("Organization", {
     .$defaultFn(() => crypto.randomUUID()),
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
-  createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp("createdAt", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
   updatedAt: timestamp("updatedAt", { withTimezone: true })
     .defaultNow()
     .notNull()
@@ -55,15 +69,15 @@ export const projects = pgTable(
     defaultBranch: text("defaultBranch").default("main"),
     toneGuide: text("toneGuide"),
     customPrompt: text("customPrompt"),
-    createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
     updatedAt: timestamp("updatedAt", { withTimezone: true })
       .defaultNow()
       .notNull()
       .$onUpdate(() => new Date()),
   },
-  (table) => [
-    unique("Project_orgId_slug_key").on(table.orgId, table.slug),
-  ]
+  (table) => [unique("Project_orgId_slug_key").on(table.orgId, table.slug)],
 );
 
 export interface HighlightItem {
@@ -96,20 +110,29 @@ export const releaseNotes = pgTable(
     executiveSummary: text("executiveSummary").notNull(),
     userHighlights: jsonb("userHighlights").$type<HighlightItem[]>().notNull(),
     userFixes: jsonb("userFixes").$type<string[]>().notNull(),
-    breakingChanges: jsonb("breakingChanges").$type<BreakingChangeItem[]>().notNull(),
-    technicalUpdates: jsonb("technicalUpdates").$type<TechnicalUpdateItem[]>().notNull(),
+    breakingChanges: jsonb("breakingChanges")
+      .$type<BreakingChangeItem[]>()
+      .notNull(),
+    technicalUpdates: jsonb("technicalUpdates")
+      .$type<TechnicalUpdateItem[]>()
+      .notNull(),
     embedding: vector("embedding"),
     status: releaseStatusEnum("status").default("DRAFT").notNull(),
     publishedAt: timestamp("publishedAt", { withTimezone: true }),
-    createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp("createdAt", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
     updatedAt: timestamp("updatedAt", { withTimezone: true })
       .defaultNow()
       .notNull()
       .$onUpdate(() => new Date()),
   },
   (table) => [
-    index("ReleaseNote_projectId_version_idx").on(table.projectId, table.version),
-  ]
+    index("ReleaseNote_projectId_version_idx").on(
+      table.projectId,
+      table.version,
+    ),
+  ],
 );
 
 // Relations

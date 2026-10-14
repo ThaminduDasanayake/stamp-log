@@ -10,7 +10,9 @@ interface PageProps {
   }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { projectSlug, version } = await params;
   const decodedVersion = decodeURIComponent(version);
 

@@ -6,15 +6,27 @@ export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
-    const { repo, name, description, toneGuide, defaultBranch = "main" } = await req.json();
+    const {
+      repo,
+      name,
+      description,
+      toneGuide,
+      defaultBranch = "main",
+    } = await req.json();
 
     if (!repo) {
-      return Response.json({ success: false, error: "Missing repository string" }, { status: 400 });
+      return Response.json(
+        { success: false, error: "Missing repository string" },
+        { status: 400 },
+      );
     }
 
     const parsed = parseGitHubRepoUrl(repo);
     if (!parsed) {
-      return Response.json({ success: false, error: "Invalid repository format" }, { status: 400 });
+      return Response.json(
+        { success: false, error: "Invalid repository format" },
+        { status: 400 },
+      );
     }
 
     const fullRepo = `${parsed.owner}/${parsed.repo}`;
@@ -82,8 +94,11 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("Error importing project:", error);
     return Response.json(
-      { success: false, error: error?.message || "Failed to import GitHub project" },
-      { status: 500 }
+      {
+        success: false,
+        error: error?.message || "Failed to import GitHub project",
+      },
+      { status: 500 },
     );
   }
 }

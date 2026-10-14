@@ -1,22 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  GithubLogoIcon,
-  BroadcastIcon,
-  CheckCircleIcon,
-  SparkleIcon,
-  GitBranchIcon,
-  MagnifyingGlassIcon,
   ArrowLeftIcon,
   CaretDownIcon,
   FolderSimpleIcon,
+  GitBranchIcon,
+  GithubLogoIcon,
+  MagnifyingGlassIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface RepoItem {
   id: number;
@@ -44,22 +41,6 @@ export default function VercelStyleImportPage() {
   const [defaultBranch, setDefaultBranch] = useState("main");
   const [isDeploying, setIsDeploying] = useState(false);
 
-  useEffect(() => {
-    fetch("/api/auth/me")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.authenticated && data.user?.username) {
-          setUsername(data.user.username);
-          fetchReposForUsername(data.user.username);
-        } else {
-          fetchReposForUsername("ThaminduDasanayake");
-        }
-      })
-      .catch(() => {
-        fetchReposForUsername("ThaminduDasanayake");
-      });
-  }, []);
-
   const fetchReposForUsername = async (userToFetch: string) => {
     setIsLoadingRepos(true);
     try {
@@ -78,6 +59,22 @@ export default function VercelStyleImportPage() {
       setIsLoadingRepos(false);
     }
   };
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.authenticated && data.user?.username) {
+          setUsername(data.user.username);
+          fetchReposForUsername(data.user.username);
+        } else {
+          fetchReposForUsername("ThaminduDasanayake");
+        }
+      })
+      .catch(() => {
+        fetchReposForUsername("ThaminduDasanayake");
+      });
+  }, []);
 
   const filteredRepos = repos.filter(
     (r) =>
@@ -143,11 +140,17 @@ export default function VercelStyleImportPage() {
             </Link>
 
             <span className="text-[#8f8f8f] text-sm">/</span>
-            <span className="text-xs text-[#8f8f8f]">Import Git Repository</span>
+            <span className="text-xs text-[#8f8f8f]">
+              Import Git Repository
+            </span>
           </div>
 
           <Link href="/app">
-            <Button variant="ghost" size="sm" className="h-8 px-2.5 text-xs gap-1.5">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2.5 text-xs gap-1.5"
+            >
               <ArrowLeftIcon className="h-3.5 w-3.5" weight="bold" /> Back
             </Button>
           </Link>
@@ -163,7 +166,8 @@ export default function VercelStyleImportPage() {
                 Import Git Repository
               </h1>
               <p className="text-xs text-[#666666] dark:text-[#888888] mt-1">
-                Select a GitHub repository to configure automated release synthesis.
+                Select a GitHub repository to configure automated release
+                synthesis.
               </p>
             </div>
 
@@ -231,7 +235,10 @@ export default function VercelStyleImportPage() {
                       className="p-3.5 px-4 sm:px-5 flex items-center justify-between gap-4 hover:bg-[#fafafa] dark:hover:bg-[#111111] transition-colors"
                     >
                       <div className="flex items-center gap-3 overflow-hidden">
-                        <FolderSimpleIcon className="h-4 w-4 text-[#8f8f8f] shrink-0" weight="bold" />
+                        <FolderSimpleIcon
+                          className="h-4 w-4 text-[#8f8f8f] shrink-0"
+                          weight="bold"
+                        />
                         <div className="space-y-0.5 overflow-hidden">
                           <div className="flex items-center gap-2">
                             <h3 className="text-xs font-medium text-[#171717] dark:text-[#ededed] truncate">
@@ -250,7 +257,10 @@ export default function VercelStyleImportPage() {
                             <span>{repo.fullName}</span>
                             <span>•</span>
                             <span className="flex items-center gap-1">
-                              <GitBranchIcon className="h-3 w-3" weight="bold" />
+                              <GitBranchIcon
+                                className="h-3 w-3"
+                                weight="bold"
+                              />
                               {repo.defaultBranch}
                             </span>
                           </p>

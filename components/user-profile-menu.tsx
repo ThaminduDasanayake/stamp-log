@@ -1,15 +1,14 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  BookOpenIcon,
   GithubLogoIcon,
-  SignOutIcon,
-  GearIcon,
   PaletteIcon,
   PlusIcon,
-  BookOpenIcon,
+  SignOutIcon,
   UserIcon,
 } from "@phosphor-icons/react";
 
@@ -102,7 +101,10 @@ export function UserProfileMenu() {
                 className="flex items-center justify-between px-2.5 py-1.5 rounded-[4px] text-xs text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white hover:bg-[#fafafa] dark:hover:bg-[#141414] transition-colors"
               >
                 <span>GitHub Profile</span>
-                <GithubLogoIcon className="h-3.5 w-3.5 text-[#8f8f8f]" weight="bold" />
+                <GithubLogoIcon
+                  className="h-3.5 w-3.5 text-[#8f8f8f]"
+                  weight="bold"
+                />
               </a>
             )}
 
@@ -121,7 +123,10 @@ export function UserProfileMenu() {
               className="flex items-center justify-between px-2.5 py-1.5 rounded-[4px] text-xs text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white hover:bg-[#fafafa] dark:hover:bg-[#141414] transition-colors"
             >
               <span>Design System</span>
-              <PaletteIcon className="h-3.5 w-3.5 text-[#8f8f8f]" weight="bold" />
+              <PaletteIcon
+                className="h-3.5 w-3.5 text-[#8f8f8f]"
+                weight="bold"
+              />
             </Link>
 
             <a
@@ -132,7 +137,10 @@ export function UserProfileMenu() {
               className="flex items-center justify-between px-2.5 py-1.5 rounded-[4px] text-xs text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white hover:bg-[#fafafa] dark:hover:bg-[#141414] transition-colors"
             >
               <span>Documentation</span>
-              <BookOpenIcon className="h-3.5 w-3.5 text-[#8f8f8f]" weight="bold" />
+              <BookOpenIcon
+                className="h-3.5 w-3.5 text-[#8f8f8f]"
+                weight="bold"
+              />
             </a>
           </div>
 

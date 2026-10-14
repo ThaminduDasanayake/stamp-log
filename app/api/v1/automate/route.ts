@@ -12,7 +12,10 @@ export async function POST(req: Request) {
     if (webhookSecret) {
       const authHeader = req.headers.get("authorization");
       if (!authHeader || authHeader !== `Bearer ${webhookSecret}`) {
-        return Response.json({ success: false, error: "Unauthorized automated webhook token" }, { status: 401 });
+        return Response.json(
+          { success: false, error: "Unauthorized automated webhook token" },
+          { status: 401 },
+        );
       }
     }
 
@@ -26,7 +29,10 @@ export async function POST(req: Request) {
     } = body;
 
     if (!rawCommits || typeof rawCommits !== "string") {
-      return Response.json({ success: false, error: "Missing required rawCommits payload string" }, { status: 400 });
+      return Response.json(
+        { success: false, error: "Missing required rawCommits payload string" },
+        { status: 400 },
+      );
     }
 
     // 2. Fetch or create project
@@ -50,7 +56,8 @@ export async function POST(req: Request) {
           name: projectName,
           slug: projectSlug,
           description: "Automated StampLog Workspace",
-          toneGuide: "Professional, engaging for users, and technically clear for developers.",
+          toneGuide:
+            "Professional, engaging for users, and technically clear for developers.",
         })
         .returning();
       project = newProject;
@@ -103,7 +110,10 @@ export async function POST(req: Request) {
         userFixes: changelog.userFacing.fixes || [],
         breakingChanges: changelog.developerFacing.breakingChanges || [],
         technicalUpdates: changelog.developerFacing.technicalUpdates || [],
-        embedding: embeddingVector && embeddingVector.length === 768 ? embeddingVector : null,
+        embedding:
+          embeddingVector && embeddingVector.length === 768
+            ? embeddingVector
+            : null,
         status: status === "PUBLISHED" ? "PUBLISHED" : "DRAFT",
         publishedAt: status === "PUBLISHED" ? new Date() : null,
       })
@@ -123,6 +133,9 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Error in automated release ingestion:", error);
-    return Response.json({ success: false, error: "Internal Server Error" }, { status: 500 });
+    return Response.json(
+      { success: false, error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

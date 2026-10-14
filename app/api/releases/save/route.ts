@@ -31,7 +31,8 @@ export async function POST(req: Request) {
 
     // 1. Ensure Organization & Project exist
     let project = await db.query.projects.findFirst({
-      where: (p, { or, eq }) => or(eq(p.id, projectId), eq(p.slug, projectSlug)),
+      where: (p, { or, eq }) =>
+        or(eq(p.id, projectId), eq(p.slug, projectSlug)),
     });
 
     if (!project) {
@@ -85,7 +86,10 @@ export async function POST(req: Request) {
         userFixes: userFixes || [],
         breakingChanges: breakingChanges || [],
         technicalUpdates: technicalUpdates || [],
-        embedding: embeddingVector && embeddingVector.length === 768 ? embeddingVector : null,
+        embedding:
+          embeddingVector && embeddingVector.length === 768
+            ? embeddingVector
+            : null,
         status: status === "DRAFT" ? "DRAFT" : "PUBLISHED",
         publishedAt: status === "PUBLISHED" ? new Date() : null,
       })

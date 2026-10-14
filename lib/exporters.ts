@@ -67,7 +67,7 @@ export function exportToHtmlEmail(rel: ReleaseExportPayload): string {
   const highlightsHtml = (rel.userHighlights || [])
     .map(
       (h) =>
-        `<li style="margin-bottom: 8px;"><strong style="color: #4F46E5;">${h.feature}:</strong> ${h.benefit}</li>`
+        `<li style="margin-bottom: 8px;"><strong style="color: #4F46E5;">${h.feature}:</strong> ${h.benefit}</li>`,
     )
     .join("");
 

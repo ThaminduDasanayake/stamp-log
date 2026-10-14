@@ -1,30 +1,29 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useObject } from "@ai-sdk/react";
 import { ChangelogSchema } from "@/lib/schemas/changelog";
 import {
-  BroadcastIcon,
-  SparkleIcon,
-  BriefcaseIcon,
-  UserIcon,
-  CodeIcon,
-  ShieldWarningIcon,
-  CheckCircleIcon,
-  CopyIcon,
-  GitCommitIcon,
-  FloppyDiskIcon,
-  ArrowUpRightIcon,
-  GlobeIcon,
-  ClockIcon,
-  CaretDownIcon,
-  GithubLogoIcon,
   ArrowClockwiseIcon,
+  ArrowUpRightIcon,
+  BriefcaseIcon,
+  CaretDownIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  CodeIcon,
+  CopyIcon,
+  FloppyDiskIcon,
+  GitCommitIcon,
+  GithubLogoIcon,
+  GlobeIcon,
+  ShieldWarningIcon,
+  SparkleIcon,
+  UserIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AudienceMeter } from "@/components/ui/audience-meter";
 
 interface GeneratorStudioProps {
@@ -226,14 +225,17 @@ export function GeneratorStudio({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 sm:p-6 max-w-[1240px] mx-auto font-sans">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 sm:p-6 max-w-310 mx-auto font-sans">
       {/* Left Workbench (5 cols) */}
       <div className="lg:col-span-5 space-y-4">
         {/* Quick Sync GitHub Repo Card */}
         <Card className="bg-[#fafafa] dark:bg-[#080808]">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-medium uppercase tracking-wider text-[#666666] dark:text-[#888888] flex items-center gap-2">
-              <GithubLogoIcon className="h-4 w-4 text-[#171717] dark:text-white" weight="bold" />
+              <GithubLogoIcon
+                className="h-4 w-4 text-[#171717] dark:text-white"
+                weight="bold"
+              />
               1-Click GitHub Sync
             </CardTitle>
           </CardHeader>
@@ -252,7 +254,9 @@ export function GeneratorStudio({
               <Button
                 size="sm"
                 onClick={handleFetchGitHubCommits}
-                disabled={isFetchingRepo || isLoading || !githubRepoInput.trim()}
+                disabled={
+                  isFetchingRepo || isLoading || !githubRepoInput.trim()
+                }
                 className="h-8 px-3 gap-1.5 text-xs font-medium"
               >
                 {isFetchingRepo ? (
@@ -279,7 +283,10 @@ export function GeneratorStudio({
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between gap-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <GitCommitIcon className="h-4 w-4 text-[#171717] dark:text-white" weight="bold" />
+                <GitCommitIcon
+                  className="h-4 w-4 text-[#171717] dark:text-white"
+                  weight="bold"
+                />
                 Raw Input Workbench
               </CardTitle>
 

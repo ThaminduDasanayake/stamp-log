@@ -3,8 +3,6 @@
 import Link from "next/link";
 import {
   ArrowLeftIcon,
-  ArrowUpRightIcon,
-  BookmarkSimpleIcon,
   BriefcaseIcon,
   BroadcastIcon,
   CheckCircleIcon,
@@ -19,7 +17,6 @@ import {
   RocketLaunchIcon,
   ShareNetworkIcon,
   ShieldWarningIcon,
-  SlidersIcon,
   SparkleIcon,
   TagIcon,
   UserIcon,
@@ -60,8 +57,13 @@ export default function DesignSystemPage() {
 
           <div className="flex items-center gap-2">
             <Link href="/app">
-              <Button variant="outline" size="sm" className="h-8 px-3 text-xs gap-1.5 font-medium">
-                <ArrowLeftIcon className="h-3.5 w-3.5" weight="bold" /> Back to Studio
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-3 text-xs gap-1.5 font-medium"
+              >
+                <ArrowLeftIcon className="h-3.5 w-3.5" weight="bold" /> Back to
+                Studio
               </Button>
             </Link>
           </div>
@@ -75,7 +77,10 @@ export default function DesignSystemPage() {
             <Card>
               <CardHeader className="pb-3 border-b border-[#ebebeb] dark:border-[#1f1f1f]">
                 <CardTitle className="text-xs uppercase tracking-wider text-[#666666] dark:text-[#888888] font-medium flex items-center gap-2">
-                  <PackageIcon className="h-3.5 w-3.5 text-[#171717] dark:text-white" weight="bold" />
+                  <PackageIcon
+                    className="h-3.5 w-3.5 text-[#171717] dark:text-white"
+                    weight="bold"
+                  />
                   Brand Principles
                 </CardTitle>
               </CardHeader>
@@ -89,7 +94,8 @@ export default function DesignSystemPage() {
                   </p>
                 </div>
                 <p className="text-xs text-[#666666] dark:text-[#888888] leading-relaxed">
-                  Precision, generous breathing room, high contrast dark text on near-white surfaces, and reserved accent moments.
+                  Precision, generous breathing room, high contrast dark text on
+                  near-white surfaces, and reserved accent moments.
                 </p>
               </CardContent>
             </Card>
@@ -109,13 +115,19 @@ export default function DesignSystemPage() {
                   </span>
                   <div className="grid grid-cols-3 gap-2">
                     <div className="p-2.5 rounded-[4px] bg-[#171717] text-white text-[10px] font-mono border border-black">
-                      Dark Text<br />#171717
+                      Dark Text
+                      <br />
+                      #171717
                     </div>
                     <div className="p-2.5 rounded-[4px] bg-white text-[#171717] text-[10px] font-mono border border-[#ebebeb]">
-                      Surface<br />#FFFFFF
+                      Surface
+                      <br />
+                      #FFFFFF
                     </div>
                     <div className="p-2.5 rounded-[4px] bg-[#fafafa] text-[#171717] text-[10px] font-mono border border-[#ebebeb]">
-                      Near-White<br />#FAFAFA
+                      Near-White
+                      <br />
+                      #FAFAFA
                     </div>
                   </div>
                 </div>
@@ -127,21 +139,31 @@ export default function DesignSystemPage() {
                   </span>
                   <div className="grid grid-cols-3 gap-2">
                     <div className="p-2.5 rounded-[4px] bg-[#0070f3] text-white text-[10px] font-mono">
-                      Blue<br />#0070F3
+                      Blue
+                      <br />
+                      #0070F3
                     </div>
                     <div className="p-2.5 rounded-[4px] bg-[#7928ca] text-white text-[10px] font-mono">
-                      Purple<br />#7928CA
+                      Purple
+                      <br />
+                      #7928CA
                     </div>
                     <div className="p-2.5 rounded-[4px] bg-[#00876c] text-white text-[10px] font-mono">
-                      Teal<br />#00876C
+                      Teal
+                      <br />
+                      #00876C
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     <div className="p-2.5 rounded-[4px] bg-[#bd5200] text-white text-[10px] font-mono">
-                      Orange<br />#BD5200
+                      Orange
+                      <br />
+                      #BD5200
                     </div>
                     <div className="p-2.5 rounded-[4px] bg-[#ee0000] text-white text-[10px] font-mono">
-                      Error<br />#EE0000
+                      Error
+                      <br />
+                      #EE0000
                     </div>
                   </div>
                 </div>
@@ -296,16 +318,19 @@ export default function DesignSystemPage() {
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant="default">Default</Badge>
                     <Badge variant="user">
-                      <UserIcon className="h-3 w-3" weight="bold" /> Customer View
+                      <UserIcon className="h-3 w-3" weight="bold" /> Customer
+                      View
                     </Badge>
                     <Badge variant="exec">
-                      <BriefcaseIcon className="h-3 w-3" weight="bold" /> Executive
+                      <BriefcaseIcon className="h-3 w-3" weight="bold" />{" "}
+                      Executive
                     </Badge>
                     <Badge variant="dev">
                       <CodeIcon className="h-3 w-3" weight="bold" /> Engineering
                     </Badge>
                     <Badge variant="destructive">
-                      <ShieldWarningIcon className="h-3 w-3" weight="bold" /> Breaking
+                      <ShieldWarningIcon className="h-3 w-3" weight="bold" />{" "}
+                      Breaking
                     </Badge>
                     <Badge variant="pixel">v2.4.0</Badge>
                   </div>

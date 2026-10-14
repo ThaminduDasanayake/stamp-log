@@ -273,7 +273,10 @@ export function ProjectTimelineDashboard() {
                   size="sm"
                   className="h-8 px-2.5 text-xs text-[#666666] hover:text-[#171717] dark:text-[#888888] dark:hover:text-white gap-1.5"
                 >
-                  <ChartBarIcon className="h-3.5 w-3.5 text-[#0070f3]" weight="bold" />
+                  <ChartBarIcon
+                    className="h-3.5 w-3.5 text-[#0070f3]"
+                    weight="bold"
+                  />
                   Analytics
                 </Button>
               </Link>
@@ -284,7 +287,10 @@ export function ProjectTimelineDashboard() {
                   size="sm"
                   className="h-8 px-2.5 text-xs gap-1.5"
                 >
-                  <GlobeIcon className="h-3.5 w-3.5 text-[#00876c]" weight="bold" />
+                  <GlobeIcon
+                    className="h-3.5 w-3.5 text-[#00876c]"
+                    weight="bold"
+                  />
                   Public Feed
                   <ArrowUpRightIcon className="h-3 w-3" weight="bold" />
                 </Button>
@@ -310,7 +316,8 @@ export function ProjectTimelineDashboard() {
                   Welcome to StampLog
                 </h2>
                 <p className="text-xs text-[#666666] dark:text-[#888888] leading-relaxed max-w-xs mx-auto">
-                  Connect a GitHub repository to start generating multi-audience changelogs.
+                  Connect a GitHub repository to start generating multi-audience
+                  changelogs.
                 </p>
               </div>
 
@@ -368,27 +375,36 @@ export function ProjectTimelineDashboard() {
                       <div>
                         <div className="text-xs font-medium text-[#171717] dark:text-white flex items-center gap-2">
                           <span>Unreleased commits detected</span>
-                          <Badge variant="exec" className="font-mono text-[10px] py-0 px-1.5">
+                          <Badge
+                            variant="exec"
+                            className="font-mono text-[10px] py-0 px-1.5"
+                          >
                             {alertInfo.newCommitCount} commits
                           </Badge>
                         </div>
                         <p className="text-[11px] text-[#666666] dark:text-[#888888] mt-0.5">
-                          New changes pushed to branch since {alertInfo.latestVersion}. Ready to synthesize.
+                          New changes pushed to branch since{" "}
+                          {alertInfo.latestVersion}. Ready to synthesize.
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      {alertInfo.recentCommits && alertInfo.recentCommits.length > 0 && (
-                        <Button
-                          onClick={() => setShowCommitsDrawer(!showCommitsDrawer)}
-                          variant="outline"
-                          size="sm"
-                          className="h-7 px-2.5 text-xs text-[#666666] dark:text-[#888888] border-[#bd5200]/30 hover:border-[#bd5200]"
-                        >
-                          {showCommitsDrawer ? "Hide Commits" : `Preview (${alertInfo.recentCommits.length})`}
-                        </Button>
-                      )}
+                      {alertInfo.recentCommits &&
+                        alertInfo.recentCommits.length > 0 && (
+                          <Button
+                            onClick={() =>
+                              setShowCommitsDrawer(!showCommitsDrawer)
+                            }
+                            variant="outline"
+                            size="sm"
+                            className="h-7 px-2.5 text-xs text-[#666666] dark:text-[#888888] border-[#bd5200]/30 hover:border-[#bd5200]"
+                          >
+                            {showCommitsDrawer
+                              ? "Hide Commits"
+                              : `Preview (${alertInfo.recentCommits.length})`}
+                          </Button>
+                        )}
                       <Button
                         onClick={() => setIsModalOpen(true)}
                         size="sm"
@@ -400,30 +416,45 @@ export function ProjectTimelineDashboard() {
                   </div>
 
                   {/* Expandable Commits Drawer inside banner */}
-                  {showCommitsDrawer && alertInfo.recentCommits && alertInfo.recentCommits.length > 0 && (
-                    <div className="border-t border-[#bd5200]/20 bg-black/5 dark:bg-black/30 p-3 space-y-1.5">
-                      <div className="text-[11px] font-mono text-[#8f8f8f] uppercase tracking-wider px-1">
-                        Recent Commits on {selectedProject?.defaultBranch || "main"}:
-                      </div>
-                      <div className="space-y-1">
-                        {alertInfo.recentCommits.map((c, i) => (
-                          <div
-                            key={i}
-                            className="flex items-center justify-between gap-3 text-xs font-mono py-1 px-2.5 rounded-[4px] bg-white dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]"
-                          >
-                            <div className="flex items-center gap-2 truncate">
-                              <GitCommitIcon className="h-3.5 w-3.5 text-[#bd5200] shrink-0" weight="bold" />
-                              <span className="truncate text-[#171717] dark:text-[#ededed]">{c.message}</span>
+                  {showCommitsDrawer &&
+                    alertInfo.recentCommits &&
+                    alertInfo.recentCommits.length > 0 && (
+                      <div className="border-t border-[#bd5200]/20 bg-black/5 dark:bg-black/30 p-3 space-y-1.5">
+                        <div className="text-[11px] font-mono text-[#8f8f8f] uppercase tracking-wider px-1">
+                          Recent Commits on{" "}
+                          {selectedProject?.defaultBranch || "main"}:
+                        </div>
+                        <div className="space-y-1">
+                          {alertInfo.recentCommits.map((c, i) => (
+                            <div
+                              key={i}
+                              className="flex items-center justify-between gap-3 text-xs font-mono py-1 px-2.5 rounded-[4px] bg-white dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]"
+                            >
+                              <div className="flex items-center gap-2 truncate">
+                                <GitCommitIcon
+                                  className="h-3.5 w-3.5 text-[#bd5200] shrink-0"
+                                  weight="bold"
+                                />
+                                <span className="truncate text-[#171717] dark:text-[#ededed]">
+                                  {c.message}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0 text-[11px] text-[#8f8f8f]">
+                                <span className="text-[#666666] dark:text-[#888888] hidden sm:inline">
+                                  {c.author}
+                                </span>
+                                <Badge
+                                  variant="pixel"
+                                  className="text-[10px] px-1 py-0"
+                                >
+                                  {c.sha}
+                                </Badge>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2 shrink-0 text-[11px] text-[#8f8f8f]">
-                              <span className="text-[#666666] dark:text-[#888888] hidden sm:inline">{c.author}</span>
-                              <Badge variant="pixel" className="text-[10px] px-1 py-0">{c.sha}</Badge>
-                            </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               )}
 
@@ -456,7 +487,9 @@ export function ProjectTimelineDashboard() {
                                 </Badge>
                                 <Badge
                                   variant={
-                                    rel.status === "PUBLISHED" ? "user" : "outline"
+                                    rel.status === "PUBLISHED"
+                                      ? "user"
+                                      : "outline"
                                   }
                                   className="text-[11px]"
                                 >
@@ -470,15 +503,17 @@ export function ProjectTimelineDashboard() {
                                 </Badge>
                                 {rel.publishedAt && (
                                   <span className="text-[11px] font-mono text-[#8f8f8f] flex items-center gap-1">
-                                    <ClockIcon className="h-3 w-3" weight="bold" />
-                                    {new Date(rel.publishedAt).toLocaleDateString(
-                                      "en-US",
-                                      {
-                                        month: "short",
-                                        day: "numeric",
-                                        year: "numeric",
-                                      },
-                                    )}
+                                    <ClockIcon
+                                      className="h-3 w-3"
+                                      weight="bold"
+                                    />
+                                    {new Date(
+                                      rel.publishedAt,
+                                    ).toLocaleDateString("en-US", {
+                                      month: "short",
+                                      day: "numeric",
+                                      year: "numeric",
+                                    })}
                                   </span>
                                 )}
                               </div>
@@ -510,9 +545,7 @@ export function ProjectTimelineDashboard() {
                                   <option value="md">Markdown (.md)</option>
                                   <option value="notion">Notion Blocks</option>
                                   <option value="email">HTML Email</option>
-                                  <option value="github">
-                                    GitHub Release
-                                  </option>
+                                  <option value="github">GitHub Release</option>
                                 </select>
                                 <CaretDownIcon
                                   className="h-3 w-3 absolute right-1.5 top-2 pointer-events-none text-[#8f8f8f]"
@@ -700,7 +733,10 @@ export function ProjectTimelineDashboard() {
                           No releases published for this project yet
                         </h3>
                         <p className="text-xs text-[#666666] dark:text-[#888888] max-w-lg leading-relaxed">
-                          Synthesize your raw git commits into distinct views: plain-English value for users, bulleted rollups for leadership, and breaking migration notes for engineers.
+                          Synthesize your raw git commits into distinct views:
+                          plain-English value for users, bulleted rollups for
+                          leadership, and breaking migration notes for
+                          engineers.
                         </p>
                       </div>
 
@@ -715,43 +751,52 @@ export function ProjectTimelineDashboard() {
                     </div>
 
                     {/* Detected Unreleased Commits Feed in Empty State */}
-                    {alertInfo?.hasNewChanges && alertInfo.recentCommits && alertInfo.recentCommits.length > 0 && (
-                      <div className="pt-3.5 border-t border-[#ebebeb] dark:border-[#1f1f1f] space-y-2">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="font-mono text-[11px] uppercase tracking-wider text-[#8f8f8f] flex items-center gap-1.5">
-                            <GitCommitIcon className="h-3.5 w-3.5 text-[#0070f3]" weight="bold" />
-                            Unreleased Commits On {selectedProject?.defaultBranch || "main"}
-                          </span>
-                          <Badge variant="exec" className="font-mono text-[10px]">
-                            {alertInfo.newCommitCount} commits detected
-                          </Badge>
-                        </div>
-
-                        <div className="space-y-1">
-                          {alertInfo.recentCommits.map((c, i) => (
-                            <div
-                              key={i}
-                              className="flex items-center justify-between gap-3 text-xs font-mono py-1.5 px-3 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]"
+                    {alertInfo?.hasNewChanges &&
+                      alertInfo.recentCommits &&
+                      alertInfo.recentCommits.length > 0 && (
+                        <div className="pt-3.5 border-t border-[#ebebeb] dark:border-[#1f1f1f] space-y-2">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-mono text-[11px] uppercase tracking-wider text-[#8f8f8f] flex items-center gap-1.5">
+                              <GitCommitIcon
+                                className="h-3.5 w-3.5 text-[#0070f3]"
+                                weight="bold"
+                              />
+                              Unreleased Commits On{" "}
+                              {selectedProject?.defaultBranch || "main"}
+                            </span>
+                            <Badge
+                              variant="exec"
+                              className="font-mono text-[10px]"
                             >
-                              <div className="flex items-center gap-2.5 truncate">
-                                <div className="h-1.5 w-1.5 rounded-full bg-[#0070f3] shrink-0" />
-                                <span className="truncate text-[#171717] dark:text-[#ededed]">
-                                  {c.message}
-                                </span>
+                              {alertInfo.newCommitCount} commits detected
+                            </Badge>
+                          </div>
+
+                          <div className="space-y-1">
+                            {alertInfo.recentCommits.map((c, i) => (
+                              <div
+                                key={i}
+                                className="flex items-center justify-between gap-3 text-xs font-mono py-1.5 px-3 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]"
+                              >
+                                <div className="flex items-center gap-2.5 truncate">
+                                  <div className="h-1.5 w-1.5 rounded-full bg-[#0070f3] shrink-0" />
+                                  <span className="truncate text-[#171717] dark:text-[#ededed]">
+                                    {c.message}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0 text-[11px] text-[#8f8f8f]">
+                                  <span className="text-[#666666] dark:text-[#888888] hidden sm:inline">
+                                    {c.author}
+                                  </span>
+                                  <span className="px-1.5 py-0.5 rounded bg-white dark:bg-black border border-[#ebebeb] dark:border-[#262626] text-[10px] text-[#171717] dark:text-[#ededed]">
+                                    {c.sha}
+                                  </span>
+                                </div>
                               </div>
-                              <div className="flex items-center gap-2 shrink-0 text-[11px] text-[#8f8f8f]">
-                                <span className="text-[#666666] dark:text-[#888888] hidden sm:inline">
-                                  {c.author}
-                                </span>
-                                <span className="px-1.5 py-0.5 rounded bg-white dark:bg-black border border-[#ebebeb] dark:border-[#262626] text-[10px] text-[#171717] dark:text-[#ededed]">
-                                  {c.sha}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
                   </Card>
 
                   {/* 3-Step Feature Process Showcase */}
@@ -764,7 +809,8 @@ export function ProjectTimelineDashboard() {
                         Conventional Commit Intake
                       </h4>
                       <p className="text-[11px] text-[#666666] dark:text-[#888888] leading-relaxed">
-                        Deterministic categorization for feats, fixes, refactors, and breaking changes directly from git.
+                        Deterministic categorization for feats, fixes,
+                        refactors, and breaking changes directly from git.
                       </p>
                     </Card>
 
@@ -776,7 +822,8 @@ export function ProjectTimelineDashboard() {
                         Multi-Audience Synthesis
                       </h4>
                       <p className="text-[11px] text-[#666666] dark:text-[#888888] leading-relaxed">
-                        Gemini Flash extracts user value highlights, executive rollups, and developer migration specs.
+                        Gemini Flash extracts user value highlights, executive
+                        rollups, and developer migration specs.
                       </p>
                     </Card>
 
@@ -788,7 +835,8 @@ export function ProjectTimelineDashboard() {
                         Universal Multi-Channel Export
                       </h4>
                       <p className="text-[11px] text-[#666666] dark:text-[#888888] leading-relaxed">
-                        Live RSS feeds, web release page, and 1-click export to Markdown, Notion blocks, and HTML email.
+                        Live RSS feeds, web release page, and 1-click export to
+                        Markdown, Notion blocks, and HTML email.
                       </p>
                     </Card>
                   </div>
@@ -797,7 +845,10 @@ export function ProjectTimelineDashboard() {
                   <Card className="p-4 border-[#ebebeb] dark:border-[#1f1f1f] bg-white dark:bg-[#0a0a0a] space-y-2.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <TerminalWindowIcon className="h-4 w-4 text-[#8f8f8f]" weight="bold" />
+                        <TerminalWindowIcon
+                          className="h-4 w-4 text-[#8f8f8f]"
+                          weight="bold"
+                        />
                         <span className="text-xs font-medium text-[#171717] dark:text-white">
                           Automate via GitHub Actions
                         </span>
@@ -832,7 +883,10 @@ jobs:
                       >
                         {copiedSnippet ? (
                           <>
-                            <CheckIcon className="h-3 w-3 text-[#00876c]" weight="bold" />
+                            <CheckIcon
+                              className="h-3 w-3 text-[#00876c]"
+                              weight="bold"
+                            />
                             Copied
                           </>
                         ) : (
@@ -844,7 +898,12 @@ jobs:
                       </Button>
                     </div>
                     <p className="text-[11px] text-[#666666] dark:text-[#888888] leading-relaxed">
-                      Drop this workflow into <code className="font-mono text-[#171717] dark:text-[#ededed] bg-[#fafafa] dark:bg-[#161616] px-1 py-0.5 rounded border border-[#ebebeb] dark:border-[#262626]">.github/workflows/stamplog.yml</code> to automatically synthesize and publish release notes every time a git tag is pushed.
+                      Drop this workflow into{" "}
+                      <code className="font-mono text-[#171717] dark:text-[#ededed] bg-[#fafafa] dark:bg-[#161616] px-1 py-0.5 rounded border border-[#ebebeb] dark:border-[#262626]">
+                        .github/workflows/stamplog.yml
+                      </code>{" "}
+                      to automatically synthesize and publish release notes
+                      every time a git tag is pushed.
                     </p>
                   </Card>
                 </div>
@@ -856,7 +915,10 @@ jobs:
               <Card>
                 <CardHeader className="pb-3 border-b border-[#ebebeb] dark:border-[#1f1f1f]">
                   <CardTitle className="text-xs font-medium uppercase tracking-wider text-[#666666] dark:text-[#888888] flex items-center gap-2">
-                    <GithubLogoIcon className="h-4 w-4 text-[#171717] dark:text-white" weight="bold" />
+                    <GithubLogoIcon
+                      className="h-4 w-4 text-[#171717] dark:text-white"
+                      weight="bold"
+                    />
                     Connected Repository
                   </CardTitle>
                 </CardHeader>
@@ -879,7 +941,10 @@ jobs:
                         />
                         Default Branch
                       </span>
-                      <Badge variant="outline" className="font-mono text-[10px]">
+                      <Badge
+                        variant="outline"
+                        className="font-mono text-[10px]"
+                      >
                         {selectedProject?.defaultBranch || "main"}
                       </Badge>
                     </div>

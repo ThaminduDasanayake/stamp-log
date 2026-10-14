@@ -3,7 +3,11 @@
 import React, { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { GithubLogoIcon, ArrowRightIcon, ShieldWarningIcon } from "@phosphor-icons/react";
+import {
+  GithubLogoIcon,
+  ArrowRightIcon,
+  ShieldWarningIcon,
+} from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -41,7 +45,8 @@ function LoginContent() {
             Log in to StampLog
           </h1>
           <p className="text-xs text-[#666666] dark:text-[#888888]">
-            Automate multi-audience release notes directly from your GitHub repositories.
+            Automate multi-audience release notes directly from your GitHub
+            repositories.
           </p>
         </div>
       </div>
@@ -81,7 +86,8 @@ function LoginContent() {
           </div>
 
           <p className="text-[11px] text-[#8f8f8f] text-center leading-relaxed">
-            By continuing, you authenticate with GitHub to access your repositories and release workspaces.
+            By continuing, you authenticate with GitHub to access your
+            repositories and release workspaces.
           </p>
         </CardContent>
       </Card>
