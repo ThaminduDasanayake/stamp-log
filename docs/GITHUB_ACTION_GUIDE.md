@@ -33,7 +33,7 @@ name: StampLog Automated Release Notes
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
 
 jobs:
   synthesize-release:
@@ -71,6 +71,7 @@ jobs:
 ## 🔑 Step 2: Add Repository Secrets
 
 In your GitHub repository:
+
 1. Go to **Settings ➔ Secrets and variables ➔ Actions**.
 2. Click **New repository secret**.
 3. Name: `STAMPLOG_URL`
@@ -94,6 +95,7 @@ curl -X POST "http://localhost:3000/api/v1/automate" \
 ```
 
 **Response Output:**
+
 ```json
 {
   "success": true,

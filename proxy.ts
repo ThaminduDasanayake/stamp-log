@@ -17,7 +17,10 @@ export function proxy(request: NextRequest) {
 
     if (!sessionToken) {
       if (pathname.startsWith("/api/")) {
-        return NextResponse.json({ success: false, error: "Unauthorized API access" }, { status: 401 });
+        return NextResponse.json(
+          { success: false, error: "Unauthorized API access" },
+          { status: 401 },
+        );
       }
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("redirect", pathname);

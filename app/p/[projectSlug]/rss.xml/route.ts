@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db, HighlightItem } from "@/lib/db";
 
 export const runtime = "nodejs";
 
@@ -13,18 +13,18 @@ function escapeXml(unsafe: string): string {
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ projectSlug: string }> }
+  { params }: { params: Promise<{ projectSlug: string }> },
 ) {
   try {
     const { projectSlug } = await params;
 
-    const project = await db.project.findFirst({
-      where: { slug: projectSlug },
-      include: {
+    const project = await db.query.projects.findFirst({
+      where: (p, { eq }) => eq(p.slug, projectSlug),
+      with: {
         releaseNotes: {
-          where: { status: "PUBLISHED" },
-          orderBy: { createdAt: "desc" },
-          take: 20,
+          where: (r, { eq }) => eq(r.status, "PUBLISHED"),
+          orderBy: (r, { desc }) => [desc(r.createdAt)],
+          limit: 20,
         },
       },
     });
@@ -45,9 +45,12 @@ export async function GET(
           ? new Date(rel.publishedAt).toUTCString()
           : new Date(rel.createdAt).toUTCString();
 
-        const highlights = (rel.userHighlights as any[]) || [];
+        const highlights = (rel.userHighlights as HighlightItem[]) || [];
         const highlightsHtml = highlights
-          .map((h) => `<li><strong>${escapeXml(h?.feature || "")}:</strong> ${escapeXml(h?.benefit || "")}</li>`)
+          .map(
+            (h) =>
+              `<li><strong>${escapeXml(h?.feature || "")}:</strong> ${escapeXml(h?.benefit || "")}</li>`,
+          )
           .join("");
 
         const contentHtml = `

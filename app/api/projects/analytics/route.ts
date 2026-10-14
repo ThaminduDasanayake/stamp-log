@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db, HighlightItem, BreakingChangeItem } from "@/lib/db";
 
 export const runtime = "nodejs";
 
@@ -7,17 +7,20 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const projectSlug = searchParams.get("projectSlug") || "stamplog";
 
-    const project = await db.project.findFirst({
-      where: { slug: projectSlug },
-      include: {
+    const project = await db.query.projects.findFirst({
+      where: (p, { eq }) => eq(p.slug, projectSlug),
+      with: {
         releaseNotes: {
-          orderBy: { createdAt: "desc" },
+          orderBy: (r, { desc }) => [desc(r.createdAt)],
         },
       },
     });
 
     if (!project) {
-      return Response.json({ success: false, error: "Project Not Found" }, { status: 404 });
+      return Response.json(
+        { success: false, error: "Project Not Found" },
+        { status: 404 },
+      );
     }
 
     const releases = project.releaseNotes || [];
@@ -32,9 +35,9 @@ export async function GET(req: Request) {
     let totalBreakingCount = 0;
 
     releases.forEach((r) => {
-      const h = (r.userHighlights as any[]) || [];
-      const f = (r.userFixes as any[]) || [];
-      const b = (r.breakingChanges as any[]) || [];
+      const h = (r.userHighlights as HighlightItem[]) || [];
+      const f = (r.userFixes as string[]) || [];
+      const b = (r.breakingChanges as BreakingChangeItem[]) || [];
       totalHighlightsCount += h.length;
       totalFixesCount += f.length;
       totalBreakingCount += b.length;
@@ -44,21 +47,29 @@ export async function GET(req: Request) {
     let avgDaysBetweenReleases = 0;
     if (publishedReleases.length > 1) {
       const dates = publishedReleases
-        .map((r) => (r.publishedAt ? new Date(r.publishedAt).getTime() : new Date(r.createdAt).getTime()))
+        .map((r) =>
+          r.publishedAt
+            ? new Date(r.publishedAt).getTime()
+            : new Date(r.createdAt).getTime(),
+        )
         .sort((a, b) => b - a);
 
       const firstDate = dates[dates.length - 1];
       const lastDate = dates[0];
       const totalSpanDays = (lastDate - firstDate) / (1000 * 60 * 60 * 24);
-      avgDaysBetweenReleases = Math.round((totalSpanDays / (publishedReleases.length - 1)) * 10) / 10;
+      avgDaysBetweenReleases =
+        Math.round((totalSpanDays / (publishedReleases.length - 1)) * 10) / 10;
     }
 
     const breakingChangeReleaseCount = releases.filter((r) => {
-      const b = (r.breakingChanges as any[]) || [];
+      const b = (r.breakingChanges as BreakingChangeItem[]) || [];
       return b.length > 0;
     }).length;
 
-    const breakingChangeRate = totalReleases > 0 ? Math.round((breakingChangeReleaseCount / totalReleases) * 100) : 0;
+    const breakingChangeRate =
+      totalReleases > 0
+        ? Math.round((breakingChangeReleaseCount / totalReleases) * 100)
+        : 0;
 
     return Response.json({
       success: true,
@@ -81,8 +92,11 @@ export async function GET(req: Request) {
         },
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error calculating project analytics:", error);
-    return Response.json({ success: false, error: "Internal Server Error" }, { status: 500 });
+    return Response.json(
+      { success: false, error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

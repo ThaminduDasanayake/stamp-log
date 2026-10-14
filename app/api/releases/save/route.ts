@@ -1,6 +1,6 @@
 import { embed } from "ai";
 import { google } from "@ai-sdk/google";
-import { db } from "@/lib/db";
+import { db, organizations, projects, releaseNotes } from "@/lib/db";
 
 export const runtime = "nodejs";
 
@@ -30,20 +30,24 @@ export async function POST(req: Request) {
     }
 
     // 1. Ensure Organization & Project exist
-    let project = await db.project.findFirst({
-      where: { OR: [{ id: projectId }, { slug: projectSlug }] },
+    let project = await db.query.projects.findFirst({
+      where: (p, { or, eq }) =>
+        or(eq(p.id, projectId), eq(p.slug, projectSlug)),
     });
 
     if (!project) {
-      let org = await db.organization.findFirst();
+      let org = await db.query.organizations.findFirst();
       if (!org) {
-        org = await db.organization.create({
-          data: { name: "Default Organization", slug: "default-org" },
-        });
+        const [newOrg] = await db
+          .insert(organizations)
+          .values({ name: "Default Organization", slug: "default-org" })
+          .returning();
+        org = newOrg;
       }
 
-      project = await db.project.create({
-        data: {
+      const [newProject] = await db
+        .insert(projects)
+        .values({
           id: projectId === "demo" ? undefined : projectId,
           orgId: org.id,
           name: projectName,
@@ -51,8 +55,9 @@ export async function POST(req: Request) {
           description: "Default StampLog Project Workspace",
           toneGuide:
             "Professional, engaging for users, and technically clear for developers.",
-        },
-      });
+        })
+        .returning();
+      project = newProject;
     }
 
     // 2. Compute vector embedding for historical tone memory (text-embedding-004 = 768 dimensions)
@@ -68,9 +73,10 @@ export async function POST(req: Request) {
       console.warn("Failed to generate embedding vector:", embedError);
     }
 
-    // 3. Create or update ReleaseNote
-    const releaseNote = await db.releaseNote.create({
-      data: {
+    // 3. Create ReleaseNote
+    const [releaseNote] = await db
+      .insert(releaseNotes)
+      .values({
         projectId: project.id,
         version: version || "v1.0.0",
         title: title || "New Release",
@@ -80,24 +86,14 @@ export async function POST(req: Request) {
         userFixes: userFixes || [],
         breakingChanges: breakingChanges || [],
         technicalUpdates: technicalUpdates || [],
+        embedding:
+          embeddingVector && embeddingVector.length === 768
+            ? embeddingVector
+            : null,
         status: status === "DRAFT" ? "DRAFT" : "PUBLISHED",
         publishedAt: status === "PUBLISHED" ? new Date() : null,
-      },
-    });
-
-    // If embedding was computed, store via raw SQL for vector type
-    if (embeddingVector && embeddingVector.length === 768) {
-      try {
-        const vectorString = `[${embeddingVector.join(",")}]`;
-        await db.$executeRawUnsafe(
-          `UPDATE "ReleaseNote" SET embedding = $1::vector WHERE id = $2`,
-          vectorString,
-          releaseNote.id,
-        );
-      } catch (vectorSqlError) {
-        console.warn("Raw SQL vector insertion skipped:", vectorSqlError);
-      }
-    }
+      })
+      .returning();
 
     return Response.json({
       success: true,

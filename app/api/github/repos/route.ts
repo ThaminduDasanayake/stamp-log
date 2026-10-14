@@ -20,11 +20,18 @@ export async function POST(req: Request) {
     }));
 
     return Response.json({ success: true, repos: formatted });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching user repos:", error);
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch GitHub repositories";
     return Response.json(
-      { success: false, error: error?.message || "Failed to fetch GitHub repositories" },
-      { status: 500 }
+      {
+        success: false,
+        error: errorMessage,
+      },
+      { status: 500 },
     );
   }
 }

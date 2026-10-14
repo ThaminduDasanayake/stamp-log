@@ -10,7 +10,10 @@ export async function GET() {
     console.log("👤 Raw Session Cookie Read in /api/auth/me:", sessionCookie);
 
     if (!sessionCookie) {
-      return Response.json({ authenticated: false, user: null }, { status: 401 });
+      return Response.json(
+        { authenticated: false, user: null },
+        { status: 401 },
+      );
     }
 
     try {
@@ -27,8 +30,14 @@ export async function GET() {
         },
       });
     } catch (parseErr) {
-      console.warn("⚠️ Unauthenticated or invalid session cookie format:", parseErr);
-      return Response.json({ authenticated: false, user: null }, { status: 401 });
+      console.warn(
+        "⚠️ Unauthenticated or invalid session cookie format:",
+        parseErr,
+      );
+      return Response.json(
+        { authenticated: false, user: null },
+        { status: 401 },
+      );
     }
   } catch (error) {
     console.error("❌ Error fetching me session:", error);

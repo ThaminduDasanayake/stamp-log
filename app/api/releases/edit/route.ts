@@ -1,6 +1,7 @@
 import { embed } from "ai";
 import { google } from "@ai-sdk/google";
-import { db } from "@/lib/db";
+import { db, releaseNotes } from "@/lib/db";
+import { eq } from "drizzle-orm";
 
 export const runtime = "nodejs";
 
@@ -20,17 +21,23 @@ export async function POST(req: Request) {
     } = body;
 
     if (!releaseId) {
-      return Response.json({ success: false, error: "Missing releaseId parameter" }, { status: 400 });
+      return Response.json(
+        { success: false, error: "Missing releaseId parameter" },
+        { status: 400 },
+      );
     }
 
     // 1. Fetch existing ReleaseNote
-    const existing = await db.releaseNote.findUnique({
-      where: { id: releaseId },
-      include: { project: true },
+    const existing = await db.query.releaseNotes.findFirst({
+      where: (r, { eq }) => eq(r.id, releaseId),
+      with: { project: true },
     });
 
     if (!existing) {
-      return Response.json({ success: false, error: "Release note not found" }, { status: 404 });
+      return Response.json(
+        { success: false, error: "Release note not found" },
+        { status: 404 },
+      );
     }
 
     // 2. Compute updated vector embedding (text-embedding-004)
@@ -47,33 +54,32 @@ export async function POST(req: Request) {
     }
 
     // 3. Update ReleaseNote in PostgreSQL
-    const updated = await db.releaseNote.update({
-      where: { id: releaseId },
-      data: {
+    const [updated] = await db
+      .update(releaseNotes)
+      .set({
         version: version || existing.version,
         title: title || existing.title,
-        executiveSummary: executiveSummary !== undefined ? executiveSummary : existing.executiveSummary,
+        executiveSummary:
+          executiveSummary !== undefined
+            ? executiveSummary
+            : existing.executiveSummary,
         userHighlights: userHighlights || existing.userHighlights,
         userFixes: userFixes || existing.userFixes,
         breakingChanges: breakingChanges || existing.breakingChanges,
         technicalUpdates: technicalUpdates || existing.technicalUpdates,
-        status: status ? (status as any) : existing.status,
-        publishedAt: status === "PUBLISHED" && !existing.publishedAt ? new Date() : existing.publishedAt,
-      },
-    });
-
-    if (embeddingVector && embeddingVector.length === 768) {
-      try {
-        const vectorString = `[${embeddingVector.join(",")}]`;
-        await db.$executeRawUnsafe(
-          `UPDATE "ReleaseNote" SET embedding = $1::vector WHERE id = $2`,
-          vectorString,
-          updated.id
-        );
-      } catch (sqlErr) {
-        console.warn("Vector update skipped:", sqlErr);
-      }
-    }
+        status: status ? status : existing.status,
+        publishedAt:
+          status === "PUBLISHED" && !existing.publishedAt
+            ? new Date()
+            : existing.publishedAt,
+        embedding:
+          embeddingVector && embeddingVector.length === 768
+            ? embeddingVector
+            : existing.embedding,
+        updatedAt: new Date(),
+      })
+      .where(eq(releaseNotes.id, releaseId))
+      .returning();
 
     return Response.json({
       success: true,
@@ -85,8 +91,13 @@ export async function POST(req: Request) {
         publicUrl: `/p/${existing.project.slug}/${encodeURIComponent(updated.version)}`,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error updating release note:", error);
-    return Response.json({ success: false, error: error?.message || "Internal Server Error" }, { status: 500 });
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal Server Error";
+    return Response.json(
+      { success: false, error: errorMessage },
+      { status: 500 },
+    );
   }
 }

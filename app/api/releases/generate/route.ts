@@ -24,12 +24,13 @@ export async function POST(req: Request) {
     if (projectId && process.env.DATABASE_URL) {
       try {
         const { db } = await import("@/lib/db");
-        projectInfo = await db.project.findUnique({
-          where: { id: projectId },
-          select: { name: true, toneGuide: true, customPrompt: true },
+        const found = await db.query.projects.findFirst({
+          where: (p, { eq }) => eq(p.id, projectId),
+          columns: { name: true, toneGuide: true, customPrompt: true },
         });
+        projectInfo = found || null;
       } catch (dbErr) {
-        console.warn("Prisma DB lookup skipped or failed:", dbErr);
+        console.warn("Neon Drizzle lookup skipped or failed:", dbErr);
       }
     }
 
@@ -49,7 +50,7 @@ export async function POST(req: Request) {
     `;
 
     const result = streamObject({
-      model: google("gemini-3.6-flash"),
+      model: google("gemini-3.5-flash-lite"),
       schema: ChangelogSchema,
       system: systemPrompt,
       prompt: `Analyze the following raw git commits / PR notes and synthesize the structured multi-audience changelog:

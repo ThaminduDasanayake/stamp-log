@@ -1,24 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { db } from "@/lib/db";
 import {
-  Broadcast,
-  CheckCircle,
-  Briefcase,
-  User,
-  Code,
-  ShieldWarning,
-  ArrowLeft,
-  Clock,
-  GitCommit,
-  Tag,
-  ShareNetwork,
-  Pencil,
+  db,
+  HighlightItem,
+  BreakingChangeItem,
+  TechnicalUpdateItem,
+} from "@/lib/db";
+import {
+  ArrowLeftIcon,
+  BriefcaseIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  CodeIcon,
+  PencilIcon,
+  ShieldWarningIcon,
+  TagIcon,
+  UserIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AudienceMeter } from "@/components/ui/audience-meter";
 
 interface PageProps {
@@ -34,13 +36,18 @@ export async function generateMetadata({
   const { projectSlug, version } = await params;
   const decodedVersion = decodeURIComponent(version);
 
-  const release = await db.releaseNote.findFirst({
-    where: {
-      version: decodedVersion,
-      project: { slug: projectSlug },
+  const project = await db.query.projects.findFirst({
+    where: (p, { eq }) => eq(p.slug, projectSlug),
+    with: {
+      releaseNotes: {
+        where: (r, { eq }) => eq(r.version, decodedVersion),
+        limit: 1,
+      },
     },
-    include: { project: true },
   });
+
+  const releaseNote = project?.releaseNotes[0];
+  const release = releaseNote && project ? { ...releaseNote, project } : null;
 
   if (!release) {
     return { title: "Release Not Found — StampLog" };
@@ -81,82 +88,102 @@ export default async function PublicReleasePage({ params }: PageProps) {
   const { projectSlug, version } = await params;
   const decodedVersion = decodeURIComponent(version);
 
-  const release = await db.releaseNote.findFirst({
-    where: {
-      version: decodedVersion,
-      project: { slug: projectSlug },
+  const project = await db.query.projects.findFirst({
+    where: (p, { eq }) => eq(p.slug, projectSlug),
+    with: {
+      releaseNotes: {
+        where: (r, { eq }) => eq(r.version, decodedVersion),
+        limit: 1,
+      },
     },
-    include: { project: true },
   });
+
+  const releaseNote = project?.releaseNotes[0];
+  const release = releaseNote && project ? { ...releaseNote, project } : null;
 
   if (!release) {
     notFound();
   }
 
-  const userHighlights = (release.userHighlights as any[]) || [];
-  const userFixes = (release.userFixes as any[]) || [];
-  const breakingChanges = (release.breakingChanges as any[]) || [];
-  const technicalUpdates = (release.technicalUpdates as any[]) || [];
+  const userHighlights = (release.userHighlights as HighlightItem[]) || [];
+  const userFixes = (release.userFixes as string[]) || [];
+  const breakingChanges =
+    (release.breakingChanges as BreakingChangeItem[]) || [];
+  const technicalUpdates =
+    (release.technicalUpdates as TechnicalUpdateItem[]) || [];
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-indigo-500/20 selection:text-indigo-600">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#000000] text-[#171717] dark:text-[#ededed] flex flex-col font-sans selection:bg-[#171717] selection:text-white dark:selection:bg-white dark:selection:text-[#171717]">
       {/* Public Header */}
-      <header className="border-b border-border bg-card/60 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
-        <div className="max-w-[1000px] mx-auto flex items-center justify-between">
+      <header className="border-b border-[#ebebeb] dark:border-[#1f1f1f] bg-white/90 dark:bg-black/90 backdrop-blur-md sticky top-0 z-50 px-6 h-14 flex items-center justify-between">
+        <div className="max-w-[900px] w-full mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link
               href={`/p/${projectSlug}`}
-              className="hover:opacity-80 transition-opacity"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             >
-              <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-md shadow-indigo-500/20">
-                <Broadcast className="h-5 w-5" weight="bold" />
+              <div className="h-6 w-6 bg-[#171717] dark:bg-white flex items-center justify-center rounded-[3px]">
+                <svg
+                  className="h-3.5 w-3.5 fill-white dark:fill-black"
+                  viewBox="0 0 76 65"
+                  aria-hidden="true"
+                >
+                  <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
+                </svg>
               </div>
             </Link>
             <div>
               <Link href={`/p/${projectSlug}`} className="hover:underline">
-                <h1 className="text-base font-bold tracking-tight text-foreground flex items-center gap-2">
+                <h1 className="text-sm font-medium tracking-tight text-[#171717] dark:text-white flex items-center gap-2">
                   {release.project.name}
-                  <Badge variant="outline" className="font-mono text-xs">
+                  <Badge variant="pixel" className="text-[10px]">
                     {release.version}
                   </Badge>
                 </h1>
               </Link>
-              <p className="text-xs text-muted-foreground">
-                Official Customer Changelog & Release Notes
-              </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <Link href={`/p/${projectSlug}/${encodeURIComponent(release.version)}/edit`}>
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs border-indigo-500/30 text-primary hover:bg-muted">
-                <Pencil className="h-4 w-4" weight="bold" /> Edit Release
+            <Link
+              href={`/p/${projectSlug}/${encodeURIComponent(release.version)}/edit`}
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 px-2.5 text-xs gap-1 font-medium"
+              >
+                <PencilIcon className="h-3 w-3" weight="bold" /> Edit
               </Button>
             </Link>
             <Link href={`/p/${projectSlug}`}>
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-                <ArrowLeft className="h-4 w-4" weight="bold" /> All Releases
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2.5 text-xs gap-1 text-[#666666] hover:text-[#171717] dark:text-[#888888] dark:hover:text-white"
+              >
+                <ArrowLeftIcon className="h-3 w-3" weight="bold" /> Changelogs
               </Button>
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Main Release Content Container */}
-      <main className="flex-1 max-w-[1000px] w-full mx-auto p-4 sm:p-8 space-y-8">
-        {/* Title & Metadata Header */}
-        <div className="space-y-3 border-b border-border pb-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="user" className="text-xs">
-              <CheckCircle
-                className="h-3.5 w-3.5 text-emerald-500"
+      {/* Main Release Content */}
+      <main className="flex-1 max-w-[900px] w-full mx-auto p-4 sm:p-8 space-y-8">
+        {/* Title Header */}
+        <div className="space-y-2 pb-6 border-b border-[#ebebeb] dark:border-[#1f1f1f]">
+          <div className="flex items-center gap-2">
+            <Badge variant="user" className="text-[11px]">
+              <CheckCircleIcon
+                className="h-3 w-3 text-[#00876c]"
                 weight="fill"
               />
-              Published Release
+              Published
             </Badge>
             {release.publishedAt && (
-              <span className="text-xs text-muted-foreground flex items-center gap-1">
-                <Clock className="h-3.5 w-3.5" weight="bold" />
+              <span className="text-[11px] font-mono text-[#8f8f8f] flex items-center gap-1">
+                <ClockIcon className="h-3 w-3" weight="bold" />
                 {new Date(release.publishedAt).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
@@ -166,22 +193,22 @@ export default async function PublicReleasePage({ params }: PageProps) {
             )}
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+          <h1 className="text-3xl font-medium tracking-tight text-[#171717] dark:text-white">
             {release.title}
           </h1>
         </div>
 
-        {/* Executive Summary Card */}
+        {/* Executive Summary */}
         {release.executiveSummary && (
-          <Card className="border-amber-500/30 bg-amber-500/5 shadow-sm">
+          <Card className="bg-[#fafafa] dark:bg-[#080808]">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider flex items-center gap-2">
-                <Briefcase className="h-4 w-4" weight="bold" /> Strategic
+              <CardTitle className="text-xs font-medium text-[#bd5200] uppercase tracking-wider flex items-center gap-1.5">
+                <BriefcaseIcon className="h-3.5 w-3.5" weight="bold" />
                 Executive Summary
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm font-medium text-foreground leading-relaxed">
+              <p className="text-xs text-[#171717] dark:text-[#ededed] leading-relaxed">
                 {release.executiveSummary}
               </p>
               <AudienceMeter
@@ -194,50 +221,53 @@ export default async function PublicReleasePage({ params }: PageProps) {
           </Card>
         )}
 
-        {/* Customer Highlights Section */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-            <User className="h-5 w-5 text-emerald-500" weight="bold" />
-            Customer Highlights & Improvements
+        {/* Customer Highlights */}
+        <div className="space-y-3">
+          <h2 className="text-base font-medium text-[#171717] dark:text-white flex items-center gap-2">
+            <UserIcon className="h-4 w-4 text-[#00876c]" weight="bold" />
+            Customer Highlights &amp; Improvements
           </h2>
 
           {userHighlights.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {userHighlights.map((h, idx) => (
                 <Card
                   key={idx}
-                  className="border-emerald-500/20 bg-card hover:shadow-md transition-shadow"
+                  className="hover:border-[#8f8f8f] transition-all"
                 >
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
-                      <Tag className="h-4 w-4 text-emerald-500" weight="bold" />
-                      {h?.feature || "Feature Feature"}
+                    <CardTitle className="text-xs font-medium text-[#171717] dark:text-[#ededed] flex items-center gap-1.5">
+                      <TagIcon
+                        className="h-3.5 w-3.5 text-[#00876c]"
+                        weight="bold"
+                      />
+                      {h?.feature || "Feature"}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {h?.benefit || "User benefit detail"}
+                    <p className="text-xs text-[#666666] dark:text-[#888888] leading-relaxed">
+                      {h?.benefit || "Detail"}
                     </p>
                   </CardContent>
                 </Card>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground italic">
+            <p className="text-xs text-[#8f8f8f] italic">
               No customer highlights for this release.
             </p>
           )}
 
-          {/* User Bug Fixes */}
+          {/* User Fixes */}
           {userFixes.length > 0 && (
-            <Card className="mt-4">
+            <Card className="mt-3">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-semibold text-foreground">
-                  Resolved Issues & Fixes
+                <CardTitle className="text-xs font-medium text-[#666666] dark:text-[#888888] uppercase tracking-wider">
+                  Resolved Issues &amp; Bug Fixes
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="list-disc pl-5 text-xs text-muted-foreground space-y-1.5">
+                <ul className="list-disc pl-4 text-xs text-[#666666] dark:text-[#888888] space-y-1">
                   {userFixes.map((fix, idx) => (
                     <li key={idx}>{fix}</li>
                   ))}
@@ -249,25 +279,24 @@ export default async function PublicReleasePage({ params }: PageProps) {
 
         {/* Developer Notes & Breaking Changes */}
         {(breakingChanges.length > 0 || technicalUpdates.length > 0) && (
-          <div className="space-y-4 pt-4 border-t border-border">
-            <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-              <Code className="h-5 w-5 text-indigo-500" weight="bold" />
-              Developer & Technical Notes
+          <div className="space-y-4 pt-4 border-t border-[#ebebeb] dark:border-[#1f1f1f]">
+            <h2 className="text-base font-medium text-[#171717] dark:text-white flex items-center gap-2">
+              <CodeIcon className="h-4 w-4 text-[#0070f3]" weight="bold" />
+              Developer &amp; Technical Notes
             </h2>
 
-            {/* Breaking Changes */}
             {breakingChanges.length > 0 && (
-              <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 space-y-3">
-                <h3 className="text-xs font-bold text-destructive uppercase tracking-wider flex items-center gap-2">
-                  <ShieldWarning className="h-4 w-4" weight="bold" /> Breaking
-                  Changes
+              <div className="p-3.5 rounded-[4px] bg-[#ee0000]/5 border border-[#ee0000]/20 space-y-2">
+                <h3 className="text-xs font-medium text-[#ee0000] flex items-center gap-1.5">
+                  <ShieldWarningIcon className="h-3.5 w-3.5" weight="bold" />
+                  Breaking Changes
                 </h3>
                 {breakingChanges.map((b, idx) => (
                   <div key={idx} className="text-xs space-y-1">
-                    <code className="bg-background px-2 py-0.5 rounded text-destructive font-mono font-semibold">
+                    <code className="bg-white dark:bg-black px-1.5 py-0.5 rounded text-[#ee0000] font-mono text-[11px] border border-[#ee0000]/20">
                       {b?.target}
                     </code>
-                    <p className="text-muted-foreground pl-3 border-l-2 border-destructive/40">
+                    <p className="text-[#666666] dark:text-[#888888] pl-1">
                       {b?.migrationStep}
                     </p>
                   </div>
@@ -275,19 +304,18 @@ export default async function PublicReleasePage({ params }: PageProps) {
               </div>
             )}
 
-            {/* Technical Updates */}
             {technicalUpdates.length > 0 && (
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-semibold text-foreground">
-                    Infrastructure & Internal Scopes
+                  <CardTitle className="text-xs font-medium text-[#666666] dark:text-[#888888] uppercase tracking-wider">
+                    Infrastructure Scopes
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {technicalUpdates.map((u, idx) => (
                     <div
                       key={idx}
-                      className="p-2.5 rounded-lg bg-muted/40 border border-border/60 flex items-start gap-2.5 text-xs"
+                      className="p-2 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222] flex items-start gap-2 text-xs"
                     >
                       <Badge
                         variant="dev"
@@ -295,7 +323,9 @@ export default async function PublicReleasePage({ params }: PageProps) {
                       >
                         {u?.scope}
                       </Badge>
-                      <span className="text-muted-foreground">{u?.detail}</span>
+                      <span className="text-[#666666] dark:text-[#888888]">
+                        {u?.detail}
+                      </span>
                     </div>
                   ))}
                 </CardContent>
@@ -305,12 +335,8 @@ export default async function PublicReleasePage({ params }: PageProps) {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border py-6 text-center text-xs text-muted-foreground">
-        <p className="font-medium text-foreground">stamplog</p>
-        <p className="mt-1 opacity-80">
-          Official AI release notes from raw git logs.
-        </p>
+      <footer className="border-t border-[#ebebeb] dark:border-[#1f1f1f] py-6 text-center text-xs text-[#8f8f8f]">
+        <p>stamplog • Release Intelligence</p>
       </footer>
     </div>
   );

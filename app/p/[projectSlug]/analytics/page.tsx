@@ -1,22 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { db } from "@/lib/db";
+import { db, HighlightItem, BreakingChangeItem } from "@/lib/db";
 import {
-  Broadcast,
-  Lightning,
-  CheckCircle,
-  ShieldWarning,
-  ArrowLeft,
-  Clock,
-  ChartBar,
-  User,
-  Bug,
-  Sparkle,
+  ArrowLeftIcon,
+  ChartBarIcon,
+  CheckCircleIcon,
+  LightningIcon,
+  ShieldWarningIcon,
+  UserIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PageProps {
   params: Promise<{
@@ -24,9 +20,13 @@ interface PageProps {
   }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { projectSlug } = await params;
-  const project = await db.project.findFirst({ where: { slug: projectSlug } });
+  const project = await db.query.projects.findFirst({
+    where: (p, { eq }) => eq(p.slug, projectSlug),
+  });
   return {
     title: `Analytics & Shipping Velocity — ${project?.name || "StampLog"}`,
   };
@@ -35,11 +35,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ProjectAnalyticsPage({ params }: PageProps) {
   const { projectSlug } = await params;
 
-  const project = await db.project.findFirst({
-    where: { slug: projectSlug },
-    include: {
+  const project = await db.query.projects.findFirst({
+    where: (p, { eq }) => eq(p.slug, projectSlug),
+    with: {
       releaseNotes: {
-        orderBy: { createdAt: "desc" },
+        orderBy: (r, { desc }) => [desc(r.createdAt)],
       },
     },
   });
@@ -49,18 +49,16 @@ export default async function ProjectAnalyticsPage({ params }: PageProps) {
   }
 
   const releases = project.releaseNotes || [];
-  const totalReleases = releases.length;
   const publishedReleases = releases.filter((r) => r.status === "PUBLISHED");
-  const draftReleases = releases.filter((r) => r.status === "DRAFT");
 
   let totalFeatures = 0;
   let totalFixes = 0;
   let totalBreaking = 0;
 
   releases.forEach((r) => {
-    totalFeatures += ((r.userHighlights as any[]) || []).length;
-    totalFixes += ((r.userFixes as any[]) || []).length;
-    totalBreaking += ((r.breakingChanges as any[]) || []).length;
+    totalFeatures += ((r.userHighlights as HighlightItem[]) || []).length;
+    totalFixes += ((r.userFixes as string[]) || []).length;
+    totalBreaking += ((r.breakingChanges as BreakingChangeItem[]) || []).length;
   });
 
   const totalContentItems = totalFeatures + totalFixes + totalBreaking || 1;
@@ -68,45 +66,62 @@ export default async function ProjectAnalyticsPage({ params }: PageProps) {
   const fixPercent = Math.round((totalFixes / totalContentItems) * 100);
   const breakingPercent = Math.max(0, 100 - featurePercent - fixPercent);
 
-  // Velocity calculation
   let avgDaysBetweenReleases = 3.5;
   if (publishedReleases.length > 1) {
     const dates = publishedReleases
-      .map((r) => (r.publishedAt ? new Date(r.publishedAt).getTime() : new Date(r.createdAt).getTime()))
+      .map((r) =>
+        r.publishedAt
+          ? new Date(r.publishedAt).getTime()
+          : new Date(r.createdAt).getTime(),
+      )
       .sort((a, b) => b - a);
     const firstDate = dates[dates.length - 1];
     const lastDate = dates[0];
     const totalSpanDays = (lastDate - firstDate) / (1000 * 60 * 60 * 24);
-    avgDaysBetweenReleases = Math.round((totalSpanDays / (publishedReleases.length - 1)) * 10) / 10 || 2.4;
+    avgDaysBetweenReleases =
+      Math.round((totalSpanDays / (publishedReleases.length - 1)) * 10) / 10 ||
+      2.4;
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-indigo-500/20 selection:text-indigo-600">
-      
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#000000] text-[#171717] dark:text-[#ededed] flex flex-col font-sans selection:bg-[#171717] selection:text-white dark:selection:bg-white dark:selection:text-[#171717]">
       {/* Header */}
-      <header className="border-b border-border bg-card/60 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
-        <div className="max-w-[1100px] mx-auto flex items-center justify-between">
+      <header className="border-b border-[#ebebeb] dark:border-[#1f1f1f] bg-white/90 dark:bg-black/90 backdrop-blur-md sticky top-0 z-50 px-6 h-14 flex items-center justify-between">
+        <div className="max-w-[1000px] w-full mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href={`/p/${projectSlug}`} className="hover:opacity-80 transition-opacity">
-              <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-md shadow-indigo-500/20">
-                <Broadcast className="h-5 w-5" weight="bold" />
+            <Link
+              href={`/p/${projectSlug}`}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            >
+              <div className="h-6 w-6 bg-[#171717] dark:bg-white flex items-center justify-center rounded-[3px]">
+                <svg
+                  className="h-3.5 w-3.5 fill-white dark:fill-black"
+                  viewBox="0 0 76 65"
+                  aria-hidden="true"
+                >
+                  <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
+                </svg>
               </div>
             </Link>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+              <h1 className="text-sm font-medium tracking-tight text-[#171717] dark:text-white flex items-center gap-2">
                 {project.name}
-                <Badge variant="dev" className="font-mono text-xs">
+                <Badge variant="pixel" className="text-[10px]">
                   Analytics
                 </Badge>
               </h1>
-              <p className="text-xs text-muted-foreground">Release Velocity &amp; Shipping Health Metrics</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             <Link href={`/p/${projectSlug}`}>
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-                <ArrowLeft className="h-4 w-4" weight="bold" /> Project Changelogs
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2.5 text-xs gap-1.5 text-[#666666] hover:text-[#171717] dark:text-[#888888] dark:hover:text-white"
+              >
+                <ArrowLeftIcon className="h-3.5 w-3.5" weight="bold" /> Project
+                Feed
               </Button>
             </Link>
           </div>
@@ -114,109 +129,151 @@ export default async function ProjectAnalyticsPage({ params }: PageProps) {
       </header>
 
       {/* Main Analytics Content */}
-      <main className="flex-1 max-w-[1100px] w-full mx-auto p-4 sm:p-8 space-y-8">
-        
-        {/* KPI Cards Grid */}
+      <main className="flex-1 max-w-[1000px] w-full mx-auto p-4 sm:p-8 space-y-6">
+        <div className="space-y-1 pb-4 border-b border-[#ebebeb] dark:border-[#1f1f1f]">
+          <h2 className="text-2xl font-medium tracking-tight text-[#171717] dark:text-white">
+            Release Analytics
+          </h2>
+          <p className="text-xs text-[#666666] dark:text-[#888888]">
+            Deployment cadence, feature throughput, and breaking change metrics.
+          </p>
+        </div>
+
+        {/* Metric Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          
-          <Card className="border-indigo-500/30 bg-card shadow-sm">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
-                <span>Shipping Velocity</span>
-                <Lightning className="h-4 w-4 text-primary" weight="bold" />
+              <CardTitle className="text-xs font-medium uppercase tracking-wider text-[#666666] dark:text-[#888888] flex items-center justify-between">
+                <span>Velocity</span>
+                <LightningIcon
+                  className="h-3.5 w-3.5 text-[#0070f3]"
+                  weight="bold"
+                />
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-black text-foreground font-mono">
-                {avgDaysBetweenReleases} <span className="text-xs font-normal text-muted-foreground">days/release</span>
+              <div className="text-2xl font-mono text-[#171717] dark:text-[#ededed]">
+                {avgDaysBetweenReleases}{" "}
+                <span className="text-xs font-normal text-[#8f8f8f]">
+                  days/rel
+                </span>
               </div>
-              <p className="text-[11px] text-muted-foreground mt-1">Average deployment interval</p>
+              <p className="text-[11px] text-[#8f8f8f] mt-1">
+                Average ship interval
+              </p>
             </CardContent>
           </Card>
 
-          <Card className="border-emerald-500/30 bg-card shadow-sm">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
-                <span>Published Releases</span>
-                <CheckCircle className="h-4 w-4 text-emerald-500" weight="bold" />
+              <CardTitle className="text-xs font-medium uppercase tracking-wider text-[#666666] dark:text-[#888888] flex items-center justify-between">
+                <span>Releases</span>
+                <CheckCircleIcon
+                  className="h-3.5 w-3.5 text-[#00876c]"
+                  weight="fill"
+                />
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-black text-foreground font-mono">
-                {publishedReleases.length} <span className="text-xs font-normal text-muted-foreground">shipped</span>
+              <div className="text-2xl font-mono text-[#171717] dark:text-[#ededed]">
+                {publishedReleases.length}{" "}
+                <span className="text-xs font-normal text-[#8f8f8f]">
+                  shipped
+                </span>
               </div>
-              <p className="text-[11px] text-muted-foreground mt-1">Total live version tags</p>
+              <p className="text-[11px] text-[#8f8f8f] mt-1">
+                Total published versions
+              </p>
             </CardContent>
           </Card>
 
-          <Card className="border-amber-500/30 bg-card shadow-sm">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
-                <span>User Features</span>
-                <User className="h-4 w-4 text-amber-500" weight="bold" />
+              <CardTitle className="text-xs font-medium uppercase tracking-wider text-[#666666] dark:text-[#888888] flex items-center justify-between">
+                <span>Features</span>
+                <UserIcon
+                  className="h-3.5 w-3.5 text-[#bd5200]"
+                  weight="bold"
+                />
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-black text-foreground font-mono">
-                {totalFeatures} <span className="text-xs font-normal text-muted-foreground">highlights</span>
+              <div className="text-2xl font-mono text-[#171717] dark:text-[#ededed]">
+                {totalFeatures}{" "}
+                <span className="text-xs font-normal text-[#8f8f8f]">
+                  items
+                </span>
               </div>
-              <p className="text-[11px] text-muted-foreground mt-1">Customer value items shipped</p>
+              <p className="text-[11px] text-[#8f8f8f] mt-1">
+                Customer highlights shipped
+              </p>
             </CardContent>
           </Card>
 
-          <Card className="border-rose-500/30 bg-card shadow-sm">
+          <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
-                <span>Breaking Changes</span>
-                <ShieldWarning className="h-4 w-4 text-rose-500" weight="bold" />
+              <CardTitle className="text-xs font-medium uppercase tracking-wider text-[#666666] dark:text-[#888888] flex items-center justify-between">
+                <span>Breaking</span>
+                <ShieldWarningIcon
+                  className="h-3.5 w-3.5 text-[#ee0000]"
+                  weight="bold"
+                />
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-black text-foreground font-mono">
-                {totalBreaking} <span className="text-xs font-normal text-muted-foreground">items</span>
+              <div className="text-2xl font-mono text-[#171717] dark:text-[#ededed]">
+                {totalBreaking}{" "}
+                <span className="text-xs font-normal text-[#8f8f8f]">
+                  changes
+                </span>
               </div>
-              <p className="text-[11px] text-muted-foreground mt-1">Migration actions required</p>
+              <p className="text-[11px] text-[#8f8f8f] mt-1">
+                Contract changes tracked
+              </p>
             </CardContent>
           </Card>
-
         </div>
 
         {/* Content Ratio Breakdown */}
-        <Card className="shadow-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
-              <ChartBar className="h-5 w-5 text-primary" weight="bold" />
-              Content Impact Distribution Ratio
+        <Card>
+          <CardHeader className="pb-3 border-b border-[#ebebeb] dark:border-[#1f1f1f]">
+            <CardTitle className="text-xs font-medium uppercase tracking-wider text-[#666666] dark:text-[#888888] flex items-center gap-2">
+              <ChartBarIcon className="h-4 w-4 text-[#0070f3]" weight="bold" />
+              Content Impact Ratio
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            
-            {/* Visual Ratio Bar */}
-            <div className="h-4 w-full rounded-full bg-muted overflow-hidden flex shadow-inner">
-              <div style={{ width: `${featurePercent}%` }} className="bg-emerald-500 h-full transition-all" />
-              <div style={{ width: `${fixPercent}%` }} className="bg-amber-500 h-full transition-all" />
-              <div style={{ width: `${breakingPercent}%` }} className="bg-rose-500 h-full transition-all" />
+          <CardContent className="p-5 space-y-4">
+            <div className="h-2 w-full rounded-full bg-[#f0f0f0] dark:bg-[#1a1a1a] overflow-hidden flex">
+              <div
+                style={{ width: `${featurePercent}%` }}
+                className="bg-[#00876c] h-full transition-all"
+              />
+              <div
+                style={{ width: `${fixPercent}%` }}
+                className="bg-[#bd5200] h-full transition-all"
+              />
+              <div
+                style={{ width: `${breakingPercent}%` }}
+                className="bg-[#ee0000] h-full transition-all"
+              />
             </div>
 
-            {/* Legend */}
-            <div className="grid grid-cols-3 gap-4 pt-2 text-xs font-medium">
-              <div className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-full bg-emerald-500 shrink-0" />
-                <span>User Features ({featurePercent}%)</span>
+            <div className="grid grid-cols-3 gap-4 pt-1 text-xs font-mono text-[#666666] dark:text-[#888888]">
+              <div className="flex items-center gap-1.5">
+                <div className="h-1.5 w-1.5 rounded-full bg-[#00876c] shrink-0" />
+                <span>Features {featurePercent}%</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-full bg-amber-500 shrink-0" />
-                <span>Bug Fixes ({fixPercent}%)</span>
+              <div className="flex items-center gap-1.5">
+                <div className="h-1.5 w-1.5 rounded-full bg-[#bd5200] shrink-0" />
+                <span>Fixes {fixPercent}%</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-full bg-rose-500 shrink-0" />
-                <span>Breaking Changes ({breakingPercent}%)</span>
+              <div className="flex items-center gap-1.5">
+                <div className="h-1.5 w-1.5 rounded-full bg-[#ee0000] shrink-0" />
+                <span>Breaking {breakingPercent}%</span>
               </div>
             </div>
-
           </CardContent>
         </Card>
-
       </main>
     </div>
   );

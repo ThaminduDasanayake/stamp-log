@@ -1,7 +1,7 @@
 import { generateObject, embed } from "ai";
 import { google } from "@ai-sdk/google";
 import { ChangelogSchema } from "@/lib/schemas/changelog";
-import { db } from "@/lib/db";
+import { db, organizations, projects, releaseNotes } from "@/lib/db";
 
 export const runtime = "nodejs";
 
@@ -12,7 +12,10 @@ export async function POST(req: Request) {
     if (webhookSecret) {
       const authHeader = req.headers.get("authorization");
       if (!authHeader || authHeader !== `Bearer ${webhookSecret}`) {
-        return Response.json({ success: false, error: "Unauthorized automated webhook token" }, { status: 401 });
+        return Response.json(
+          { success: false, error: "Unauthorized automated webhook token" },
+          { status: 401 },
+        );
       }
     }
 
@@ -26,30 +29,38 @@ export async function POST(req: Request) {
     } = body;
 
     if (!rawCommits || typeof rawCommits !== "string") {
-      return Response.json({ success: false, error: "Missing required rawCommits payload string" }, { status: 400 });
+      return Response.json(
+        { success: false, error: "Missing required rawCommits payload string" },
+        { status: 400 },
+      );
     }
 
     // 2. Fetch or create project
-    let project = await db.project.findFirst({
-      where: { slug: projectSlug },
+    let project = await db.query.projects.findFirst({
+      where: (p, { eq }) => eq(p.slug, projectSlug),
     });
 
     if (!project) {
-      let org = await db.organization.findFirst();
+      let org = await db.query.organizations.findFirst();
       if (!org) {
-        org = await db.organization.create({
-          data: { name: "Default Organization", slug: "default-org" },
-        });
+        const [newOrg] = await db
+          .insert(organizations)
+          .values({ name: "Default Organization", slug: "default-org" })
+          .returning();
+        org = newOrg;
       }
-      project = await db.project.create({
-        data: {
+      const [newProject] = await db
+        .insert(projects)
+        .values({
           orgId: org.id,
           name: projectName,
           slug: projectSlug,
           description: "Automated StampLog Workspace",
-          toneGuide: "Professional, engaging for users, and technically clear for developers.",
-        },
-      });
+          toneGuide:
+            "Professional, engaging for users, and technically clear for developers.",
+        })
+        .returning();
+      project = newProject;
     }
 
     const systemPrompt = `
@@ -65,9 +76,9 @@ export async function POST(req: Request) {
       3. Lead user-facing highlights with clear user benefits rather than implementation details.
     `;
 
-    // 3. Generate structured changelog via Gemini 3.6 Flash synchronously
+    // 3. Generate structured changelog via Gemini 3.5 Flash Lite synchronously
     const { object: changelog } = await generateObject({
-      model: google("gemini-3.6-flash"),
+      model: google("gemini-3.5-flash-lite"),
       schema: ChangelogSchema,
       system: systemPrompt,
       prompt: `Analyze the following raw git commits and synthesize the structured changelog for version ${version}:\n\n${rawCommits}`,
@@ -87,8 +98,9 @@ export async function POST(req: Request) {
     }
 
     // 5. Save ReleaseNote to PostgreSQL
-    const releaseNote = await db.releaseNote.create({
-      data: {
+    const [releaseNote] = await db
+      .insert(releaseNotes)
+      .values({
         projectId: project.id,
         version: changelog.version || version,
         title: changelog.title || "New Automated Release",
@@ -98,23 +110,14 @@ export async function POST(req: Request) {
         userFixes: changelog.userFacing.fixes || [],
         breakingChanges: changelog.developerFacing.breakingChanges || [],
         technicalUpdates: changelog.developerFacing.technicalUpdates || [],
+        embedding:
+          embeddingVector && embeddingVector.length === 768
+            ? embeddingVector
+            : null,
         status: status === "PUBLISHED" ? "PUBLISHED" : "DRAFT",
         publishedAt: status === "PUBLISHED" ? new Date() : null,
-      },
-    });
-
-    if (embeddingVector && embeddingVector.length === 768) {
-      try {
-        const vectorString = `[${embeddingVector.join(",")}]`;
-        await db.$executeRawUnsafe(
-          `UPDATE "ReleaseNote" SET embedding = $1::vector WHERE id = $2`,
-          vectorString,
-          releaseNote.id
-        );
-      } catch (sqlErr) {
-        console.warn("Vector insertion skipped:", sqlErr);
-      }
-    }
+      })
+      .returning();
 
     return Response.json({
       success: true,
@@ -130,6 +133,9 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Error in automated release ingestion:", error);
-    return Response.json({ success: false, error: "Internal Server Error" }, { status: 500 });
+    return Response.json(
+      { success: false, error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

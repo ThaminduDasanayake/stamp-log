@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
+  BookOpenIcon,
   GithubLogoIcon,
-  SignOutIcon,
-  GearIcon,
   PaletteIcon,
   PlusIcon,
-  BookOpenIcon,
+  SignOutIcon,
   UserIcon,
 } from "@phosphor-icons/react";
 
@@ -21,6 +21,7 @@ interface UserProfile {
 }
 
 export function UserProfileMenu() {
+  const router = useRouter();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -29,7 +30,6 @@ export function UserProfileMenu() {
     fetch("/api/auth/me")
       .then((res) => res.json())
       .then((data) => {
-        console.log("🎨 Frontend Profile Response (/api/auth/me):", data);
         if (data.authenticated && data.user) {
           setUser(data.user);
         }
@@ -50,86 +50,85 @@ export function UserProfileMenu() {
 
   const handleSignOut = () => {
     document.cookie = "stamplog_session=; path=/; max-age=0";
-    window.location.href = "/login";
+    router.push("/login");
   };
 
   const userName = user?.name || user?.username || "Developer";
-  const userHandle = user?.email || (user?.username ? `@${user.username}` : "Signed In");
+  const userHandle =
+    user?.email || (user?.username ? `@${user.username}` : "Signed In");
 
   return (
     <div className="relative font-sans" ref={menuRef}>
-      
-      {/* Trigger: ONLY the User Avatar Image */}
+      {/* Trigger: User Avatar */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative h-8 w-8 rounded-full overflow-hidden border border-border/80 hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all shadow-sm shrink-0 bg-muted flex items-center justify-center"
+        className="relative h-7 w-7 rounded-full overflow-hidden border border-[#ebebeb] dark:border-[#262626] hover:border-[#171717] dark:hover:border-white focus:outline-none focus:ring-1 focus:ring-[#0070f3] transition-all shrink-0 bg-[#fafafa] dark:bg-[#111111] flex items-center justify-center cursor-pointer"
         title={userName}
       >
         {user?.avatarUrl ? (
           <Image
             src={user.avatarUrl}
             alt={userName}
-            width={32}
-            height={32}
+            width={28}
+            height={28}
             className="object-cover h-full w-full"
             unoptimized
           />
         ) : (
-          <UserIcon className="h-4 w-4 text-muted-foreground" weight="bold" />
+          <UserIcon className="h-3.5 w-3.5 text-[#8f8f8f]" weight="bold" />
         )}
       </button>
 
-      {/* Dropdown Menu */}
+      {/* Vercel-Style Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-card border border-border/80 rounded-2xl shadow-2xl p-2 z-50 space-y-1 backdrop-blur-md">
-          
+        <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#0a0a0a] border border-[#ebebeb] dark:border-[#1f1f1f] rounded-[6px] shadow-[0_4px_16px_0_rgba(0,0,0,0.08)] p-1.5 z-50 space-y-0.5">
           {/* Header Profile Info */}
-          <div className="p-3 border-b border-border/60 flex items-start justify-between gap-2">
-            <div className="space-y-0.5 overflow-hidden">
-              <p className="text-xs font-bold text-foreground truncate">{userName}</p>
-              <p className="text-[11px] font-mono text-muted-foreground truncate">{userHandle}</p>
-            </div>
-            <Link
-              href="/projects/import"
-              onClick={() => setIsOpen(false)}
-              className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              title="Settings & Import"
-            >
-              <GearIcon className="h-4 w-4" weight="bold" />
-            </Link>
+          <div className="px-2.5 py-2 border-b border-[#ebebeb] dark:border-[#1f1f1f] space-y-0.5">
+            <p className="text-xs font-medium text-[#171717] dark:text-[#ededed] truncate">
+              {userName}
+            </p>
+            <p className="text-[11px] font-mono text-[#8f8f8f] truncate">
+              {userHandle}
+            </p>
           </div>
 
           {/* Menu Links */}
-          <div className="py-1 space-y-0.5">
+          <div className="py-1">
             {user?.username && (
               <a
                 href={`https://github.com/${user.username}`}
                 target="_blank"
                 rel="noreferrer"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                className="flex items-center justify-between px-2.5 py-1.5 rounded-[4px] text-xs text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white hover:bg-[#fafafa] dark:hover:bg-[#141414] transition-colors"
               >
                 <span>GitHub Profile</span>
-                <GithubLogoIcon className="h-4 w-4" weight="bold" />
+                <GithubLogoIcon
+                  className="h-3.5 w-3.5 text-[#8f8f8f]"
+                  weight="bold"
+                />
               </a>
             )}
 
             <Link
               href="/projects/import"
               onClick={() => setIsOpen(false)}
-              className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              className="flex items-center justify-between px-2.5 py-1.5 rounded-[4px] text-xs text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white hover:bg-[#fafafa] dark:hover:bg-[#141414] transition-colors"
             >
-              <span>Import New Project</span>
-              <PlusIcon className="h-4 w-4 text-primary" weight="bold" />
+              <span>Import Project</span>
+              <PlusIcon className="h-3.5 w-3.5 text-[#8f8f8f]" weight="bold" />
             </Link>
 
             <Link
               href="/design-system"
               onClick={() => setIsOpen(false)}
-              className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              className="flex items-center justify-between px-2.5 py-1.5 rounded-[4px] text-xs text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white hover:bg-[#fafafa] dark:hover:bg-[#141414] transition-colors"
             >
               <span>Design System</span>
-              <PaletteIcon className="h-4 w-4" weight="bold" />
+              <PaletteIcon
+                className="h-3.5 w-3.5 text-[#8f8f8f]"
+                weight="bold"
+              />
             </Link>
 
             <a
@@ -137,33 +136,26 @@ export function UserProfileMenu() {
               target="_blank"
               rel="noreferrer"
               onClick={() => setIsOpen(false)}
-              className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              className="flex items-center justify-between px-2.5 py-1.5 rounded-[4px] text-xs text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white hover:bg-[#fafafa] dark:hover:bg-[#141414] transition-colors"
             >
-              <span>Documentation &amp; Help</span>
-              <BookOpenIcon className="h-4 w-4" weight="bold" />
+              <span>Documentation</span>
+              <BookOpenIcon
+                className="h-3.5 w-3.5 text-[#8f8f8f]"
+                weight="bold"
+              />
             </a>
           </div>
 
           {/* Log Out Option */}
-          <div className="pt-1 border-t border-border/60">
+          <div className="pt-1 border-t border-[#ebebeb] dark:border-[#1f1f1f]">
             <button
               onClick={handleSignOut}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
+              className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-[4px] text-xs text-[#ee0000] hover:bg-[#ee0000]/8 transition-colors cursor-pointer"
             >
               <span>Log Out</span>
-              <SignOutIcon className="h-4 w-4" weight="bold" />
+              <SignOutIcon className="h-3.5 w-3.5" weight="bold" />
             </button>
           </div>
-
-          {/* Footer Status Badge */}
-          <div className="pt-2 px-3 pb-1 border-t border-border/40 flex items-center justify-between text-[10px] text-muted-foreground">
-            <span className="flex items-center gap-1.5 text-emerald-500 font-semibold">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              All systems normal.
-            </span>
-            <span className="font-mono text-muted-foreground/70">v1.2.0</span>
-          </div>
-
         </div>
       )}
     </div>

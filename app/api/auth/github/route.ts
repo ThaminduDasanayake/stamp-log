@@ -44,5 +44,7 @@ export async function GET(req: Request) {
   }
 
   // 3. Fallback: Prompt user to authenticate via GitHub
-  return NextResponse.redirect(new URL("/login?error=no_github_credentials", req.url));
+  return NextResponse.redirect(
+    new URL("/login?error=no_github_credentials", req.url),
+  );
 }

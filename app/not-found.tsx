@@ -1,65 +1,36 @@
 import Link from "next/link";
-import {
-  CompassIcon,
-  HouseIcon,
-  MagnifyingGlassIcon,
-} from "@phosphor-icons/react/dist/ssr";
+import { HouseIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 sm:p-8 font-sans selection:bg-indigo-500/20 selection:text-indigo-600">
-      <div className="max-w-md w-full text-center space-y-6">
-        {/* Brand Icon & Error Badge */}
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-16 w-16 rounded-2xl bg-accent border border-indigo-500/20 flex items-center justify-center text-primary shadow-lg shadow-indigo-500/10 animate-bounce">
-            <CompassIcon className="h-8 w-8 text-primary" weight="duotone" />
-          </div>
-          <Badge variant="destructive" className="font-mono text-xs px-3 py-1">
-            404 — Page Not Found
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#000000] text-[#171717] dark:text-[#ededed] flex flex-col items-center justify-center p-4 sm:p-6 font-sans selection:bg-[#171717] selection:text-white dark:selection:bg-white dark:selection:text-[#171717]">
+      <div className="max-w-sm w-full text-center space-y-5">
+        <div className="flex flex-col items-center gap-2">
+          <Badge variant="pixel" className="text-[11px] px-2.5 py-1">
+            404 NOT_FOUND
           </Badge>
-        </div>
-
-        {/* Heading & Explanation */}
-        <div className="space-y-2">
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-            Lost Signal in space
+          <h1 className="text-2xl font-medium tracking-tight text-[#171717] dark:text-white mt-2">
+            This page could not be found.
           </h1>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            The release note, route, or changelog version you are looking for
-            has either been moved, unlisted, or does not exist.
+          <p className="text-xs text-[#666666] dark:text-[#888888] leading-relaxed">
+            The release note, route, or changelog version does not exist.
           </p>
         </div>
 
-        {/* Code Snippet Box */}
-        <div className="p-3.5 rounded-xl bg-muted/60 border border-border/80 text-left font-mono text-xs text-muted-foreground space-y-1">
-          <div className="flex items-center gap-1.5 text-destructive font-semibold">
-            <MagnifyingGlassIcon className="h-3.5 w-3.5" weight="bold" />
-            <span>HTTP status: 404 NOT_FOUND</span>
-          </div>
-          <p className="text-[11px] opacity-80">
-            Target route signal was lost before reaching StampLog server.
-          </p>
-        </div>
-
-        {/* Navigation Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-          <Link href="/" className="w-full sm:w-auto">
+        <div className="pt-2">
+          <Link href="/">
             <Button
               variant="default"
-              className="w-full gap-2 shadow-md shadow-indigo-500/20"
+              size="sm"
+              className="h-9 px-4 gap-2 text-xs font-medium"
             >
-              <HouseIcon className="h-4 w-4" weight="bold" /> Return to
-              Workbench
+              <HouseIcon className="h-3.5 w-3.5" weight="bold" />
+              Return Home
             </Button>
           </Link>
         </div>
-
-        {/* Footer info */}
-        <p className="text-[11px] text-muted-foreground pt-4 border-t border-border/60">
-          stamplog • Official AI release notes from raw git logs
-        </p>
       </div>
     </div>
   );
