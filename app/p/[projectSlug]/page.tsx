@@ -27,8 +27,8 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { projectSlug } = await params;
 
-  const project = await db.project.findFirst({
-    where: { slug: projectSlug },
+  const project = await db.query.projects.findFirst({
+    where: (p, { eq }) => eq(p.slug, projectSlug),
   });
 
   return {
@@ -40,11 +40,11 @@ export async function generateMetadata({
 export default async function PublicProjectReleasesPage({ params }: PageProps) {
   const { projectSlug } = await params;
 
-  const project = await db.project.findFirst({
-    where: { slug: projectSlug },
-    include: {
+  const project = await db.query.projects.findFirst({
+    where: (p, { eq }) => eq(p.slug, projectSlug),
+    with: {
       releaseNotes: {
-        orderBy: { createdAt: "desc" },
+        orderBy: (r, { desc }) => [desc(r.createdAt)],
       },
     },
   });

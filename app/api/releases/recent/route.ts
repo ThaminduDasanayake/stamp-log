@@ -7,30 +7,31 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const projectSlug = searchParams.get("projectSlug") || "demo";
 
-    const releases = await db.releaseNote.findMany({
-      where: {
-        project: { slug: projectSlug },
-      },
-      orderBy: { createdAt: "desc" },
-      take: 10,
-      select: {
-        id: true,
-        version: true,
-        title: true,
-        rawCommits: true,
-        executiveSummary: true,
-        userHighlights: true,
-        userFixes: true,
-        breakingChanges: true,
-        technicalUpdates: true,
-        status: true,
-        publishedAt: true,
-        createdAt: true,
+    const project = await db.query.projects.findFirst({
+      where: (p, { eq }) => eq(p.slug, projectSlug),
+      with: {
+        releaseNotes: {
+          orderBy: (r, { desc }) => [desc(r.createdAt)],
+          limit: 10,
+        },
       },
     });
 
+    const releases = project?.releaseNotes || [];
+
     const formatted = releases.map((rel) => ({
-      ...rel,
+      id: rel.id,
+      version: rel.version,
+      title: rel.title,
+      rawCommits: rel.rawCommits,
+      executiveSummary: rel.executiveSummary,
+      userHighlights: rel.userHighlights,
+      userFixes: rel.userFixes,
+      breakingChanges: rel.breakingChanges,
+      technicalUpdates: rel.technicalUpdates,
+      status: rel.status,
+      publishedAt: rel.publishedAt,
+      createdAt: rel.createdAt,
       publicUrl: `/p/${projectSlug}/${encodeURIComponent(rel.version)}`,
     }));
 

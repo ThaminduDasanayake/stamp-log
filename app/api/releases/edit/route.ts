@@ -1,6 +1,7 @@
 import { embed } from "ai";
 import { google } from "@ai-sdk/google";
-import { db } from "@/lib/db";
+import { db, releaseNotes } from "@/lib/db";
+import { eq } from "drizzle-orm";
 
 export const runtime = "nodejs";
 
@@ -24,9 +25,9 @@ export async function POST(req: Request) {
     }
 
     // 1. Fetch existing ReleaseNote
-    const existing = await db.releaseNote.findUnique({
-      where: { id: releaseId },
-      include: { project: true },
+    const existing = await db.query.releaseNotes.findFirst({
+      where: (r, { eq }) => eq(r.id, releaseId),
+      with: { project: true },
     });
 
     if (!existing) {
@@ -47,9 +48,9 @@ export async function POST(req: Request) {
     }
 
     // 3. Update ReleaseNote in PostgreSQL
-    const updated = await db.releaseNote.update({
-      where: { id: releaseId },
-      data: {
+    const [updated] = await db
+      .update(releaseNotes)
+      .set({
         version: version || existing.version,
         title: title || existing.title,
         executiveSummary: executiveSummary !== undefined ? executiveSummary : existing.executiveSummary,
@@ -57,23 +58,13 @@ export async function POST(req: Request) {
         userFixes: userFixes || existing.userFixes,
         breakingChanges: breakingChanges || existing.breakingChanges,
         technicalUpdates: technicalUpdates || existing.technicalUpdates,
-        status: status ? (status as any) : existing.status,
+        status: status ? status : existing.status,
         publishedAt: status === "PUBLISHED" && !existing.publishedAt ? new Date() : existing.publishedAt,
-      },
-    });
-
-    if (embeddingVector && embeddingVector.length === 768) {
-      try {
-        const vectorString = `[${embeddingVector.join(",")}]`;
-        await db.$executeRawUnsafe(
-          `UPDATE "ReleaseNote" SET embedding = $1::vector WHERE id = $2`,
-          vectorString,
-          updated.id
-        );
-      } catch (sqlErr) {
-        console.warn("Vector update skipped:", sqlErr);
-      }
-    }
+        embedding: embeddingVector && embeddingVector.length === 768 ? embeddingVector : existing.embedding,
+        updatedAt: new Date(),
+      })
+      .where(eq(releaseNotes.id, releaseId))
+      .returning();
 
     return Response.json({
       success: true,

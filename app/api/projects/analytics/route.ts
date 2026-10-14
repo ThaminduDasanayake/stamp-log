@@ -7,11 +7,11 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const projectSlug = searchParams.get("projectSlug") || "stamplog";
 
-    const project = await db.project.findFirst({
-      where: { slug: projectSlug },
-      include: {
+    const project = await db.query.projects.findFirst({
+      where: (p, { eq }) => eq(p.slug, projectSlug),
+      with: {
         releaseNotes: {
-          orderBy: { createdAt: "desc" },
+          orderBy: (r, { desc }) => [desc(r.createdAt)],
         },
       },
     });

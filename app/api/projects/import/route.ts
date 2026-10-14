@@ -1,4 +1,5 @@
-import { db } from "@/lib/db";
+import { db, organizations, projects } from "@/lib/db";
+import { eq } from "drizzle-orm";
 import { parseGitHubRepoUrl } from "@/lib/github";
 
 export const runtime = "nodejs";
@@ -21,32 +22,38 @@ export async function POST(req: Request) {
     const projectName = name || parsed.repo;
 
     // Ensure Organization exists
-    let org = await db.organization.findFirst();
+    let org = await db.query.organizations.findFirst();
     if (!org) {
-      org = await db.organization.create({
-        data: { name: "Default Organization", slug: "default-org" },
-      });
+      const [newOrg] = await db
+        .insert(organizations)
+        .values({ name: "Default Organization", slug: "default-org" })
+        .returning();
+      org = newOrg;
     }
 
     // Upsert Project in PostgreSQL
-    let project = await db.project.findFirst({
-      where: { slug },
+    let project = await db.query.projects.findFirst({
+      where: (p, { eq }) => eq(p.slug, slug),
     });
 
     if (project) {
-      project = await db.project.update({
-        where: { id: project.id },
-        data: {
+      const [updated] = await db
+        .update(projects)
+        .set({
           name: projectName,
           description: description || project.description,
           githubRepo: fullRepo,
           defaultBranch,
           toneGuide: toneGuide || project.toneGuide,
-        },
-      });
+          updatedAt: new Date(),
+        })
+        .where(eq(projects.id, project.id))
+        .returning();
+      project = updated;
     } else {
-      project = await db.project.create({
-        data: {
+      const [created] = await db
+        .insert(projects)
+        .values({
           orgId: org.id,
           name: projectName,
           slug,
@@ -56,8 +63,9 @@ export async function POST(req: Request) {
           toneGuide:
             toneGuide ||
             "Professional, concise, engaging for users, and technically rigorous for developers.",
-        },
-      });
+        })
+        .returning();
+      project = created;
     }
 
     return Response.json({

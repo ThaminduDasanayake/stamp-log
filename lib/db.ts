@@ -1,22 +1,27 @@
-import { PrismaClient } from "@prisma/client";
+import { neon } from "@neondatabase/serverless";
+import { drizzle, NeonHttpDatabase } from "drizzle-orm/neon-http";
+import * as schema from "./db/schema";
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
+type SchemaType = typeof schema;
+export type DrizzleDb = NeonHttpDatabase<SchemaType>;
 
-function getPrismaClient(): PrismaClient {
-  if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = new PrismaClient({
-      log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
-    });
+let _db: DrizzleDb | null = null;
+
+function getDbClient(): DrizzleDb {
+  if (!_db) {
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) {
+      throw new Error("DATABASE_URL is not set in environment variables");
+    }
+    const sql = neon(connectionString);
+    _db = drizzle(sql, { schema });
   }
-  return globalForPrisma.prisma;
+  return _db;
 }
 
-// Proxy wrapper for lazy initialization during Next.js static build pre-rendering
-export const db = new Proxy({} as PrismaClient, {
-  get(_target, prop: keyof PrismaClient) {
-    const client = getPrismaClient();
+export const db = new Proxy({} as DrizzleDb, {
+  get(_target, prop: keyof DrizzleDb) {
+    const client = getDbClient();
     const value = client[prop];
     if (typeof value === "function") {
       return value.bind(client);
@@ -24,3 +29,5 @@ export const db = new Proxy({} as PrismaClient, {
     return value;
   },
 });
+
+export * from "./db/schema";

@@ -26,7 +26,9 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { projectSlug } = await params;
-  const project = await db.project.findFirst({ where: { slug: projectSlug } });
+  const project = await db.query.projects.findFirst({
+    where: (p, { eq }) => eq(p.slug, projectSlug),
+  });
   return {
     title: `Analytics & Shipping Velocity — ${project?.name || "StampLog"}`,
   };
@@ -35,11 +37,11 @@ export async function generateMetadata({
 export default async function ProjectAnalyticsPage({ params }: PageProps) {
   const { projectSlug } = await params;
 
-  const project = await db.project.findFirst({
-    where: { slug: projectSlug },
-    include: {
+  const project = await db.query.projects.findFirst({
+    where: (p, { eq }) => eq(p.slug, projectSlug),
+    with: {
       releaseNotes: {
-        orderBy: { createdAt: "desc" },
+        orderBy: (r, { desc }) => [desc(r.createdAt)],
       },
     },
   });
@@ -167,7 +169,7 @@ export default async function ProjectAnalyticsPage({ params }: PageProps) {
                 <span>Releases</span>
                 <CheckCircleIcon
                   className="h-3.5 w-3.5 text-[#00876c]"
-                  weight="bold"
+                  weight="fill"
                 />
               </CardTitle>
             </CardHeader>

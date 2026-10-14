@@ -8,17 +8,21 @@ import {
   BriefcaseIcon,
   BroadcastIcon,
   CaretDownIcon,
+  CaretRightIcon,
   ChartBarIcon,
   CheckCircleIcon,
+  CheckIcon,
   ClockIcon,
   CodeIcon,
   FolderSimpleIcon,
   GitBranchIcon,
+  GitCommitIcon,
   GithubLogoIcon,
   GlobeIcon,
   PencilIcon,
   ShieldWarningIcon,
   SparkleIcon,
+  TerminalWindowIcon,
   UserIcon,
   PlusIcon,
   CopyIcon,
@@ -133,7 +137,16 @@ export function ProjectTimelineDashboard() {
     newCommitCount: number;
     latestVersion: string;
     rawCommits: string;
+    recentCommits?: Array<{
+      sha: string;
+      message: string;
+      author: string;
+      date?: string;
+    }>;
   } | null>(null);
+
+  const [showCommitsDrawer, setShowCommitsDrawer] = useState(false);
+  const [copiedSnippet, setCopiedSnippet] = useState(false);
 
   const checkUnreleasedCommits = async (projectSlug: string) => {
     try {
@@ -149,6 +162,7 @@ export function ProjectTimelineDashboard() {
           newCommitCount: data.newCommitCount,
           latestVersion: data.latestVersion,
           rawCommits: data.rawCommits,
+          recentCommits: data.recentCommits || [],
         });
       } else {
         setAlertInfo(null);
@@ -347,29 +361,69 @@ export function ProjectTimelineDashboard() {
 
               {/* Unreleased Changes Notification Banner */}
               {alertInfo?.hasNewChanges && (
-                <div className="p-3.5 rounded-[6px] border border-[#bd5200]/30 bg-[#bd5200]/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-[#bd5200] shrink-0 animate-pulse" />
-                    <div>
-                      <div className="text-xs font-medium text-[#171717] dark:text-white flex items-center gap-2">
-                        <span>Unreleased commits detected</span>
-                        <Badge variant="exec" className="font-mono text-[10px] py-0 px-1.5">
-                          {alertInfo.newCommitCount} commits
-                        </Badge>
+                <div className="rounded-[6px] border border-[#bd5200]/30 bg-[#bd5200]/5 overflow-hidden transition-all">
+                  <div className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-2 w-2 rounded-full bg-[#bd5200] shrink-0 animate-pulse" />
+                      <div>
+                        <div className="text-xs font-medium text-[#171717] dark:text-white flex items-center gap-2">
+                          <span>Unreleased commits detected</span>
+                          <Badge variant="exec" className="font-mono text-[10px] py-0 px-1.5">
+                            {alertInfo.newCommitCount} commits
+                          </Badge>
+                        </div>
+                        <p className="text-[11px] text-[#666666] dark:text-[#888888] mt-0.5">
+                          New changes pushed to branch since {alertInfo.latestVersion}. Ready to synthesize.
+                        </p>
                       </div>
-                      <p className="text-[11px] text-[#666666] dark:text-[#888888] mt-0.5">
-                        New changes pushed to branch since {alertInfo.latestVersion}. Ready to synthesize.
-                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      {alertInfo.recentCommits && alertInfo.recentCommits.length > 0 && (
+                        <Button
+                          onClick={() => setShowCommitsDrawer(!showCommitsDrawer)}
+                          variant="outline"
+                          size="sm"
+                          className="h-7 px-2.5 text-xs text-[#666666] dark:text-[#888888] border-[#bd5200]/30 hover:border-[#bd5200]"
+                        >
+                          {showCommitsDrawer ? "Hide Commits" : `Preview (${alertInfo.recentCommits.length})`}
+                        </Button>
+                      )}
+                      <Button
+                        onClick={() => setIsModalOpen(true)}
+                        size="sm"
+                        className="h-7 px-3 text-xs shrink-0 bg-[#bd5200] hover:bg-[#a34600] text-white border-[#bd5200]"
+                      >
+                        Generate Notes
+                      </Button>
                     </div>
                   </div>
 
-                  <Button
-                    onClick={() => setIsModalOpen(true)}
-                    size="sm"
-                    className="h-7 px-3 text-xs shrink-0 bg-[#bd5200] hover:bg-[#a34600] text-white border-[#bd5200]"
-                  >
-                    Generate Notes
-                  </Button>
+                  {/* Expandable Commits Drawer inside banner */}
+                  {showCommitsDrawer && alertInfo.recentCommits && alertInfo.recentCommits.length > 0 && (
+                    <div className="border-t border-[#bd5200]/20 bg-black/5 dark:bg-black/30 p-3 space-y-1.5">
+                      <div className="text-[11px] font-mono text-[#8f8f8f] uppercase tracking-wider px-1">
+                        Recent Commits on {selectedProject?.defaultBranch || "main"}:
+                      </div>
+                      <div className="space-y-1">
+                        {alertInfo.recentCommits.map((c, i) => (
+                          <div
+                            key={i}
+                            className="flex items-center justify-between gap-3 text-xs font-mono py-1 px-2.5 rounded-[4px] bg-white dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]"
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              <GitCommitIcon className="h-3.5 w-3.5 text-[#bd5200] shrink-0" weight="bold" />
+                              <span className="truncate text-[#171717] dark:text-[#ededed]">{c.message}</span>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0 text-[11px] text-[#8f8f8f]">
+                              <span className="text-[#666666] dark:text-[#888888] hidden sm:inline">{c.author}</span>
+                              <Badge variant="pixel" className="text-[10px] px-1 py-0">{c.sha}</Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -629,24 +683,171 @@ export function ProjectTimelineDashboard() {
                   })}
                 </div>
               ) : (
-                <Card className="p-8 text-center space-y-4">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-[#171717] dark:text-[#ededed]">
-                      No releases published for this project yet.
-                    </p>
-                    <p className="text-xs text-[#666666] dark:text-[#888888] max-w-sm mx-auto">
-                      Fetch recent commits from GitHub or paste git logs to synthesize your first release.
-                    </p>
+                <div className="space-y-4">
+                  {/* Primary Hero Action Card */}
+                  <Card className="p-5 border-[#ebebeb] dark:border-[#262626] bg-white dark:bg-[#0a0a0a] space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="pixel" className="text-[10px]">
+                            Repository Connected
+                          </Badge>
+                          <span className="text-[11px] text-[#8f8f8f] font-mono">
+                            {selectedProject?.githubRepo}
+                          </span>
+                        </div>
+                        <h3 className="text-base font-medium text-[#171717] dark:text-white mt-1">
+                          No releases published for this project yet
+                        </h3>
+                        <p className="text-xs text-[#666666] dark:text-[#888888] max-w-lg leading-relaxed">
+                          Synthesize your raw git commits into distinct views: plain-English value for users, bulleted rollups for leadership, and breaking migration notes for engineers.
+                        </p>
+                      </div>
+
+                      <Button
+                        onClick={() => setIsModalOpen(true)}
+                        size="sm"
+                        className="h-8 px-4 gap-1.5 text-xs font-medium shrink-0"
+                      >
+                        <SparkleIcon className="h-3.5 w-3.5" weight="fill" />
+                        Generate First Release
+                      </Button>
+                    </div>
+
+                    {/* Detected Unreleased Commits Feed in Empty State */}
+                    {alertInfo?.hasNewChanges && alertInfo.recentCommits && alertInfo.recentCommits.length > 0 && (
+                      <div className="pt-3.5 border-t border-[#ebebeb] dark:border-[#1f1f1f] space-y-2">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-mono text-[11px] uppercase tracking-wider text-[#8f8f8f] flex items-center gap-1.5">
+                            <GitCommitIcon className="h-3.5 w-3.5 text-[#0070f3]" weight="bold" />
+                            Unreleased Commits On {selectedProject?.defaultBranch || "main"}
+                          </span>
+                          <Badge variant="exec" className="font-mono text-[10px]">
+                            {alertInfo.newCommitCount} commits detected
+                          </Badge>
+                        </div>
+
+                        <div className="space-y-1">
+                          {alertInfo.recentCommits.map((c, i) => (
+                            <div
+                              key={i}
+                              className="flex items-center justify-between gap-3 text-xs font-mono py-1.5 px-3 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]"
+                            >
+                              <div className="flex items-center gap-2.5 truncate">
+                                <div className="h-1.5 w-1.5 rounded-full bg-[#0070f3] shrink-0" />
+                                <span className="truncate text-[#171717] dark:text-[#ededed]">
+                                  {c.message}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0 text-[11px] text-[#8f8f8f]">
+                                <span className="text-[#666666] dark:text-[#888888] hidden sm:inline">
+                                  {c.author}
+                                </span>
+                                <span className="px-1.5 py-0.5 rounded bg-white dark:bg-black border border-[#ebebeb] dark:border-[#262626] text-[10px] text-[#171717] dark:text-[#ededed]">
+                                  {c.sha}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </Card>
+
+                  {/* 3-Step Feature Process Showcase */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <Card className="p-3.5 space-y-1.5 bg-[#fafafa] dark:bg-[#0d0d0d] border-[#ebebeb] dark:border-[#1f1f1f]">
+                      <div className="h-6 w-6 rounded-[3px] bg-white dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-[#262626] flex items-center justify-center text-[10px] font-mono text-[#0070f3]">
+                        01
+                      </div>
+                      <h4 className="text-xs font-medium text-[#171717] dark:text-white">
+                        Conventional Commit Intake
+                      </h4>
+                      <p className="text-[11px] text-[#666666] dark:text-[#888888] leading-relaxed">
+                        Deterministic categorization for feats, fixes, refactors, and breaking changes directly from git.
+                      </p>
+                    </Card>
+
+                    <Card className="p-3.5 space-y-1.5 bg-[#fafafa] dark:bg-[#0d0d0d] border-[#ebebeb] dark:border-[#1f1f1f]">
+                      <div className="h-6 w-6 rounded-[3px] bg-white dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-[#262626] flex items-center justify-center text-[10px] font-mono text-[#00876c]">
+                        02
+                      </div>
+                      <h4 className="text-xs font-medium text-[#171717] dark:text-white">
+                        Multi-Audience Synthesis
+                      </h4>
+                      <p className="text-[11px] text-[#666666] dark:text-[#888888] leading-relaxed">
+                        Gemini Flash extracts user value highlights, executive rollups, and developer migration specs.
+                      </p>
+                    </Card>
+
+                    <Card className="p-3.5 space-y-1.5 bg-[#fafafa] dark:bg-[#0d0d0d] border-[#ebebeb] dark:border-[#1f1f1f]">
+                      <div className="h-6 w-6 rounded-[3px] bg-white dark:bg-[#1a1a1a] border border-[#ebebeb] dark:border-[#262626] flex items-center justify-center text-[10px] font-mono text-[#bd5200]">
+                        03
+                      </div>
+                      <h4 className="text-xs font-medium text-[#171717] dark:text-white">
+                        Universal Multi-Channel Export
+                      </h4>
+                      <p className="text-[11px] text-[#666666] dark:text-[#888888] leading-relaxed">
+                        Live RSS feeds, web release page, and 1-click export to Markdown, Notion blocks, and HTML email.
+                      </p>
+                    </Card>
                   </div>
-                  <Button
-                    onClick={() => setIsModalOpen(true)}
-                    size="sm"
-                    className="h-8 gap-1.5 text-xs font-medium"
-                  >
-                    <SparkleIcon className="h-3.5 w-3.5" weight="fill" />
-                    Generate First Release
-                  </Button>
-                </Card>
+
+                  {/* GitHub Actions CI/CD Integration Card */}
+                  <Card className="p-4 border-[#ebebeb] dark:border-[#1f1f1f] bg-white dark:bg-[#0a0a0a] space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <TerminalWindowIcon className="h-4 w-4 text-[#8f8f8f]" weight="bold" />
+                        <span className="text-xs font-medium text-[#171717] dark:text-white">
+                          Automate via GitHub Actions
+                        </span>
+                      </div>
+                      <Button
+                        onClick={() => {
+                          const yaml = `name: StampLog Automated Release
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Generate Release Notes
+        run: |
+          COMMITS=$(git log -n 25 --oneline)
+          curl -X POST \${{ secrets.STAMPLOG_URL }}/api/v1/automate \\
+            -H "Content-Type: application/json" \\
+            -d "{\\"projectSlug\\": \\"${selectedProject?.slug}\\", \\"version\\": \\"\${{ github.ref_name }}\\", \\"rawCommits\\": \\"$COMMITS\\", \\"status\\": \\"PUBLISHED\\"}"`;
+                          navigator.clipboard.writeText(yaml);
+                          setCopiedSnippet(true);
+                          setTimeout(() => setCopiedSnippet(false), 2000);
+                        }}
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2.5 text-xs font-mono gap-1 text-[#666666] dark:text-[#888888] hover:text-[#171717] dark:hover:text-white"
+                      >
+                        {copiedSnippet ? (
+                          <>
+                            <CheckIcon className="h-3 w-3 text-[#00876c]" weight="bold" />
+                            Copied
+                          </>
+                        ) : (
+                          <>
+                            <CopyIcon className="h-3 w-3" weight="bold" />
+                            Copy Workflow YAML
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-[11px] text-[#666666] dark:text-[#888888] leading-relaxed">
+                      Drop this workflow into <code className="font-mono text-[#171717] dark:text-[#ededed] bg-[#fafafa] dark:bg-[#161616] px-1 py-0.5 rounded border border-[#ebebeb] dark:border-[#262626]">.github/workflows/stamplog.yml</code> to automatically synthesize and publish release notes every time a git tag is pushed.
+                    </p>
+                  </Card>
+                </div>
               )}
             </div>
 

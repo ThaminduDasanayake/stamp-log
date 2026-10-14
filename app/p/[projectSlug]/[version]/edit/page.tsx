@@ -14,13 +14,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { projectSlug, version } = await params;
   const decodedVersion = decodeURIComponent(version);
 
-  const release = await db.releaseNote.findFirst({
-    where: {
-      version: decodedVersion,
-      project: { slug: projectSlug },
+  const project = await db.query.projects.findFirst({
+    where: (p, { eq }) => eq(p.slug, projectSlug),
+    with: {
+      releaseNotes: {
+        where: (r, { eq }) => eq(r.version, decodedVersion),
+        limit: 1,
+      },
     },
-    include: { project: true },
   });
+
+  const releaseNote = project?.releaseNotes[0];
+  const release = releaseNote && project ? { ...releaseNote, project } : null;
 
   return {
     title: `Edit Release ${release?.version || decodedVersion} — ${release?.project.name || "StampLog"}`,
@@ -31,13 +36,18 @@ export default async function EditReleasePage({ params }: PageProps) {
   const { projectSlug, version } = await params;
   const decodedVersion = decodeURIComponent(version);
 
-  const release = await db.releaseNote.findFirst({
-    where: {
-      version: decodedVersion,
-      project: { slug: projectSlug },
+  const project = await db.query.projects.findFirst({
+    where: (p, { eq }) => eq(p.slug, projectSlug),
+    with: {
+      releaseNotes: {
+        where: (r, { eq }) => eq(r.version, decodedVersion),
+        limit: 1,
+      },
     },
-    include: { project: true },
   });
+
+  const releaseNote = project?.releaseNotes[0];
+  const release = releaseNote && project ? { ...releaseNote, project } : null;
 
   if (!release) {
     notFound();

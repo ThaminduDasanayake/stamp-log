@@ -154,7 +154,7 @@ export function GenerateReleaseModal({
               </Badge>
             </div>
             <p className="text-xs text-[#666666] dark:text-[#888888]">
-              Synthesize multi-audience release notes with Gemini 3.6 Flash
+              Synthesize multi-audience release notes with Gemini Flash
             </p>
           </div>
 

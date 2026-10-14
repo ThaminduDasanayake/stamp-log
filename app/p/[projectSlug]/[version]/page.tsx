@@ -33,13 +33,18 @@ export async function generateMetadata({
   const { projectSlug, version } = await params;
   const decodedVersion = decodeURIComponent(version);
 
-  const release = await db.releaseNote.findFirst({
-    where: {
-      version: decodedVersion,
-      project: { slug: projectSlug },
+  const project = await db.query.projects.findFirst({
+    where: (p, { eq }) => eq(p.slug, projectSlug),
+    with: {
+      releaseNotes: {
+        where: (r, { eq }) => eq(r.version, decodedVersion),
+        limit: 1,
+      },
     },
-    include: { project: true },
   });
+
+  const releaseNote = project?.releaseNotes[0];
+  const release = releaseNote && project ? { ...releaseNote, project } : null;
 
   if (!release) {
     return { title: "Release Not Found — StampLog" };
@@ -80,13 +85,18 @@ export default async function PublicReleasePage({ params }: PageProps) {
   const { projectSlug, version } = await params;
   const decodedVersion = decodeURIComponent(version);
 
-  const release = await db.releaseNote.findFirst({
-    where: {
-      version: decodedVersion,
-      project: { slug: projectSlug },
+  const project = await db.query.projects.findFirst({
+    where: (p, { eq }) => eq(p.slug, projectSlug),
+    with: {
+      releaseNotes: {
+        where: (r, { eq }) => eq(r.version, decodedVersion),
+        limit: 1,
+      },
     },
-    include: { project: true },
   });
+
+  const releaseNote = project?.releaseNotes[0];
+  const release = releaseNote && project ? { ...releaseNote, project } : null;
 
   if (!release) {
     notFound();
