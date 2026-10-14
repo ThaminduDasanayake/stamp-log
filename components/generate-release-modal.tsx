@@ -10,6 +10,7 @@ import {
   BriefcaseIcon,
   UserIcon,
   CodeIcon,
+  CheckCircleIcon,
   ShieldWarningIcon,
   FloppyDiskIcon,
   XIcon,
@@ -384,31 +385,69 @@ export function GenerateReleaseModal({
 
                 {/* View 3: Developer */}
                 {activeTab === "dev" && (
-                  <div className="space-y-2 text-xs">
+                  <div className="space-y-3 text-xs">
+                    {/* Breaking Changes */}
                     {object.developerFacing?.breakingChanges &&
-                      object.developerFacing.breakingChanges.length > 0 && (
-                        <div className="p-2.5 rounded-[4px] bg-[#ee0000]/5 border border-[#ee0000]/20 space-y-1">
-                          <span className="text-xs font-medium text-[#ee0000] flex items-center gap-1">
-                            <ShieldWarningIcon
-                              className="h-3.5 w-3.5"
-                              weight="bold"
-                            />
-                            Breaking Changes
-                          </span>
-                          {object.developerFacing.breakingChanges.map(
-                            (b: any, i: number) => (
-                              <div key={i} className="pt-1">
-                                <code className="bg-white dark:bg-black px-1.5 py-0.5 rounded text-[#ee0000] font-mono text-[11px] border border-[#ee0000]/20">
-                                  {b?.target}
-                                </code>
-                                <p className="text-[#666666] dark:text-[#888888] mt-1 pl-1">
-                                  {b?.migrationStep}
-                                </p>
-                              </div>
-                            ),
-                          )}
-                        </div>
-                      )}
+                    object.developerFacing.breakingChanges.length > 0 ? (
+                      <div className="p-2.5 rounded-[4px] bg-[#ee0000]/5 border border-[#ee0000]/20 space-y-1">
+                        <span className="text-xs font-medium text-[#ee0000] flex items-center gap-1">
+                          <ShieldWarningIcon
+                            className="h-3.5 w-3.5"
+                            weight="bold"
+                          />
+                          Breaking Changes
+                        </span>
+                        {object.developerFacing.breakingChanges.map(
+                          (b: any, i: number) => (
+                            <div key={i} className="pt-1">
+                              <code className="bg-white dark:bg-black px-1.5 py-0.5 rounded text-[#ee0000] font-mono text-[11px] border border-[#ee0000]/20">
+                                {b?.target}
+                              </code>
+                              <p className="text-[#666666] dark:text-[#888888] mt-1 pl-1">
+                                {b?.migrationStep}
+                              </p>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    ) : (
+                      <div className="p-2.5 rounded-[4px] bg-[#00876c]/5 border border-[#00876c]/20 flex items-center gap-2 text-xs text-[#00876c]">
+                        <CheckCircleIcon className="h-3.5 w-3.5" weight="fill" />
+                        <span>No breaking API or contract changes detected in this release.</span>
+                      </div>
+                    )}
+
+                    {/* Technical Updates / Internal Scopes */}
+                    {object.developerFacing?.technicalUpdates &&
+                    object.developerFacing.technicalUpdates.length > 0 ? (
+                      <div className="space-y-1.5">
+                        <span className="text-[11px] font-mono text-[#8f8f8f] uppercase tracking-wider block px-0.5">
+                          Internal Technical Scopes
+                        </span>
+                        {object.developerFacing.technicalUpdates.map(
+                          (u: any, i: number) => (
+                            <div
+                              key={i}
+                              className="p-2 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222] flex items-start gap-2 text-xs"
+                            >
+                              <Badge
+                                variant="dev"
+                                className="font-mono text-[10px] shrink-0"
+                              >
+                                {u?.scope}
+                              </Badge>
+                              <span className="text-[#666666] dark:text-[#888888] leading-relaxed">
+                                {u?.detail}
+                              </span>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-[#8f8f8f] italic py-1">
+                        Awaiting developer technical notes...
+                      </p>
+                    )}
                   </div>
                 )}
               </CardContent>
