@@ -1,1 +1,2 @@
-export { GET, runtime } from "../../callback/github/route";
+export { GET } from "../../callback/github/route";
+export const runtime = "nodejs";
