@@ -2,19 +2,17 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowUpRightIcon,
-  BellRingingIcon,
   BriefcaseIcon,
   BroadcastIcon,
   CaretDownIcon,
-  CaretRightIcon,
   ChartBarIcon,
   CheckCircleIcon,
   CheckIcon,
   ClockIcon,
   CodeIcon,
-  FolderSimpleIcon,
   GitBranchIcon,
   GitCommitIcon,
   GithubLogoIcon,
@@ -24,7 +22,6 @@ import {
   SparkleIcon,
   TerminalWindowIcon,
   UserIcon,
-  PlusIcon,
   CopyIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
@@ -53,16 +50,31 @@ interface ProjectItem {
   publicUrl: string;
 }
 
+interface HighlightItem {
+  feature: string;
+  benefit: string;
+}
+
+interface BreakingChangeItem {
+  target: string;
+  migrationStep: string;
+}
+
+interface TechnicalUpdateItem {
+  scope: string;
+  detail: string;
+}
+
 interface ReleaseItem {
   id: string;
   version: string;
   title: string;
   rawCommits: string;
   executiveSummary: string;
-  userHighlights: any[];
-  userFixes: any[];
-  breakingChanges: any[];
-  technicalUpdates: any[];
+  userHighlights: HighlightItem[];
+  userFixes: string[];
+  breakingChanges: BreakingChangeItem[];
+  technicalUpdates: TechnicalUpdateItem[];
   status: string;
   publishedAt: string | null;
   createdAt: string;
@@ -70,6 +82,7 @@ interface ReleaseItem {
 }
 
 export function ProjectTimelineDashboard() {
+  const router = useRouter();
   const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(
     null,
@@ -88,7 +101,6 @@ export function ProjectTimelineDashboard() {
 
   // Fetch all user projects on mount
   const fetchProjects = async () => {
-    setIsLoadingProjects(true);
     try {
       const res = await fetch("/api/projects/list");
       const data = await res.json();
@@ -108,7 +120,32 @@ export function ProjectTimelineDashboard() {
   };
 
   useEffect(() => {
-    fetchProjects();
+    let isMounted = true;
+    async function loadInitialProjects() {
+      try {
+        const res = await fetch("/api/projects/list");
+        const data = await res.json();
+        if (
+          isMounted &&
+          data.success &&
+          Array.isArray(data.projects) &&
+          data.projects.length > 0
+        ) {
+          setProjects(data.projects);
+          setSelectedProject(data.projects[0]);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch projects list:", err);
+      } finally {
+        if (isMounted) {
+          setIsLoadingProjects(false);
+        }
+      }
+    }
+    loadInitialProjects();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Fetch timeline release notes when selected project changes
@@ -148,40 +185,66 @@ export function ProjectTimelineDashboard() {
   const [showCommitsDrawer, setShowCommitsDrawer] = useState(false);
   const [copiedSnippet, setCopiedSnippet] = useState(false);
 
-  const checkUnreleasedCommits = async (projectSlug: string) => {
-    try {
-      const res = await fetch("/api/github/check-updates", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ projectSlug }),
-      });
-      const data = await res.json();
-      if (data.success && data.hasNewChanges) {
-        setAlertInfo({
-          hasNewChanges: data.hasNewChanges,
-          newCommitCount: data.newCommitCount,
-          latestVersion: data.latestVersion,
-          rawCommits: data.rawCommits,
-          recentCommits: data.recentCommits || [],
-        });
-      } else {
-        setAlertInfo(null);
-      }
-    } catch (err) {
-      console.warn("Failed to check unreleased commits:", err);
-    }
-  };
-
   useEffect(() => {
-    if (selectedProject) {
-      fetchReleasesForProject(selectedProject.slug);
-      checkUnreleasedCommits(selectedProject.slug);
+    if (!selectedProject) return;
+    let isMounted = true;
+    const projectSlug = selectedProject.slug;
+
+    async function loadProjectData() {
+      setIsLoadingReleases(true);
+      try {
+        const res = await fetch(
+          `/api/releases/recent?projectSlug=${encodeURIComponent(projectSlug)}`,
+        );
+        const data = await res.json();
+        if (isMounted) {
+          if (data.success && Array.isArray(data.releases)) {
+            setReleases(data.releases);
+          } else {
+            setReleases([]);
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to fetch project releases:", err);
+        if (isMounted) setReleases([]);
+      } finally {
+        if (isMounted) setIsLoadingReleases(false);
+      }
+
+      try {
+        const res = await fetch("/api/github/check-updates", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectSlug }),
+        });
+        const data = await res.json();
+        if (isMounted) {
+          if (data.success && data.hasNewChanges) {
+            setAlertInfo({
+              hasNewChanges: data.hasNewChanges,
+              newCommitCount: data.newCommitCount,
+              latestVersion: data.latestVersion,
+              rawCommits: data.rawCommits,
+              recentCommits: data.recentCommits || [],
+            });
+          } else {
+            setAlertInfo(null);
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to check unreleased commits:", err);
+      }
     }
+
+    loadProjectData();
+    return () => {
+      isMounted = false;
+    };
   }, [selectedProject]);
 
   const handleSelectProject = (slug: string) => {
     if (slug === "IMPORT_NEW") {
-      window.location.href = "/projects/import";
+      router.push("/projects/import");
       return;
     }
     const proj = projects.find((p) => p.slug === slug);
@@ -530,7 +593,8 @@ export function ProjectTimelineDashboard() {
                                     if (e.target.value) {
                                       handleExportFormat(
                                         rel,
-                                        e.target.value as any,
+                                        e.target.value as
+                                          "md" | "notion" | "email" | "github",
                                       );
                                       e.target.value = "";
                                     }
@@ -631,19 +695,21 @@ export function ProjectTimelineDashboard() {
                             {/* View 1: Customer */}
                             {currentTab === "user" && (
                               <div className="space-y-2 text-xs">
-                                {userHighlights.map((h: any, i: number) => (
-                                  <div
-                                    key={i}
-                                    className="p-2.5 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]"
-                                  >
-                                    <strong className="text-[#171717] dark:text-[#ededed] font-medium">
-                                      {h?.feature}:
-                                    </strong>{" "}
-                                    <span className="text-[#666666] dark:text-[#888888]">
-                                      {h?.benefit}
-                                    </span>
-                                  </div>
-                                ))}
+                                {userHighlights.map(
+                                  (h: HighlightItem, i: number) => (
+                                    <div
+                                      key={i}
+                                      className="p-2.5 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]"
+                                    >
+                                      <strong className="text-[#171717] dark:text-[#ededed] font-medium">
+                                        {h?.feature}:
+                                      </strong>{" "}
+                                      <span className="text-[#666666] dark:text-[#888888]">
+                                        {h?.benefit}
+                                      </span>
+                                    </div>
+                                  ),
+                                )}
                               </div>
                             )}
 
@@ -677,7 +743,7 @@ export function ProjectTimelineDashboard() {
                                       Breaking Changes
                                     </span>
                                     {breakingChanges.map(
-                                      (b: any, i: number) => (
+                                      (b: BreakingChangeItem, i: number) => (
                                         <div key={i} className="pt-1">
                                           <code className="bg-white dark:bg-black px-1.5 py-0.5 rounded text-[#ee0000] font-mono text-[11px] border border-[#ee0000]/20">
                                             {b?.target}
@@ -691,22 +757,24 @@ export function ProjectTimelineDashboard() {
                                   </div>
                                 )}
 
-                                {technicalUpdates.map((u: any, i: number) => (
-                                  <div
-                                    key={i}
-                                    className="p-2 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222] flex items-center gap-2 text-xs"
-                                  >
-                                    <Badge
-                                      variant="dev"
-                                      className="font-mono text-[10px] shrink-0"
+                                {technicalUpdates.map(
+                                  (u: TechnicalUpdateItem, i: number) => (
+                                    <div
+                                      key={i}
+                                      className="p-2 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222] flex items-center gap-2 text-xs"
                                     >
-                                      {u?.scope}
-                                    </Badge>
-                                    <span className="text-[#666666] dark:text-[#888888]">
-                                      {u?.detail}
-                                    </span>
-                                  </div>
-                                ))}
+                                      <Badge
+                                        variant="dev"
+                                        className="font-mono text-[10px] shrink-0"
+                                      >
+                                        {u?.scope}
+                                      </Badge>
+                                      <span className="text-[#666666] dark:text-[#888888]">
+                                        {u?.detail}
+                                      </span>
+                                    </div>
+                                  ),
+                                )}
                               </div>
                             )}
                           </CardContent>

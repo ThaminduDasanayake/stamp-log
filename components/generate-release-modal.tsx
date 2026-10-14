@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useObject } from "@ai-sdk/react";
 import { ChangelogSchema } from "@/lib/schemas/changelog";
 import {
@@ -41,26 +41,26 @@ export function GenerateReleaseModal({
   onReleaseCreated,
 }: GenerateReleaseModalProps) {
   const [inputMode, setInputMode] = useState<"github" | "manual">("github");
+  const [prevRepo, setPrevRepo] = useState(project.githubRepo);
   const [githubRepoInput, setGithubRepoInput] = useState(
     project.githubRepo || "",
   );
   const [rawCommitsInput, setRawCommitsInput] = useState("");
   const [activeTab, setActiveTab] = useState<"user" | "exec" | "dev">("user");
 
+  if (project.githubRepo !== prevRepo) {
+    setPrevRepo(project.githubRepo);
+    setGithubRepoInput(project.githubRepo || "");
+  }
+
   const [isFetchingCommits, setIsFetchingCommits] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [fetchError, setFetchError] = useState("");
 
-  const { object, submit, isLoading, stop } = useObject({
+  const { object, submit, isLoading } = useObject({
     api: "/api/releases/generate",
     schema: ChangelogSchema,
   });
-
-  useEffect(() => {
-    if (project.githubRepo) {
-      setGithubRepoInput(project.githubRepo);
-    }
-  }, [project]);
 
   if (!isOpen) return null;
 
@@ -91,8 +91,12 @@ export function GenerateReleaseModal({
       } else {
         setFetchError(data.error || "Failed to fetch GitHub commits");
       }
-    } catch (err: any) {
-      setFetchError(err?.message || "Connection error fetching commits");
+    } catch (err: unknown) {
+      setFetchError(
+        err instanceof Error
+          ? err.message
+          : "Connection error fetching commits",
+      );
     } finally {
       setIsFetchingCommits(false);
     }
@@ -341,21 +345,19 @@ export function GenerateReleaseModal({
                     {object.userFacing?.highlights &&
                     object.userFacing.highlights.length > 0 ? (
                       <div className="space-y-1.5">
-                        {object.userFacing.highlights.map(
-                          (h: any, i: number) => (
-                            <div
-                              key={i}
-                              className="p-2.5 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]"
-                            >
-                              <strong className="text-[#171717] dark:text-[#ededed] font-medium">
-                                {h?.feature}:
-                              </strong>{" "}
-                              <span className="text-[#666666] dark:text-[#888888]">
-                                {h?.benefit}
-                              </span>
-                            </div>
-                          ),
-                        )}
+                        {object.userFacing.highlights.map((h, i) => (
+                          <div
+                            key={i}
+                            className="p-2.5 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222]"
+                          >
+                            <strong className="text-[#171717] dark:text-[#ededed] font-medium">
+                              {h?.feature}:
+                            </strong>{" "}
+                            <span className="text-[#666666] dark:text-[#888888]">
+                              {h?.benefit}
+                            </span>
+                          </div>
+                        ))}
                       </div>
                     ) : (
                       <p className="text-xs text-[#8f8f8f] italic">
@@ -396,18 +398,16 @@ export function GenerateReleaseModal({
                           />
                           Breaking Changes
                         </span>
-                        {object.developerFacing.breakingChanges.map(
-                          (b: any, i: number) => (
-                            <div key={i} className="pt-1">
-                              <code className="bg-white dark:bg-black px-1.5 py-0.5 rounded text-[#ee0000] font-mono text-[11px] border border-[#ee0000]/20">
-                                {b?.target}
-                              </code>
-                              <p className="text-[#666666] dark:text-[#888888] mt-1 pl-1">
-                                {b?.migrationStep}
-                              </p>
-                            </div>
-                          ),
-                        )}
+                        {object.developerFacing.breakingChanges.map((b, i) => (
+                          <div key={i} className="pt-1">
+                            <code className="bg-white dark:bg-black px-1.5 py-0.5 rounded text-[#ee0000] font-mono text-[11px] border border-[#ee0000]/20">
+                              {b?.target}
+                            </code>
+                            <p className="text-[#666666] dark:text-[#888888] mt-1 pl-1">
+                              {b?.migrationStep}
+                            </p>
+                          </div>
+                        ))}
                       </div>
                     ) : (
                       <div className="p-2.5 rounded-[4px] bg-[#00876c]/5 border border-[#00876c]/20 flex items-center gap-2 text-xs text-[#00876c]">
@@ -429,24 +429,22 @@ export function GenerateReleaseModal({
                         <span className="text-[11px] font-mono text-[#8f8f8f] uppercase tracking-wider block px-0.5">
                           Internal Technical Scopes
                         </span>
-                        {object.developerFacing.technicalUpdates.map(
-                          (u: any, i: number) => (
-                            <div
-                              key={i}
-                              className="p-2 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222] flex items-start gap-2 text-xs"
+                        {object.developerFacing.technicalUpdates.map((u, i) => (
+                          <div
+                            key={i}
+                            className="p-2 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222] flex items-start gap-2 text-xs"
+                          >
+                            <Badge
+                              variant="dev"
+                              className="font-mono text-[10px] shrink-0"
                             >
-                              <Badge
-                                variant="dev"
-                                className="font-mono text-[10px] shrink-0"
-                              >
-                                {u?.scope}
-                              </Badge>
-                              <span className="text-[#666666] dark:text-[#888888] leading-relaxed">
-                                {u?.detail}
-                              </span>
-                            </div>
-                          ),
-                        )}
+                              {u?.scope}
+                            </Badge>
+                            <span className="text-[#666666] dark:text-[#888888] leading-relaxed">
+                              {u?.detail}
+                            </span>
+                          </div>
+                        ))}
                       </div>
                     ) : (
                       <p className="text-xs text-[#8f8f8f] italic py-1">

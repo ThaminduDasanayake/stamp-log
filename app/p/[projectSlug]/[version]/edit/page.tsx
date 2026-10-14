@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { db } from "@/lib/db";
+import {
+  db,
+  HighlightItem,
+  BreakingChangeItem,
+  TechnicalUpdateItem,
+} from "@/lib/db";
 import { InlineReleaseEditorClient } from "./editor-client";
 
 interface PageProps {
@@ -63,10 +68,12 @@ export default async function EditReleasePage({ params }: PageProps) {
         title: release.title,
         status: release.status,
         executiveSummary: release.executiveSummary || "",
-        userHighlights: (release.userHighlights as any[]) || [],
-        userFixes: (release.userFixes as any[]) || [],
-        breakingChanges: (release.breakingChanges as any[]) || [],
-        technicalUpdates: (release.technicalUpdates as any[]) || [],
+        userHighlights: (release.userHighlights as HighlightItem[]) || [],
+        userFixes: (release.userFixes as string[]) || [],
+        breakingChanges:
+          (release.breakingChanges as BreakingChangeItem[]) || [],
+        technicalUpdates:
+          (release.technicalUpdates as TechnicalUpdateItem[]) || [],
         projectSlug: release.project.slug,
         projectName: release.project.name,
       }}

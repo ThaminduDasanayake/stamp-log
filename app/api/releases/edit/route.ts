@@ -91,10 +91,12 @@ export async function POST(req: Request) {
         publicUrl: `/p/${existing.project.slug}/${encodeURIComponent(updated.version)}`,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error updating release note:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal Server Error";
     return Response.json(
-      { success: false, error: error?.message || "Internal Server Error" },
+      { success: false, error: errorMessage },
       { status: 500 },
     );
   }

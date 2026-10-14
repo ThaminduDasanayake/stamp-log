@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   BookOpenIcon,
   GithubLogoIcon,
@@ -20,6 +21,7 @@ interface UserProfile {
 }
 
 export function UserProfileMenu() {
+  const router = useRouter();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -48,7 +50,7 @@ export function UserProfileMenu() {
 
   const handleSignOut = () => {
     document.cookie = "stamplog_session=; path=/; max-age=0";
-    window.location.href = "/login";
+    router.push("/login");
   };
 
   const userName = user?.name || user?.username || "Developer";

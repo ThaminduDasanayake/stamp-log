@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { db } from "@/lib/db";
+import {
+  db,
+  HighlightItem,
+  BreakingChangeItem,
+  TechnicalUpdateItem,
+} from "@/lib/db";
 import {
   ArrowLeftIcon,
   BriefcaseIcon,
@@ -100,10 +105,12 @@ export default async function PublicReleasePage({ params }: PageProps) {
     notFound();
   }
 
-  const userHighlights = (release.userHighlights as any[]) || [];
-  const userFixes = (release.userFixes as any[]) || [];
-  const breakingChanges = (release.breakingChanges as any[]) || [];
-  const technicalUpdates = (release.technicalUpdates as any[]) || [];
+  const userHighlights = (release.userHighlights as HighlightItem[]) || [];
+  const userFixes = (release.userFixes as string[]) || [];
+  const breakingChanges =
+    (release.breakingChanges as BreakingChangeItem[]) || [];
+  const technicalUpdates =
+    (release.technicalUpdates as TechnicalUpdateItem[]) || [];
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-[#000000] text-[#171717] dark:text-[#ededed] flex flex-col font-sans selection:bg-[#171717] selection:text-white dark:selection:bg-white dark:selection:text-[#171717]">

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { db } from "@/lib/db";
+import { db, HighlightItem, BreakingChangeItem } from "@/lib/db";
 import {
   ArrowLeftIcon,
   ChartBarIcon,
@@ -56,9 +56,9 @@ export default async function ProjectAnalyticsPage({ params }: PageProps) {
   let totalBreaking = 0;
 
   releases.forEach((r) => {
-    totalFeatures += ((r.userHighlights as any[]) || []).length;
-    totalFixes += ((r.userFixes as any[]) || []).length;
-    totalBreaking += ((r.breakingChanges as any[]) || []).length;
+    totalFeatures += ((r.userHighlights as HighlightItem[]) || []).length;
+    totalFixes += ((r.userFixes as string[]) || []).length;
+    totalBreaking += ((r.breakingChanges as BreakingChangeItem[]) || []).length;
   });
 
   const totalContentItems = totalFeatures + totalFixes + totalBreaking || 1;

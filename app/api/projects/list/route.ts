@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { desc } from "drizzle-orm";
 
 export const runtime = "nodejs";
 
@@ -35,7 +34,7 @@ export async function GET() {
     }));
 
     return Response.json({ success: true, projects: formatted });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching projects list:", error);
     return Response.json({ success: false, projects: [] }, { status: 500 });
   }

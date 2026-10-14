@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db, HighlightItem, BreakingChangeItem } from "@/lib/db";
 
 export const runtime = "nodejs";
 
@@ -35,9 +35,9 @@ export async function GET(req: Request) {
     let totalBreakingCount = 0;
 
     releases.forEach((r) => {
-      const h = (r.userHighlights as any[]) || [];
-      const f = (r.userFixes as any[]) || [];
-      const b = (r.breakingChanges as any[]) || [];
+      const h = (r.userHighlights as HighlightItem[]) || [];
+      const f = (r.userFixes as string[]) || [];
+      const b = (r.breakingChanges as BreakingChangeItem[]) || [];
       totalHighlightsCount += h.length;
       totalFixesCount += f.length;
       totalBreakingCount += b.length;
@@ -62,7 +62,7 @@ export async function GET(req: Request) {
     }
 
     const breakingChangeReleaseCount = releases.filter((r) => {
-      const b = (r.breakingChanges as any[]) || [];
+      const b = (r.breakingChanges as BreakingChangeItem[]) || [];
       return b.length > 0;
     }).length;
 
@@ -92,7 +92,7 @@ export async function GET(req: Request) {
         },
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error calculating project analytics:", error);
     return Response.json(
       { success: false, error: "Internal Server Error" },

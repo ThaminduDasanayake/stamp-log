@@ -67,7 +67,7 @@ export async function POST(req: Request) {
       rawCommits,
       recentCommits,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error checking GitHub updates:", error);
     return Response.json(
       {

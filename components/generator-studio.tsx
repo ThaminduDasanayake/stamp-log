@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useObject } from "@ai-sdk/react";
 import { ChangelogSchema } from "@/lib/schemas/changelog";
@@ -31,16 +31,31 @@ interface GeneratorStudioProps {
   projectName?: string;
 }
 
+interface HighlightItem {
+  feature: string;
+  benefit: string;
+}
+
+interface BreakingChangeItem {
+  target: string;
+  migrationStep: string;
+}
+
+interface TechnicalUpdateItem {
+  scope: string;
+  detail: string;
+}
+
 interface SavedReleaseItem {
   id: string;
   version: string;
   title: string;
   rawCommits: string;
   executiveSummary: string;
-  userHighlights: any[];
-  userFixes: any[];
-  breakingChanges: any[];
-  technicalUpdates: any[];
+  userHighlights: HighlightItem[];
+  userFixes: string[];
+  breakingChanges: BreakingChangeItem[];
+  technicalUpdates: TechnicalUpdateItem[];
   status: string;
   publicUrl: string;
   createdAt: string;
@@ -71,12 +86,12 @@ export function GeneratorStudio({
     null,
   );
 
-  const { object, submit, isLoading, stop } = useObject({
+  const { object, submit, isLoading } = useObject({
     api: "/api/releases/generate",
     schema: ChangelogSchema,
   });
 
-  const fetchRecentReleases = async () => {
+  const fetchRecentReleases = useCallback(async () => {
     try {
       const res = await fetch("/api/releases/recent?projectSlug=demo");
       const data = await res.json();
@@ -86,10 +101,25 @@ export function GeneratorStudio({
     } catch (err) {
       console.warn("Failed to fetch recent releases:", err);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchRecentReleases();
+    let isMounted = true;
+    async function load() {
+      try {
+        const res = await fetch("/api/releases/recent?projectSlug=demo");
+        const data = await res.json();
+        if (isMounted && data.success && Array.isArray(data.releases)) {
+          setRecentReleases(data.releases);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch recent releases:", err);
+      }
+    }
+    load();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleGenerate = () => {
@@ -122,9 +152,11 @@ export function GeneratorStudio({
       } else {
         setRepoError(data.error || "Failed to fetch GitHub commits");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setRepoError(
-        err?.message || "Connection error fetching GitHub repository",
+        err instanceof Error
+          ? err.message
+          : "Connection error fetching GitHub repository",
       );
     } finally {
       setIsFetchingRepo(false);
@@ -171,10 +203,10 @@ export function GeneratorStudio({
     const version = displayVersion;
     const summary = displayExecSummary;
     const highlights = displayHighlights
-      .map((h: any) => `- **${h?.feature}**: ${h?.benefit}`)
+      .map((h) => `- **${h?.feature || ""}**: ${h?.benefit || ""}`)
       .join("\n");
     const tech = displayTech
-      .map((u: any) => `- [${u?.scope}] ${u?.detail}`)
+      .map((u) => `- [${u?.scope || ""}] ${u?.detail || ""}`)
       .join("\n");
 
     const md = `# ${title} (${version})\n\n## Executive Summary\n${summary}\n\n## User Highlights\n${highlights}\n\n## Technical Updates\n${tech}`;
@@ -487,7 +519,7 @@ export function GeneratorStudio({
                   </h4>
                   {displayHighlights.length > 0 ? (
                     <div className="space-y-1.5">
-                      {displayHighlights.map((h: any, i: number) => (
+                      {displayHighlights.map((h, i) => (
                         <div
                           key={i}
                           className="p-2.5 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222] text-xs leading-relaxed"
@@ -514,7 +546,7 @@ export function GeneratorStudio({
                       Bug Fixes
                     </h4>
                     <ul className="list-disc pl-4 text-xs text-[#666666] dark:text-[#888888] space-y-1">
-                      {displayFixes.map((f: any, i: number) => (
+                      {displayFixes.map((f, i) => (
                         <li key={i}>{f}</li>
                       ))}
                     </ul>
@@ -556,7 +588,7 @@ export function GeneratorStudio({
                       />
                       Breaking Changes
                     </span>
-                    {displayBreaking.map((b: any, i: number) => (
+                    {displayBreaking.map((b, i) => (
                       <div key={i} className="text-xs space-y-1">
                         <code className="bg-white dark:bg-black px-1.5 py-0.5 rounded text-[#ee0000] font-mono text-[11px] border border-[#ee0000]/20">
                           {b?.target}
@@ -575,7 +607,7 @@ export function GeneratorStudio({
                       Technical Scopes
                     </h4>
                     <div className="space-y-1.5">
-                      {displayTech.map((u: any, i: number) => (
+                      {displayTech.map((u, i) => (
                         <div
                           key={i}
                           className="p-2 rounded-[4px] bg-[#fafafa] dark:bg-[#111111] border border-[#ebebeb] dark:border-[#222222] flex items-start gap-2 text-xs"

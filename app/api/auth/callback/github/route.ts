@@ -64,7 +64,7 @@ export async function GET(req: Request) {
     });
 
     return response;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(
       "❌ Error in GitHub OAuth callback (/api/auth/callback/github):",
       error,
@@ -73,11 +73,10 @@ export async function GET(req: Request) {
       process.env.BETTER_AUTH_URL ||
       process.env.NEXT_PUBLIC_APP_URL ||
       new URL(req.url).origin;
+    const errorMessage =
+      error instanceof Error ? error.message : "oauth_failed";
     return NextResponse.redirect(
-      new URL(
-        `/login?error=${encodeURIComponent(error?.message || "oauth_failed")}`,
-        baseUrl,
-      ),
+      new URL(`/login?error=${encodeURIComponent(errorMessage)}`, baseUrl),
     );
   }
 }

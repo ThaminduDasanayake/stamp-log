@@ -39,12 +39,14 @@ export async function POST(req: Request) {
       rawCommits,
       commitCount,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error in /api/github/commits:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to fetch GitHub commits";
     return Response.json(
       {
         success: false,
-        error: error?.message || "Failed to fetch GitHub commits",
+        error: errorMessage,
       },
       { status: 500 },
     );

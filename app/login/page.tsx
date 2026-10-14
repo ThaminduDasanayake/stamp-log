@@ -16,6 +16,8 @@ function LoginContent() {
   const error = searchParams.get("error");
 
   const handleGitHubLogin = () => {
+    // Full page navigation to GitHub OAuth endpoint
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
     window.location.href = "/api/auth/github";
   };
 

@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db, HighlightItem } from "@/lib/db";
 
 export const runtime = "nodejs";
 
@@ -45,7 +45,7 @@ export async function GET(
           ? new Date(rel.publishedAt).toUTCString()
           : new Date(rel.createdAt).toUTCString();
 
-        const highlights = (rel.userHighlights as any[]) || [];
+        const highlights = (rel.userHighlights as HighlightItem[]) || [];
         const highlightsHtml = highlights
           .map(
             (h) =>

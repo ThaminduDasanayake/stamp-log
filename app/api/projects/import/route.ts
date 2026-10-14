@@ -91,12 +91,16 @@ export async function POST(req: Request) {
         publicUrl: `/p/${project.slug}`,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error importing project:", error);
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "Failed to import GitHub project";
     return Response.json(
       {
         success: false,
-        error: error?.message || "Failed to import GitHub project",
+        error: errorMessage,
       },
       { status: 500 },
     );
